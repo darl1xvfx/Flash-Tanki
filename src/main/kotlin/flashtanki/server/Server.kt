@@ -1003,7 +1003,7 @@ class Server : KoinComponent {
       socketServer.run(this)
       GlobalScope.launchDelayed(1.seconds) {
         DiscordBot.run(
-          token = "MTI0MTA4NTEyMzY3NjYwMjQ4OA.GPheAQ.y3xQjmzE9f4fAsz-T1wxddWDjTdanrcV-c9YZM",
+          token = "MTI0MTA4NTEyMzY3NjYwMjQ4OA.G0EGAB.irlr4OKAZiEsMFK4X2PaUear7l8Lvqx4EDSslg",
           discordCommandHandler = CommandHandler(),
           autoResponsesHandlers = autoResponsesHandlers()
         )
