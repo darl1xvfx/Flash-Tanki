@@ -27,6 +27,9 @@ import flashtanki.server.battles.map.IMapRegistry
 import flashtanki.server.battles.map.get
 import flashtanki.server.battles.mode.CaptureTheFlagModeHandler
 import flashtanki.server.battles.mode.DeathmatchModeHandler
+import flashtanki.server.bot.discord.CommandHandler
+import flashtanki.server.bot.discord.DiscordBot
+import flashtanki.server.bot.discord.autoResponsesHandlers
 import flashtanki.server.chat.*
 import flashtanki.server.client.*
 import flashtanki.server.commands.Command
@@ -159,7 +162,7 @@ class Server : KoinComponent {
           reply(builder.toString())
         }
       }
-	  
+
       command("online") {
         permissions(Permissions.Moderator.toBitfield().plus(Permissions.Superuser.toBitfield()))
         description("Shows the number of online players")
@@ -169,7 +172,7 @@ class Server : KoinComponent {
           reply("Online players: $onlinePlayersCount")
         }
       }
-	  
+
       command("addpermission") {
         permissions(Permissions.Superuser.toBitfield())
         description("Добавить разрешения пользователю")
@@ -414,7 +417,7 @@ class Server : KoinComponent {
           }
         }
       }
-	  
+
 	  command("vote") {
         permissions(Permissions.DefaultUser.toBitfield())
 		permissions(Permissions.Superuser.toBitfield())
@@ -445,7 +448,7 @@ class Server : KoinComponent {
             val user = player.user ?: throw Exception("User is null")
           }
         }
-	  
+
 	  command("creategold") {
         permissions(Permissions.Superuser.toBitfield())
         description("Drop gold")
@@ -454,7 +457,7 @@ class Server : KoinComponent {
           permissions(Permissions.Superuser.toBitfield())
           description("The amount of golds")
         }
-         
+
 		handler {
 		   val battle = socket.battle
            if(battle == null) {
@@ -995,6 +998,17 @@ class Server : KoinComponent {
     HibernateUtils.createEntityManager().close()
 
     // inviteRepository.createInvite("2112")
+
+    coroutineScope {
+      socketServer.run(this)
+      GlobalScope.launchDelayed(1.seconds) {
+        DiscordBot.run(
+          token = "MTI0MTA4NTEyMzY3NjYwMjQ4OA.GPheAQ.y3xQjmzE9f4fAsz-T1wxddWDjTdanrcV-c9YZM",
+          discordCommandHandler = CommandHandler(),
+          autoResponsesHandlers = autoResponsesHandlers()
+        )
+      }
+    }
 
     coroutineScope {
       socketServer.run(this)

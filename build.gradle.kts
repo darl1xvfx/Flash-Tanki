@@ -64,6 +64,10 @@ dependencies {
 
   implementation("com.github.ajalt.clikt:clikt:3.5.0")
 
+  // lib discord bot
+  implementation(files("gradle/wrapper/JDA-4.3.0_277.jar"))
+
+
   testImplementation(kotlin("test"))
 }
 
