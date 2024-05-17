@@ -1,0 +1,9 @@
+
+build
+.gradle
+FlashTanki.mv.db
+gradlew.bat
+install.bat
+restart.bat
+start.bat
+taraGUI.exe

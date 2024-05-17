@@ -1,0 +1,9 @@
+{
+  "price": {
+    "rub": 300
+  },
+  "crystals": {
+    "base": 80000,
+    "bonus": 5000
+  }
+}
