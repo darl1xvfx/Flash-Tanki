@@ -999,18 +999,12 @@ class Server : KoinComponent {
 
     // inviteRepository.createInvite("2112")
 
-    coroutineScope {
-      socketServer.run(this)
-      GlobalScope.launchDelayed(1.seconds) {
-        DiscordBot.run(
+coroutineScope {
+	DiscordBot.run(
           token = "MTI0MTA4NTEyMzY3NjYwMjQ4OA.G0EGAB.irlr4OKAZiEsMFK4X2PaUear7l8Lvqx4EDSslg",
           discordCommandHandler = CommandHandler(),
           autoResponsesHandlers = autoResponsesHandlers()
         )
-      }
-    }
-
-    coroutineScope {
       socketServer.run(this)
       launch { resourceServer.run() }
       launch { apiServer.run() }
