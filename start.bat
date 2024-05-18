@@ -1,0 +1,1 @@
+java -jar build\libs\flashtanki-server-0.1.0-all.jar
