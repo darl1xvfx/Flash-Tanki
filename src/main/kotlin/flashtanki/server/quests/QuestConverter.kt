@@ -4,7 +4,7 @@ import org.koin.core.component.KoinComponent
 import flashtanki.server.client.SocketLocale
 
 interface IQuestConverter {
-  fun toClientDailyQuest(quest: ServerDailyQuest, locale: SocketLocale): DailyQuest
+  fun   toClientDailyQuest(quest: ServerDailyQuest, locale: SocketLocale): DailyQuest
 }
 
 class QuestConverter : IQuestConverter, KoinComponent {

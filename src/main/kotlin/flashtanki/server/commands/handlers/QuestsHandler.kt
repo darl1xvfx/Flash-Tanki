@@ -47,7 +47,7 @@ class QuestsHandler : ICommandHandler, KoinComponent {
   suspend fun skipQuestFree(socket: UserSocket, questId: Int) {
     // TODO(Assasans)
     val user = socket.user ?: throw Exception("No User")
-    val id = if (questId == 0 || user.dailyQuests.size == 1) 0 else (questId - 1)
+    val id = if (questId <= 0 || questId >= user.dailyQuests.size) 0 else (questId - 1)
     val randQuest = randomQuestService.getRandomQuest(id, socket)
     user.dailyQuests.set(id, randQuest)
     userRepository.updateUser(user)
@@ -64,7 +64,7 @@ class QuestsHandler : ICommandHandler, KoinComponent {
   @CommandHandler(CommandName.SkipQuestPaid)
   suspend fun skipQuestPaid(socket: UserSocket, questId: Int, price: Int) {
     val user = socket.user ?: throw Exception("No User")
-    val id = if (questId == 0 || user.dailyQuests.size == 1) 0 else (questId - 1)
+    val id = if (questId <= 0 || questId >= user.dailyQuests.size) 0 else (questId - 1)
     val randQuest = randomQuestService.getRandomQuest(id, socket)
     user.dailyQuests.set(id, randQuest)
     user.crystals -= price
@@ -78,6 +78,13 @@ class QuestsHandler : ICommandHandler, KoinComponent {
       ).toJson()
     ).send(socket)
     socket.updateQuests()
+
+    if (user.dailyQuests.size > 1) {
+      return
+    }
+    else if (user.dailyQuests.size < 1) {
+      return
+    }
   }
 
   @CommandHandler(CommandName.QuestTakePrize)

@@ -30,7 +30,7 @@ enum class UserRank(val value: Int, val score: Int, val bonusCrystals: Int) {
   Marshal(27, 1000000, 28000),
   FieldMarshal(28, 1122000, 31000),
   Commander(29, 1255000, 34000),
-  Generalissimo(30, Int.MAX_VALUE, 37000);
+  Generalissimo(30, 1400000, 37000);
 
   companion object {
     private val map = values().associateBy(UserRank::value)
