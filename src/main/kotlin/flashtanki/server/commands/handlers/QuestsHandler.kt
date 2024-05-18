@@ -91,22 +91,22 @@ class QuestsHandler : ICommandHandler, KoinComponent {
 
   @CommandHandler(CommandName.QuestTakePrize)
   suspend fun questTakePrize(socket: UserSocket, questId: Int) {
-    //TODO(TitanoMachina)
     val user = socket.user ?: throw Exception("User is null")
-    val id = if (questId == 1 || user.dailyQuests.size == 1) 0 else (questId - 1)
-    val quest = user.dailyQuests.get(id)
+    val id = if (questId <= 0 || questId > user.dailyQuests.size) 0 else (questId - 1)
+    val quest = user.dailyQuests[id]
+
     for (reward in quest.rewards) {
       if (reward.type == ServerDailyRewardType.Crystals) {
         user.crystals += reward.count
-        userRepository.updateUser(user)
-        socket.updateCrystals()
+        socket.updateCrystals() // Перемещено внутрь блока обновления кристаллов
       }
       if (reward.type == ServerDailyRewardType.Premium) {
         socket.addPremiumAccount(reward.count)
-        userRepository.updateUser(user)
       }
     }
-    Command(CommandName.ClientQuestTakePrize, questId.toString()).send(socket)
+
+    userRepository.updateUser(user)
+
     if (user.dailyQuests.size == 3) {
       user.currentQuestStreak++
       if (user.currentQuestStreak == 7) {
@@ -118,8 +118,10 @@ class QuestsHandler : ICommandHandler, KoinComponent {
         }
       }
     }
-	user.dailyQuests.removeAt(id)
-    userRepository.updateUser(user)
-	socket.updateQuests()
+
+    user.dailyQuests.removeAt(id)
+    socket.updateQuests()
+    Command(CommandName.ClientQuestTakePrize, questId.toString()).send(socket)
   }
 }
+
