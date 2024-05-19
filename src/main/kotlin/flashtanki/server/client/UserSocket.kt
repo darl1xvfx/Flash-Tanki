@@ -564,10 +564,10 @@ suspend fun initBattleList() {
 
     val marketItems = marketRegistry.items
 
-    if (user.premium == 0) {
+    /*if (user.premium == 0) {
       user.equipment.paintId = "green"
       entityManager.merge(user.equipment)
-    }
+    }*/
 
     marketItems.forEach { (_, marketItem) ->
       val userItem = user.items.singleOrNull { it.marketItem == marketItem }
