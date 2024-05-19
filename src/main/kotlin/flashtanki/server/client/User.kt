@@ -136,7 +136,8 @@ class UserRepository : IUserRepository {
       dailyQuests = mutableListOf(),
       hash = md5(username + ":" + password),
       currentQuestLevel = 0,
-      currentQuestStreak = 0
+      currentQuestStreak = 0,
+      canSkipQuestForFree = false
     )
     user.items += listOf(
       ServerGarageUserItemWeapon(user, "smoky", modificationIndex = 0),
@@ -233,6 +234,8 @@ class User(
   @Column(nullable = false) var currentQuestLevel: Int,
 
   @Column(nullable = false) var currentQuestStreak: Int,
+
+  @Column(nullable = false) var canSkipQuestForFree: Boolean,
 
   private var mutedUntilMilliseconds: Long? = null,
   private var bannedUntilMilliseconds: Long? = null,
