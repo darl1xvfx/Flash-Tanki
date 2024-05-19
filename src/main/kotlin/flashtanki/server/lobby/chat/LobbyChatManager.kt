@@ -6,6 +6,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.time.Duration.Companion.minutes
 import flashtanki.server.ISocketServer
+import flashtanki.server.battles.IBattleProcessor
 import flashtanki.server.chat.CommandInvocationSource
 import flashtanki.server.chat.CommandParseResult
 import flashtanki.server.chat.IChatCommandRegistry
@@ -16,6 +17,7 @@ import kotlinx.coroutines.*
 import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandName
 import flashtanki.server.extensions.truncateLastTo
+import org.hibernate.query.sqm.tree.SqmNode.log
 
 interface ILobbyChatManager {
   val messagesBufferSize: Int
@@ -28,8 +30,10 @@ interface ILobbyChatManager {
 
 class LobbyChatManager : ILobbyChatManager, KoinComponent {
   private val logger = KotlinLogging.logger { }
+  private val lobbyChatManager by inject<ILobbyChatManager>()
+  private val battleProcessor by inject<IBattleProcessor>()
 
-  override val messagesBufferSize: Int = 100 // Original server stores last 70 messages
+    override val messagesBufferSize: Int = 100 // Original server stores last 70 messages
   override val messages: MutableList<ChatMessage> = mutableListOf()
   private val yellowText: MutableList<String> = mutableListOf(		"Логин и пароль от аккаунта - это ключ от вашего танка. Нельзя вводить их где-то, кроме формы входа в игру. Ежедневно злоумышленники угоняют сотни аккаунтов честных танкистов, из-за их халатного обращения с логином и паролем. Будьте внимательны!",
           "Следите за тем, чтобы ваш аккаунт был надёжно защищён. Не забывайте, что, потеряв аккаунт, вы скорее всего потеряете и почту. А это значит, что злоумышленник получит доступ к вашим персональным данным, платёжным паролям и другой информации, которая может быть в письмах. Будьте внимательнее!",
@@ -135,11 +139,54 @@ class LobbyChatManager : ILobbyChatManager, KoinComponent {
           socket.sendChat("Слишком мало аргументов для команды '${result.command.name}'. Expected ${result.expected.size}, got: ${result.got.size}")
         }
       }
-      return
+        return
+    } else if (content.contains("#/battle/")) {
+        handleBattleLink(content, socket)
+    } else {
+        broadcast(message)
     }
-
-    broadcast(message)
   }
+
+    private suspend fun handleBattleLink(content: String, socket: UserSocket) {
+        val user = socket.user
+                if (user == null) {
+                    log.error("No User in socket")
+                    return
+                }
+
+        val battleLinkPattern = "#/battle/(\\w+)".toRegex()
+        val matchResult = battleLinkPattern.find(content)
+
+        if (matchResult != null) {
+            val battleId = matchResult.groupValues[1]
+            val battle = try {
+                battleProcessor.getBattle(battleId)
+            } catch (e: Exception) {
+                log.error("Error fetching battle $battleId: ${e.message}")
+                return
+            }
+
+            if (battle == null) {
+                log.error("Battle $battleId not found")
+                return
+            }
+
+            val battleName = battle.title
+            try {
+                lobbyChatManager.send(socket, ChatMessage(
+                    name = "",
+                    rang = user.rank.value,
+                    chatPermissions = user.chatModerator,
+                    message = """<font color="#13ff01">${user.username}: </font><font color="#FFFFFF"><a href='event:$battleId'><u>$battleName</u></a></font>""",
+                    system = true
+                ))
+            } catch (e: Exception) {
+                log.error("Error sending message to lobby chat: ${e.message}")
+            }
+        } else {
+            log.warn("Battle link not found in content: $content")
+        }
+    }
 
   override suspend fun broadcast(message: ChatMessage) {
     Command(CommandName.SendChatMessageClient, message.toJson()).let { command ->
