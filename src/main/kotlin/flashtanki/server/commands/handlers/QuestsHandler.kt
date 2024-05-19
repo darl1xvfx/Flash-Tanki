@@ -50,6 +50,7 @@ class QuestsHandler : ICommandHandler, KoinComponent {
     val id = if (questId <= 0 || questId >= user.dailyQuests.size) 0 else (questId - 1)
     val randQuest = randomQuestService.getRandomQuest(id, socket)
     user.dailyQuests.set(id, randQuest)
+    user.canSkipQuestForFree = true
     userRepository.updateUser(user)
     Command(
       CommandName.ClientSkipQuest,
