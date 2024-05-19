@@ -30,7 +30,7 @@ class QuestsHandler : ICommandHandler, KoinComponent {
                       weeklyQuestDescription = WeeklyQuestDescriptionData(doneForToday = if (user.dailyQuests.size < 3) true else false, currentQuestLevel = user.currentQuestLevel, currentQuestStreak = user.currentQuestStreak),
                       quests = user.dailyQuests
                               .sortedBy { quest -> quest.id }
-                              .map { quest -> questConverter.toClientDailyQuest(quest, locale) }
+                              .map { quest -> questConverter.toClientDailyQuest(quest, locale, user) }
               ).toJson()
       ).send(socket)
     } else {
@@ -55,7 +55,7 @@ class QuestsHandler : ICommandHandler, KoinComponent {
       CommandName.ClientSkipQuest,
       SkipDailyQuestResponseData(
         questId = questId,
-        quest = questConverter.toClientDailyQuest(randQuest, socket.locale ?: throw Exception("No Locale"))
+        quest = questConverter.toClientDailyQuest(randQuest, socket.locale ?: throw Exception("No Locale"), user)
       ).toJson()
     ).send(socket)
     socket.updateQuests()
@@ -77,7 +77,7 @@ class QuestsHandler : ICommandHandler, KoinComponent {
       CommandName.ClientSkipQuest,
       SkipDailyQuestResponseData(
         questId = questId,
-        quest = questConverter.toClientDailyQuest(randQuest, socket.locale ?: throw Exception("No Locale"))
+        quest = questConverter.toClientDailyQuest(randQuest, socket.locale ?: throw Exception("No Locale"), user)
       ).toJson()
     ).send(socket)
     socket.updateQuests()
