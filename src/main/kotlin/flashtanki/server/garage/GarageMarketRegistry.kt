@@ -31,9 +31,12 @@ class GarageMarketRegistry : IGarageMarketRegistry, KoinComponent {
   private val resourceManager by inject<IResourceManager>()
 
   private val groups = listOf(
-    GarageItemGroup(GarageItemType.Weapon, ServerGarageItemWeapon::class, "weapons"),
-    GarageItemGroup(GarageItemType.Hull, ServerGarageItemHull::class, "hulls"),
-    GarageItemGroup(GarageItemType.Paint, ServerGarageItemPaint::class, "paints"),
+    GarageItemGroup(GarageItemType.Weapon, ServerGarageItemWeapon::class, "weapons/default"),
+	GarageItemGroup(GarageItemType.Weapon, ServerGarageItemWeapon::class, "weapons/xt"),
+    GarageItemGroup(GarageItemType.Hull, ServerGarageItemHull::class, "hulls/default"),
+	GarageItemGroup(GarageItemType.Hull, ServerGarageItemHull::class, "hulls/xt"),
+    GarageItemGroup(GarageItemType.Paint, ServerGarageItemPaint::class, "paints/default"),
+	//GarageItemGroup(GarageItemType.Paint, ServerGarageItemPaint::class, "paints/animated"),
     GarageItemGroup(GarageItemType.Supply, ServerGarageItemSupply::class, "supplies"),
     GarageItemGroup(GarageItemType.Subscription, ServerGarageItemSubscription::class, "subscriptions"),
     GarageItemGroup(GarageItemType.Kit, ServerGarageItemKit::class, "kits"),

@@ -498,13 +498,21 @@ class UserSocket(
     Command(CommandName.MainResourcesLoaded).send(this)
   }
 
-  suspend fun initBattleList() {
+suspend fun initBattleList() {
+    val mapsFileName = when (locale) {
+      SocketLocale.Russian -> "maps_ru.json"
+      SocketLocale.English -> "maps_en.json"
+      else -> "maps_en.json"
+    }
+
+    val mapsData = resourceManager.get(mapsFileName).readText()
+
     val mapsParsed = json
       .adapter<List<Map>>(Types.newParameterizedType(List::class.java, Map::class.java))
-      .fromJson(resourceManager.get("maps.json").readText())!!
+      .fromJson(mapsData)!!
 
     mapsParsed.forEach { userMap ->
-      if(!mapRegistry.maps.any { map -> map.name == userMap.mapId && map.theme.clientKey == userMap.theme }) {
+      if (!mapRegistry.maps.any { map -> map.name == userMap.mapId && map.theme.clientKey == userMap.theme }) {
         userMap.enabled = false
         logger.warn { "Map ${userMap.mapId}@${userMap.theme} is missing" }
       }
