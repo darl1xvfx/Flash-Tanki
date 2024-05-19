@@ -1,18 +1,18 @@
 package flashtanki.server.quests
 
 import org.koin.core.component.KoinComponent
-import flashtanki.server.client.SocketLocale
+import flashtanki.server.client.*
 import kotlin.random.Random
 
 interface IQuestConverter {
-  fun   toClientDailyQuest(quest: ServerDailyQuest, locale: SocketLocale): DailyQuest
+  fun   toClientDailyQuest(quest: ServerDailyQuest, locale: SocketLocale, user: User): DailyQuest
 }
 
 class QuestConverter : IQuestConverter, KoinComponent {
-  override fun toClientDailyQuest(quest: ServerDailyQuest, locale: SocketLocale): DailyQuest {
+  override fun toClientDailyQuest(quest: ServerDailyQuest, locale: SocketLocale, user: User): DailyQuest {
     // TODO(Assasans): Quest information
     return DailyQuest(
-      canSkipForFree = true,
+      canSkipForFree = !user.canSkipQuestForFree,
       description = quest.description.get(locale),
       finishCriteria = quest.required,
       image = quest.preview,
