@@ -19,15 +19,15 @@ class FundProcessor(
   override val battle: Battle
 ) : IFundProcessor, KoinComponent {
   override var fund: Int = 0
+  var randomGoldFund: Int = Random.nextInt(100, 300)
 
   override suspend fun updateFund() {
     Command(CommandName.ChangeFund, fund.toString()).sendTo(battle)
     var goldFund: Int = 0
     goldFund = (goldFund + fund)
-    var randomGoldFund: Int = Random.nextInt(100, 300)//(1000, 2800)
     if (goldFund >= randomGoldFund) {
         battle.spawnGoldBonus()
-        randomGoldFund = Random.nextInt(100, 300) + fund//(1000, 2800) + fund
+        randomGoldFund = Random.nextInt(100, 300) + fund
         goldFund = 0
     }
   }
