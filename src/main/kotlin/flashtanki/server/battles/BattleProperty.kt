@@ -22,6 +22,8 @@ class BattleProperty<T : Any> private constructor(val key: String, val type: KCl
 
     val MaxPeople = BattleProperty("maxPeopleCount", Int::class, 2)
 
+    val privateBattle = BattleProperty("privateBattle", Boolean::class, false)
+
     val ProBattle = BattleProperty("proBattle", Boolean::class, false)
 
     // TODO(Assasans): Use UserRank?

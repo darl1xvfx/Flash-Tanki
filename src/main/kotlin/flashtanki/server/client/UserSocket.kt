@@ -538,13 +538,15 @@ suspend fun initBattleList() {
       ).toJson()
     ).send(this)
 
-    Command(
-      CommandName.InitBattleSelect,
-      InitBattleSelectData(
-        battles = battleProcessor.battles.map { battle -> battle.toBattleData() }
-      ).toJson()
-    ).send(this)
-  }
+  val visibleBattles = battleProcessor.battles.filter { !it.properties[BattleProperty.privateBattle] }
+
+  Command(
+    CommandName.InitBattleSelect,
+    InitBattleSelectData(
+      battles = visibleBattles.map { battle -> battle.toBattleData() }
+    ).toJson()
+  ).send(this)
+}
 
   public suspend fun createFriend(username: String, rank: Int, online: Boolean): FriendEntry {
     val friend = FriendEntry(username, rank, online)

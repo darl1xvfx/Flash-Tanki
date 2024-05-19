@@ -392,6 +392,7 @@ suspend fun createBonusRegions(socket: UserSocket) {
         map = map.name,
         name = title,
         proBattle = properties[BattleProperty.ProBattle],
+        privateBattle = properties[BattleProperty.privateBattle],
         maxPeople = properties[BattleProperty.MaxPeople],
         minRank = properties[BattleProperty.MinRank],
         maxRank = properties[BattleProperty.MaxRank],
@@ -407,6 +408,7 @@ suspend fun createBonusRegions(socket: UserSocket) {
         map = map.name,
         name = title,
         proBattle = properties[BattleProperty.ProBattle],
+        privateBattle = properties[BattleProperty.privateBattle],
         maxPeople = properties[BattleProperty.MaxPeople],
         minRank = properties[BattleProperty.MinRank],
         maxRank = properties[BattleProperty.MaxRank],
@@ -443,6 +445,7 @@ suspend fun createBonusRegions(socket: UserSocket) {
         maxPeopleCount = properties[BattleProperty.MaxPeople],
         name = title,
         proBattle = properties[BattleProperty.ProBattle],
+
         minRank = properties[BattleProperty.MinRank],
         maxRank = properties[BattleProperty.MaxRank],
         spectator = socket.user?.permissions?.any(Permissions.Moderator.toBitfield().plus(Permissions.Superuser.toBitfield())) ?: false,

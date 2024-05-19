@@ -91,7 +91,7 @@ class BattlePlayer(
           battleId = battle.id,
           mapName = battle.title,
           mode = battle.modeHandler.mode,
-          privateBattle = false,
+          privateBattle = battle.properties[BattleProperty.privateBattle],
           proBattle = battle.properties[BattleProperty.ProBattle],
           minRank = battle.properties[BattleProperty.MinRank],
           maxRank = battle.properties[BattleProperty.MaxRank]

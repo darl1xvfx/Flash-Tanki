@@ -128,7 +128,7 @@ class LobbyHandler : ICommandHandler, KoinComponent {
             battleId = battle.id,
             mapName = battle.title,
             mode = battle.modeHandler.mode,
-            privateBattle = false,
+            privateBattle = battle.properties[BattleProperty.privateBattle],
             proBattle = battle.properties[BattleProperty.ProBattle],
             minRank = battle.properties[BattleProperty.MinRank],
             maxRank = battle.properties[BattleProperty.MaxRank]
@@ -424,6 +424,8 @@ class LobbyHandler : ICommandHandler, KoinComponent {
       battle.properties[BattleProperty.RearmingEnabled] = data.rearmingEnabled
     }
 
+    battle.properties[BattleProperty.privateBattle] = data.privateBattle
+
     battle.properties[BattleProperty.WithoutBonuses] = data.withoutBonuses
     battle.properties[BattleProperty.WithoutCrystals] = data.withoutCrystals
     battle.properties[BattleProperty.WithoutSupplies] = data.withoutSupplies
@@ -443,12 +445,21 @@ class LobbyHandler : ICommandHandler, KoinComponent {
     battle.manageBattleDeletion(battle)
     battle.manageBattleBonuses(battle)
 
+    val creatorUsername = socket.user?.username
+
+    val creatorPlayer = server.players.find { it.user?.username == creatorUsername }
+
     Command(CommandName.AddBattle, battle.toBattleData().toJson()).let { command ->
-      server.players
-        .filter { player -> player.screen == Screen.BattleSelect }
-        .filter { player -> player.active }
-        .forEach { player -> command.send(player) }
+      if (battle.properties[BattleProperty.privateBattle] == true && creatorPlayer != null) {
+        command.send(creatorPlayer)
+      } else {
+        server.players
+          .filter { it.screen == Screen.BattleSelect && it.active }
+          .forEach { command.send(it) }
+      }
     }
+
+
 
     socket.selectedBattle = battle
     battle.selectFor(socket)
@@ -515,7 +526,7 @@ class LobbyHandler : ICommandHandler, KoinComponent {
           battleId = battle.id,
           mapName = battle.title,
           mode = battle.modeHandler.mode,
-          privateBattle = false,
+          privateBattle = battle.properties[BattleProperty.privateBattle],
           proBattle = battle.properties[BattleProperty.ProBattle],
           minRank = battle.properties[BattleProperty.MinRank],
           maxRank = battle.properties[BattleProperty.MaxRank]
