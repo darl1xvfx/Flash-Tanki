@@ -142,6 +142,7 @@ class UserRepository : IUserRepository {
     user.items += listOf(
       ServerGarageUserItemWeapon(user, "smoky", modificationIndex = 0),
       ServerGarageUserItemHull(user, "hunter", modificationIndex = 0),
+      ServerGarageUserItemPaint(user, "premium"),
       ServerGarageUserItemPaint(user, "green"),
       ServerGarageUserItemPaint(user, "holiday")
     )
@@ -231,7 +232,7 @@ class User(
 
   @Column(nullable = false, unique = true, length = 64) var hash: String,
 
-  @Column(nullable = false) var currentQuestLevel: Int,
+  @Column(nullable = false) var   currentQuestLevel: Int,
 
   @Column(nullable = false) var currentQuestStreak: Int,
 

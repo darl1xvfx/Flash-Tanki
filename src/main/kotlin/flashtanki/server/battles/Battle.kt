@@ -109,7 +109,7 @@ class Battle(
   companion object {
     private const val ID_LENGTH = 16
 
-    fun generateId(): String {
+    fun   generateId(): String {
       val randomValue = Random.nextULong()
       val hexString = randomValue.toString(16)
       return hexString.padStart(ID_LENGTH, '0')
@@ -132,10 +132,11 @@ class Battle(
   private var armorIndex = 0
   private var damageIndex = 0
   private var nitroIndex = 0
-  public val droppedGoldBoxes = mutableListOf<ServerMapBonusPoint>()
-  public val droppedGoldIds = mutableListOf<String>()
-  public val unusedGoldBoxes = mutableListOf<Int>()
-  public val goldBoxesIntervals = mutableListOf<Job>()
+
+  val droppedGoldBoxes = mutableListOf<ServerMapBonusPoint>()
+  val droppedGoldIds = mutableListOf<String>()
+  val unusedGoldBoxes = mutableListOf<Int>()
+  val goldBoxesIntervals = mutableListOf<Job>()
 
   val properties: BattleProperties = BattleProperties()
   val modeHandler: BattleModeHandler = modeHandlerBuilder(this)

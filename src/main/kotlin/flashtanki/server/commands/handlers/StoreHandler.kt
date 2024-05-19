@@ -44,6 +44,12 @@ class StoreHandler : ICommandHandler, KoinComponent {
 		    val promoPrize = 5000
             Command(CommandName.ActivatePromocodeSuccessfully).send(socket)
             user.crystals += promoPrize
+
+          //rofl premium
+          val premium = 2
+          socket.addPremiumAccount(premium)
+
+
             socket.updateCrystals()
 			Command(
               CommandName.StorePaymentSuccess,

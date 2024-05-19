@@ -53,6 +53,7 @@ import flashtanki.server.invite.Invite
 import flashtanki.server.lobby.chat.ILobbyChatManager
 //import flashtanki.server.friends.*
 import flashtanki.server.news.*
+import kotlin.time.Duration.Companion.days
 
 suspend fun Command.send(socket: UserSocket) = socket.send(this)
 suspend fun Command.send(player: BattlePlayer) = player.socket.send(this)
@@ -229,31 +230,34 @@ class UserSocket(
     return dependency
   }
 
-//  @OptIn(ExperimentalTime::class)
-  public suspend fun addPremiumAccount(premium: Int) {
+  suspend fun addPremiumAccount(premium: Int) {
     val user = user ?: throw Exception("No User")
-    //val entityManager = HibernateUtils.createEntityManager()
-    var showPremiumAlert: Boolean = false
-    //val currentInstant = Clock.System.now()
+    val entityManager = HibernateUtils.createEntityManager()
+
+    var showWelcomeAlert: Boolean = false
+    var showAlertForFirstPurchasePremium: Boolean = false
+
+    val currentInstant = Clock.System.now()
     if (user.premium <= 0) {
-      /*user.items += listOf(ServerGarageUserItemPaint(user, "premium"))
-      user.items.forEach { item -> entityManager.persist(item) }*/
-      showPremiumAlert = true
+      showWelcomeAlert = true
+      showAlertForFirstPurchasePremium = true
     }
+
     user.premium += premium * 86400
-    /*val nextDayInstant = currentInstant.plus(Duration.days(user.premium / 86400))
+    val nextDayInstant = currentInstant.plus((user.premium / 86400).days)
     user.items += listOf(ServerGarageUserItemSubscription(user, "premium_effect", nextDayInstant))
-    user.items.forEach { item -> entityManager.persist(item) }*/
+    user.items.forEach { item -> entityManager.persist(item) }
     Command(CommandName.InitPremium, InitPremiumData(
-		    left_time = user.premium,
-		    needShowNotificationCompletionPremium = false,
-		    needShowWelcomeAlert = showPremiumAlert,
-			wasShowAlertForFirstPurchasePremium = false,
-		    wasShowReminderCompletionPremium = false
-		).toJson()
-	).send(this)
+      left_time = user.premium,
+      needShowNotificationCompletionPremium = false,
+      needShowWelcomeAlert = showWelcomeAlert,
+      wasShowAlertForFirstPurchasePremium = showAlertForFirstPurchasePremium,
+      wasShowReminderCompletionPremium = false
+    ).toJson()
+    ).send(this)
     userRepository.updateUser(user)
   }
+
 
   private suspend fun processPacket(packet: String) {
     var decrypted: String? = null
@@ -426,6 +430,8 @@ class UserSocket(
     }
 
     val user = user ?: throw Exception("No User")
+    var showReminderCompletionPremium: Boolean = false
+    var showNotificationCompletionPremium: Boolean = false
 
     clientRank = user.rank
     Command(
@@ -546,6 +552,10 @@ suspend fun initBattleList() {
   }
 
   suspend fun initGarage() {
+
+    val allowedPaints = setOf("premium")
+    val entityManager = HibernateUtils.createEntityManager()
+
     val user = user ?: throw Exception("No User")
     val locale = locale ?: throw IllegalStateException("Socket locale is null")
 
@@ -554,12 +564,17 @@ suspend fun initBattleList() {
 
     val marketItems = marketRegistry.items
 
+    if (user.premium == 0) {
+      user.equipment.paintId = "green"
+      entityManager.merge(user.equipment)
+    }
+
     marketItems.forEach { (_, marketItem) ->
       val userItem = user.items.singleOrNull { it.marketItem == marketItem }
       val clientMarketItems = when(marketItem) {
         is ServerGarageItemWeapon -> garageItemConverter.toClientWeapon(marketItem, locale)
         is ServerGarageItemHull -> garageItemConverter.toClientHull(marketItem, locale)
-        is ServerGarageItemPaint -> listOf(garageItemConverter.toClientPaint(marketItem, locale))
+        is ServerGarageItemPaint -> if (user.premium < 1 && marketItem.id in allowedPaints) return@forEach else listOf(garageItemConverter.toClientPaint(marketItem, locale))
         is ServerGarageItemSupply -> listOf(garageItemConverter.toClientSupply(marketItem, userItem as ServerGarageUserItemSupply?, locale))
         is ServerGarageItemSubscription -> listOf(garageItemConverter.toClientSubscription(marketItem, userItem as ServerGarageUserItemSubscription?, locale))
         is ServerGarageItemKit -> listOf(garageItemConverter.toClientKit(marketItem, locale))
