@@ -3,6 +3,7 @@ package flashtanki.server.battles.weapons
 import flashtanki.server.battles.*
 import flashtanki.server.client.ChangeTankSpecificationData
 import flashtanki.server.client.send
+import flashtanki.server.client.toJson
 import flashtanki.server.client.weapons.freeze.FireTarget
 import flashtanki.server.client.weapons.freeze.StartFire
 import flashtanki.server.client.weapons.freeze.StopFire
@@ -17,27 +18,19 @@ class FreezeWeaponHandler(
 ) : WeaponHandler(player, weapon) {
     private var fireStarted = false
     private var temperature = 0.0
-    private var originalSpeed: Double? = null
+    private var originalSpeed: MutableMap<String, Double?> = mutableMapOf() // Сохраняем оригинальную скорость для каждого танка
+    private var speedReduced = mutableMapOf<String, Boolean>() // Отслеживаем, была ли уменьшена скорость для каждого танка
+    val tank = player.tank
 
     suspend fun fireStart(startFire: StartFire) {
         if (fireStarted) return
 
         val tank = player.tank ?: throw Exception("No Tank")
         val battle = player.battle
-        val specification = ChangeTankSpecificationData.fromPhysics(tank.hull.modification.physics, tank.weapon.item.modification.physics)
 
         fireStarted = true
-        
-        originalSpeed = specification.speed
-        
-        specification.speed = -0.5
-        
-        sendSpecificationChange(specification)
-        
-        temperature = -0.5
 
         Command(CommandName.ClientStartFire, tank.id).send(battle.players.exclude(player).ready())
-		//Command(CommandName.Temperature, tank.id, temperature.toString()).sendTo(battle)
     }
 
     suspend fun fireTarget(target: FireTarget) {
@@ -55,6 +48,18 @@ class FreezeWeaponHandler(
             val damage = damageCalculator.calculate(sourceTank, targetTank)
             if (damage.damage > 0) {
                 battle.damageProcessor.dealDamage(sourceTank, targetTank, damage.damage, isCritical = damage.isCritical)
+
+                if (speedReduced[targetTank.id] != true) {
+                    val targetSpecification = ChangeTankSpecificationData.fromPhysics(targetTank.hull.modification.physics, targetTank.weapon.item.modification.physics)
+                    originalSpeed[targetTank.id] = targetSpecification.speed
+                    targetSpecification.speed = -0.000001
+                    speedReduced[targetTank.id] = true
+
+                    Command(CommandName.ChangeTankSpecification, targetTank.id, targetSpecification.toJson()).sendTo(battle)
+                    delay(5000)
+                }
+
+                temperature = -0.5
                 val param1 = temperature
 
                 val isAlly = targetTank.player.team == player.team
@@ -62,13 +67,11 @@ class FreezeWeaponHandler(
 
                 if (!isAlly || friendlyFireEnabled) {
                     Command(CommandName.Temperature, targetTank.id, param1.toString()).sendTo(battle)
-                    
-                    if (temperature == -0.5) {
-                        delay(3500)
-                        if (temperature != -0.5) {
-                            val param1Stop = 0.0
-                            Command(CommandName.Temperature, targetTank.id, param1Stop.toString()).sendTo(battle)
-                        }
+
+                    delay(3500)
+                    if (temperature != -0.5) {
+                        val param1Stop = 0.0
+                        Command(CommandName.Temperature, targetTank.id, param1Stop.toString()).sendTo(battle)
                     }
                 }
             }
@@ -80,30 +83,23 @@ class FreezeWeaponHandler(
 
         val tank = player.tank ?: throw Exception("No Tank")
         val battle = player.battle
-        val specification = ChangeTankSpecificationData.fromPhysics(tank.hull.modification.physics, tank.weapon.item.modification.physics)
 
-        originalSpeed?.let { specification.speed = it }
-        originalSpeed = null
-
-        sendSpecificationChange(specification)
-        
         fireStarted = false
         temperature = 0.0
 
         Command(CommandName.Temperature, tank.id, temperature.toString()).sendTo(battle)
 
         Command(CommandName.ClientStopFire, tank.id).send(battle.players.exclude(player).ready())
-        
-        delay(3500)
-        if (temperature != 0.0) { //-0.5
-            val param1Stop = 0.0
-            Command(CommandName.Temperature, tank.id, param1Stop.toString()).sendTo(battle)
-        }
-    }
 
-	private suspend fun sendSpecificationChange(specification: ChangeTankSpecificationData) {
-    val tank = player.tank ?: return
-    val specification = ChangeTankSpecificationData.fromPhysics(tank.hull.modification.physics, tank.weapon.item.modification.physics)
-    Command(CommandName.ChangeTankSpecification, tank.id, specification.toString()).send(tank)
+        delay(3500)
+        val targetTanks = battle.players.mapNotNull { it.tank }.filter { it.state == TankState.Active }
+        targetTanks.forEach { targetTank ->
+            if (speedReduced[targetTank.id] == true) {
+                val targetSpecification = ChangeTankSpecificationData.fromPhysics(targetTank.hull.modification.physics, targetTank.weapon.item.modification.physics)
+                targetSpecification.speed = originalSpeed[targetTank.id] ?: targetSpecification.speed
+                Command(CommandName.ChangeTankSpecification, targetTank.id, targetSpecification.toJson()).sendTo(battle)
+                speedReduced[targetTank.id] = false
+            }
+        }
     }
 }
