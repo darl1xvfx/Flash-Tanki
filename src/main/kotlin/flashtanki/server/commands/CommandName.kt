@@ -91,6 +91,7 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   ShowSettings(CommandCategory.Lobby, "showSettings", CommandSide.Server),
   ClientShowSettings(CommandCategory.Lobby, "showSettings", CommandSide.Client),
   CheckPasswordIsSet(CommandCategory.Lobby, "checkPasswordIsSet", CommandSide.Server),
+  CheckPasswordCorrectness(CommandCategory.Lobby, "checkPasswordCorrectness", CommandSide.Server),
   PasswordIsSet(CommandCategory.Lobby, "notifyPasswordIsSet", CommandSide.Client),
   PasswordIsNotSet(CommandCategory.Lobby, "notifyPasswordIsNotSet", CommandSide.Client),
 
