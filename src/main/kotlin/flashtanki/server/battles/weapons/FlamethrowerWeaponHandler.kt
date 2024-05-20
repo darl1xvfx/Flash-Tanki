@@ -38,14 +38,12 @@ class FlamethrowerWeaponHandler(
         .filter { tank -> tank.state == TankState.Active }
 
       targetTanks.forEach { targetTank ->
-        val randomDamage = random.nextInt(97, 168).coerceAtMost(168).toDouble()
         val damage = damageCalculator.calculate(sourceTank, targetTank)
-        val totalDamage = randomDamage.toDouble()
         val param1 = fire
 
         Command(CommandName.Temperature, targetTank.id, param1).sendTo(battle)
 
-        battle.damageProcessor.dealDamage(sourceTank, targetTank, totalDamage, damage.isCritical)
+        battle.damageProcessor.dealDamage(sourceTank, targetTank, damage.damage, damage.isCritical)
         if (fire == "0.5") {
           delay(2000)
           if (fire != "0.5") {
