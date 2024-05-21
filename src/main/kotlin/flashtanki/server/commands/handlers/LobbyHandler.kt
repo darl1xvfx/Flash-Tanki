@@ -439,6 +439,9 @@ class LobbyHandler : ICommandHandler, KoinComponent {
 
     battle.properties[BattleProperty.AutoBalance] = data.autoBalance
 
+    battle.properties[BattleProperty.FriendlyFireEnabled] = data.friendlyFire
+
+
     battleProcessor.battles.add(battle)
 
     battle.autoRestartHandler(battle)
