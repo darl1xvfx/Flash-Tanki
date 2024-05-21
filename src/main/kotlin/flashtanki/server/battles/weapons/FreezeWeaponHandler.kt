@@ -82,7 +82,7 @@
                         targetTank.hull.modification.physics,
                         targetTank.weapon.item.modification.physics
                     )
-                    delay(750)
+                    delay(1600)
                     targetSpecification.speed = originalSpeed[targetTank.id] ?: targetSpecification.speed
                     targetSpecification.turnSpeed = originalTurnSpeed[targetTank.id] ?: targetSpecification.turnSpeed
                     targetSpecification.turretRotationSpeed =
