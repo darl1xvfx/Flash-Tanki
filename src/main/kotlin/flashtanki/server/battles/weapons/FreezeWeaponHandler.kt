@@ -1,6 +1,7 @@
     package flashtanki.server.battles.weapons
 
     import flashtanki.server.battles.*
+    import flashtanki.server.battles.mode.DeathmatchModeHandler
     import flashtanki.server.client.ChangeTankSpecificationData
     import flashtanki.server.client.send
     import flashtanki.server.client.toJson
@@ -41,27 +42,39 @@
                 .filter { tank -> tank.state == TankState.Active }
 
             targetTanks.forEach { targetTank ->
-                val damage = damageCalculator.calculate(sourceTank, targetTank)
-                battle.damageProcessor.dealDamage(sourceTank, targetTank, damage.damage, isCritical = damage.isCritical)
+                if (sourceTank != targetTank && (battle.properties[BattleProperty.FriendlyFireEnabled] || (battle.modeHandler is DeathmatchModeHandler || player.team != targetTank.player.team))) {
 
-                if (speedReduced[targetTank.id] != true) {
-                    val targetSpecification = ChangeTankSpecificationData.fromPhysics(
-                        targetTank.hull.modification.physics,
-                        targetTank.weapon.item.modification.physics
+                    val damage = damageCalculator.calculate(sourceTank, targetTank)
+                    battle.damageProcessor.dealDamage(
+                        sourceTank,
+                        targetTank,
+                        damage.damage,
+                        isCritical = damage.isCritical
                     )
-                    originalSpeed[targetTank.id] = targetSpecification.speed
-                    originalTurnSpeed[targetTank.id] = targetSpecification.turnSpeed
-                    originalTurretRotationSpeed[targetTank.id] = targetSpecification.turretRotationSpeed
-                    speedReduced[targetTank.id] = true
-                    targetSpecification.speed *= 0.3
-                    targetSpecification.turnSpeed *= 0.3
-                    targetSpecification.turretRotationSpeed *= 0.3
-                    Command(CommandName.ChangeTankSpecification, targetTank.id, targetSpecification.toJson()).sendTo(
-                        battle
-                    )
-                    temperature = -0.8
-                    Command(CommandName.Temperature, targetTank.id, temperature.toString()).sendTo(battle)
-                    delay(5000)
+
+                    if (speedReduced[targetTank.id] != true) {
+                        val targetSpecification = ChangeTankSpecificationData.fromPhysics(
+                            targetTank.hull.modification.physics,
+                            targetTank.weapon.item.modification.physics
+                        )
+                        originalSpeed[targetTank.id] = targetSpecification.speed
+                        originalTurnSpeed[targetTank.id] = targetSpecification.turnSpeed
+                        originalTurretRotationSpeed[targetTank.id] = targetSpecification.turretRotationSpeed
+                        speedReduced[targetTank.id] = true
+                        targetSpecification.speed *= 0.3
+                        targetSpecification.turnSpeed *= 0.3
+                        targetSpecification.turretRotationSpeed *= 0.3
+                        Command(
+                            CommandName.ChangeTankSpecification,
+                            targetTank.id,
+                            targetSpecification.toJson()
+                        ).sendTo(
+                            battle
+                        )
+                        temperature = -0.8
+                        Command(CommandName.Temperature, targetTank.id, temperature.toString()).sendTo(battle)
+                        delay(5000)
+                    }
                 }
             }
         }
@@ -77,27 +90,34 @@
             Command(CommandName.ClientStopFire, tank.id).send(battle.players.exclude(player).ready())
             delay(3500)
             targetTanks.forEach { targetTank ->
-                if (speedReduced[targetTank.id] == true) {
-                    val targetSpecification = ChangeTankSpecificationData.fromPhysics(
-                        targetTank.hull.modification.physics,
-                        targetTank.weapon.item.modification.physics
-                    )
-                    delay(1600)
-                    targetSpecification.speed = originalSpeed[targetTank.id] ?: targetSpecification.speed
-                    targetSpecification.turnSpeed = originalTurnSpeed[targetTank.id] ?: targetSpecification.turnSpeed
-                    targetSpecification.turretRotationSpeed =
-                        originalTurretRotationSpeed[targetTank.id] ?: targetSpecification.turretRotationSpeed
-                    Command(CommandName.ChangeTankSpecification, targetTank.id, targetSpecification.toJson()).sendTo(
-                        battle
-                    )
-                    speedReduced[targetTank.id] = false
+                if (tank != targetTank && (battle.properties[BattleProperty.FriendlyFireEnabled] || (battle.modeHandler is DeathmatchModeHandler || player.team != targetTank.player.team))) {
+                    if (speedReduced[targetTank.id] == true) {
+                        val targetSpecification = ChangeTankSpecificationData.fromPhysics(
+                            targetTank.hull.modification.physics,
+                            targetTank.weapon.item.modification.physics
+                        )
+                        delay(1600)
+                        targetSpecification.speed = originalSpeed[targetTank.id] ?: targetSpecification.speed
+                        targetSpecification.turnSpeed =
+                            originalTurnSpeed[targetTank.id] ?: targetSpecification.turnSpeed
+                        targetSpecification.turretRotationSpeed =
+                            originalTurretRotationSpeed[targetTank.id] ?: targetSpecification.turretRotationSpeed
+                        Command(
+                            CommandName.ChangeTankSpecification,
+                            targetTank.id,
+                            targetSpecification.toJson()
+                        ).sendTo(
+                            battle
+                        )
+                        speedReduced[targetTank.id] = false
+                    }
+                    delay(500)
+                    Command(CommandName.Temperature, targetTank.id, "-0.6").sendTo(battle)
+                    delay(1000)
+                    Command(CommandName.Temperature, targetTank.id, "-0.3").sendTo(battle)
+                    delay(1500)
+                    Command(CommandName.Temperature, targetTank.id, temperature.toString()).sendTo(battle)
                 }
-                delay(500)
-                Command(CommandName.Temperature, targetTank.id, "-0.6").sendTo(battle)
-                delay(1000)
-                Command(CommandName.Temperature, targetTank.id, "-0.3").sendTo(battle)
-                delay(1500)
-                Command(CommandName.Temperature, targetTank.id, temperature.toString()).sendTo(battle)
             }
         }
     }
