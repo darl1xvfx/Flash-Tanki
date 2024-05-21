@@ -18,10 +18,10 @@ class FlamethrowerWeaponHandler(
   private var fire = "0"
   private var accumulatedDamage = mutableMapOf<String, Double>()
 
+
   suspend fun fireStart(startFire: StartFire) {
     val tank = player.tank ?: throw Exception("No Tank")
     val battle = player.battle
-
 
     Command(CommandName.ClientStartFire, tank.id).send(battle.players.exclude(player).ready())
   }
@@ -29,7 +29,7 @@ class FlamethrowerWeaponHandler(
   suspend fun fireTarget(target: flashtanki.server.client.weapons.flamethrower.FireTarget) {
     val sourceTank = player.tank ?: throw Exception("No Tank")
     val battle = player.battle
-    fire = "0.6"
+    fire = "0.7"
 
     val targetTanks = battle.players
       .mapNotNull { player -> player.tank }
@@ -37,16 +37,15 @@ class FlamethrowerWeaponHandler(
       .filter { tank -> tank.state == TankState.Active }
 
     targetTanks.forEach { targetTank ->
-      val randomDamage = random.nextInt(34, 76).toDouble()
       val damage = damageCalculator.calculate(sourceTank, targetTank)
+      val damageToDeal = damage.damage / random.nextInt(2, 4)
 
-      accumulatedDamage[targetTank.id] = (accumulatedDamage[targetTank.id] ?: 0.0) + randomDamage
+      accumulatedDamage[targetTank.id] = (accumulatedDamage[targetTank.id] ?: 0.0) + damageToDeal
 
       val param1 = fire
       Command(CommandName.Temperature, targetTank.id, param1).sendTo(battle)
 
       battle.damageProcessor.dealDamage(sourceTank, targetTank, damage.damage, damage.isCritical)
-
       delay(2000)
     }
   }
@@ -60,20 +59,18 @@ class FlamethrowerWeaponHandler(
 
     targetTanks.forEach { targetTank ->
       Command(CommandName.ClientStopFire, tank.id).send(battle.players.exclude(player).ready())
-
-      if (targetTank.health > 1.0) {
+      while ((accumulatedDamage[targetTank.id] ?: 0.0) > 0) {
         val damage = damageCalculator.calculate(tank, targetTank)
-        while ((accumulatedDamage[targetTank.id] ?: 0.0) > 0 && targetTank.health > 1.0) {
-          val damageToDeal = damage.damage / 2.5
-          battle.damageProcessor.dealDamage(player.tank!!, targetTank, damageToDeal, isCritical = false)
-          accumulatedDamage[targetTank.id] = (accumulatedDamage[targetTank.id] ?: 0.0) - damageToDeal
-          val currentTemperature = ((accumulatedDamage[targetTank.id] ?: 0.0)).coerceIn(0.0000, 0.5)
-          Command(CommandName.Temperature, targetTank.id, currentTemperature.toString()).sendTo(battle)
-
-          delay(2000)
+        val damageToDeal = damage.damage / random.nextInt(2, 4)
+        battle.damageProcessor.dealDamage(player.tank!!, targetTank, damageToDeal, isCritical = false)
+        accumulatedDamage[targetTank.id] = (accumulatedDamage[targetTank.id] ?: 0.0) - damageToDeal
+        val currentTemperature = ((accumulatedDamage[targetTank.id] ?: 0.0)).coerceIn(0.0, 0.5)
+        Command(CommandName.Temperature, targetTank.id, currentTemperature.toString()).sendTo(battle)
+        if (targetTank.health < 2.0) {
+          Command(CommandName.Temperature, targetTank.id, fire).sendTo(battle)
+          break
         }
-      } else {
-        Command(CommandName.Temperature, targetTank.id, "0.0").sendTo(battle)
+        delay(1500)
       }
       Command(CommandName.Temperature, targetTank.id, fire).sendTo(battle)
     }
