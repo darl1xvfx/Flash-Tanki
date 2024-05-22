@@ -112,12 +112,12 @@
                         speedReduced[targetTank.id] = false
                     }
                     delay(500)
-                    Command(CommandName.Temperature, targetTank.id, "-0.6").sendTo(battle)
-                    delay(1000)
-                    Command(CommandName.Temperature, targetTank.id, "-0.3").sendTo(battle)
-                    delay(1500)
-                    Command(CommandName.Temperature, targetTank.id, temperature.toString()).sendTo(battle)
                 }
+                Command(CommandName.Temperature, targetTank.id, "-0.6").sendTo(battle)
+                delay(1000)
+                Command(CommandName.Temperature, targetTank.id, "-0.3").sendTo(battle)
+                delay(1500)
+                Command(CommandName.Temperature, targetTank.id, temperature.toString()).sendTo(battle)
             }
         }
     }
