@@ -2728,6 +2728,10 @@
       "key": "MAIN_PANEL_BUTTON_SHOP",
       "value": "Shop"
     },
+	  	{
+      "key": "CLAN",
+      "value": "Clan"
+    },
 	{
       "key": "CAUSES_AND_SOLUTIONS",
       "value": "Causes and solutions"
