@@ -2733,6 +2733,10 @@
       "value": "Магазин"
     },
 	{
+      "key": "CLAN",
+      "value": "Клан"
+    },
+	{
       "key": "CAUSES_AND_SOLUTIONS",
       "value": "Причины и способы устранения"
     },
