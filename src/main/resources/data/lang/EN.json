@@ -2729,6 +2729,10 @@
       "value": "Shop"
     },
 	{
+      "key": "FIND_BATTLE_BUTTON_TEXT",
+      "value": "Battle!"
+    },
+	{
       "key": "CLAN",
       "value": "Clan"
     },
