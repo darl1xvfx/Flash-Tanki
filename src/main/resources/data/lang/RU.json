@@ -2733,6 +2733,10 @@
       "value": "Магазин"
     },
 	{
+      "key": "FIND_BATTLE_BUTTON_TEXT",
+      "value": "В бой!"
+    },
+	{
       "key": "CLAN",
       "value": "Клан"
     },
