@@ -126,7 +126,6 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
 
   ExitFromBattle(CommandCategory.Lobby, "exitFromBattle", CommandSide.Server),
   BattlePlayerRemove(CommandCategory.Battle, "remove_user", CommandSide.Client),
-
   BattlePlayerJoinDm(CommandCategory.Battle, "user_connect_dm", CommandSide.Client),
   BattlePlayerLeaveDm(CommandCategory.Battle, "user_disconnect_dm", CommandSide.Client),
 
@@ -352,9 +351,9 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   SetCrystals(CommandCategory.Lobby, "add_crystall", CommandSide.Client),
   SetScore(CommandCategory.Lobby, "add_score", CommandSide.Client),
   SetRank(CommandCategory.Lobby, "update_rang", CommandSide.Client),
-
+ 
   SetBattleRank(CommandCategory.Battle, "update_rang", CommandSide.Client),
-
+ 
   InitGarageItems(CommandCategory.Garage, "init_garage_items", CommandSide.Client),
   InitMountedItem(CommandCategory.Garage, "init_mounted_item", CommandSide.Client),
   InitGarageMarket(CommandCategory.Garage, "init_market", CommandSide.Client),
@@ -408,6 +407,7 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   NotifyQuestCompleted(CommandCategory.Lobby, "notifyDailyQuestCompleted", CommandSide.Client),
   QuestTakePrize(CommandCategory.Lobby, "takePrize", CommandSide.Server),
   ClientQuestTakePrize(CommandCategory.Lobby, "takeDailyQuestPrize", CommandSide.Client),
+  StartMatchmaking(CommandCategory.Lobby, "start_matchmaking", CommandSide.Server),
 
   ;
 
