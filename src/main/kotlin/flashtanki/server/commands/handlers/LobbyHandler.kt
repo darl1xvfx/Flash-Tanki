@@ -278,6 +278,11 @@ class LobbyHandler : ICommandHandler, KoinComponent {
     }
   }
 
+  @CommandHandler(CommandName.StartMatchmaking)
+  suspend fun startMatchmaking(socket: UserSocket) {
+
+  }  
+
   @CommandHandler(CommandName.SwitchBattleSelect)
   suspend fun switchBattleSelect(socket: UserSocket) {
     logger.debug { "Switch to battle select" }
