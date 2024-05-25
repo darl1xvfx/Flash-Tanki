@@ -70,6 +70,7 @@ class GarageHandler : ICommandHandler, KoinComponent {
       is ServerGarageUserItemWeapon -> user.equipment.weapon = currentItem
       is ServerGarageUserItemHull   -> user.equipment.hull = currentItem
       is ServerGarageUserItemPaint  -> user.equipment.paint = currentItem
+      is ServerGarageUserItemResistance  -> user.equipment.resistance = currentItem
 
       else                          -> {
         logger.debug { "Player ${user.username} (${user.id}) tried to mount invalid item: ${marketItem.id} (${currentItem::class.simpleName})" }
@@ -247,6 +248,23 @@ class GarageHandler : ICommandHandler, KoinComponent {
             user.crystals -= price
 
             logger.debug { "Bought paint ${marketItem.id} ($price crystals)" }
+          }
+        }
+
+        is ServerGarageItemResistance  -> {
+          if(currentItem == null) {
+            currentItem = ServerGarageUserItemResistance(user, marketItem.id)
+            user.items.add(currentItem)
+            isNewItem = true
+
+            val price = currentItem.marketItem.price
+            if(user.crystals < price) {
+              logger.debug { "Player ${user.username} (${user.id}) tried to buy item: ${marketItem.id} ($price crystals), but does not have enough crystals (user: ${user.crystals} crystals, delta: ${user.crystals - price} crystals)" }
+              return
+            }
+            user.crystals -= price
+
+            logger.debug { "Bought resist ${marketItem.id} ($price crystals)" }
           }
         }
 

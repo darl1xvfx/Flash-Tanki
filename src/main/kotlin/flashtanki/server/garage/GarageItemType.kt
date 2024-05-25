@@ -8,7 +8,8 @@ enum class GarageItemType(val key: Int, val categoryKey: String) {
   Subscription(5, "special"),
   Kit(6, "kit"),
   Present(7, "special"),
-  GivenPresents(9, "given_presents");
+  GivenPresents(9, "given_presents"),
+  Resistance(10, "resistance");
 
   companion object {
     private val map = values().associateBy(GarageItemType::key)

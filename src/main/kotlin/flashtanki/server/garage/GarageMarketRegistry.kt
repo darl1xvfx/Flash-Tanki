@@ -35,6 +35,7 @@ class GarageMarketRegistry : IGarageMarketRegistry, KoinComponent {
 	GarageItemGroup(GarageItemType.Weapon, ServerGarageItemWeapon::class, "weapons/xt"),
     GarageItemGroup(GarageItemType.Hull, ServerGarageItemHull::class, "hulls/default"),
 	GarageItemGroup(GarageItemType.Hull, ServerGarageItemHull::class, "hulls/xt"),
+	GarageItemGroup(GarageItemType.Resistance, ServerGarageItemResistance::class, "resistance"),
     GarageItemGroup(GarageItemType.Paint, ServerGarageItemPaint::class, "paints/default"),
 	//GarageItemGroup(GarageItemType.Paint, ServerGarageItemPaint::class, "paints/animated"),
     GarageItemGroup(GarageItemType.Supply, ServerGarageItemSupply::class, "supplies"),

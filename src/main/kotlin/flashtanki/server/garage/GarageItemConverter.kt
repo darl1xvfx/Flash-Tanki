@@ -6,6 +6,7 @@ interface IGarageItemConverter {
   fun toClientWeapon(item: ServerGarageItemWeapon, locale: SocketLocale): List<GarageItem>
   fun toClientHull(item: ServerGarageItemHull, locale: SocketLocale): List<GarageItem>
   fun toClientPaint(item: ServerGarageItemPaint, locale: SocketLocale): GarageItem
+  fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): GarageItem
   fun toClientSupply(item: ServerGarageItemSupply, userItem: ServerGarageUserItemSupply?, locale: SocketLocale): GarageItem
   fun toClientSubscription(item: ServerGarageItemSubscription, userItem: ServerGarageUserItemSubscription?, locale: SocketLocale): GarageItem
   fun toClientKit(item: ServerGarageItemKit, locale: SocketLocale): GarageItem
@@ -147,6 +148,47 @@ class GarageItemConverter : IGarageItemConverter {
 
       coloring = item.coloring,
       animatedColoring = item.animatedColoring,
+
+      count = null,
+
+      kit = null
+    )
+  }
+  
+  override fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): GarageItem {
+    return GarageItem(
+      id = item.id,
+      index = item.index,
+      type = item.type,
+      category = item.type.categoryKey,
+      isInventory = false,
+
+      name = item.name.get(locale),
+      description = item.description.get(locale),
+
+      baseItemId = item.baseItemId,
+      previewResourceId = item.previewResourceId,
+
+      rank = item.rank,
+      next_rank = item.rank,
+
+      price = item.price,
+      next_price = item.price,
+      discount = Discount(
+        percent = 0,
+        timeLeftInSeconds = -1,
+        timeToStartInSeconds = -1
+      ),
+
+      timeLeft = -1,
+
+      properties = toClientProperties(item.properties),
+
+      modificationID = null,
+      object3ds = null,
+
+      coloring = null,
+      animatedColoring = null,
 
       count = null,
 

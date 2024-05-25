@@ -22,6 +22,7 @@ import flashtanki.server.garage.ServerGarageUserItem
 import flashtanki.server.garage.ServerGarageUserItemHull
 import flashtanki.server.garage.ServerGarageUserItemPaint
 import flashtanki.server.garage.ServerGarageUserItemWeapon
+import flashtanki.server.garage.ServerGarageUserItemResistance
 import flashtanki.server.quests.*
 import flashtanki.server.serialization.database.BitfieldConverter
 
@@ -29,7 +30,8 @@ import flashtanki.server.serialization.database.BitfieldConverter
 data class UserEquipment(
   @Column(name = "equipment_hull", nullable = false) var hullId: String,
   @Column(name = "equipment_weapon", nullable = false) var weaponId: String,
-  @Column(name = "equipment_paint", nullable = false) var paintId: String
+  @Column(name = "equipment_paint", nullable = false) var paintId: String,
+  @Column(name = "equipment_resistance", nullable = false) var resistanceId: String
 ) {
   @Suppress("JpaAttributeTypeInspection")
   @Parent
@@ -54,6 +56,13 @@ data class UserEquipment(
     get() = (user.items.singleOrNull { it.id.itemName == paintId } ?: user.items.single { it.id.itemName == "green" }) as ServerGarageUserItemPaint
     set(value) {
       paintId = value.id.itemName
+    }
+
+  @get:Transient
+  var resistance: ServerGarageUserItemResistance
+    get() = user.items.single { it -> it.id.itemName == resistanceId } as ServerGarageUserItemResistance
+    set(value) {
+      resistanceId = value.id.itemName
     }
 }
 
@@ -142,6 +151,7 @@ class UserRepository : IUserRepository {
     user.items += listOf(
       ServerGarageUserItemWeapon(user, "smoky", modificationIndex = 0),
       ServerGarageUserItemHull(user, "hunter", modificationIndex = 0),
+      ServerGarageUserItemResistance(user, "zero"),
       ServerGarageUserItemPaint(user, "premium"),
       ServerGarageUserItemPaint(user, "green"),
       ServerGarageUserItemPaint(user, "holiday")
@@ -149,7 +159,8 @@ class UserRepository : IUserRepository {
     user.equipment = UserEquipment(
       hullId = "hunter",
       weaponId = "smoky",
-      paintId = "green"
+      paintId = "green",
+      resistanceId = "zero"
     )
     user.equipment.user = user
 
@@ -248,6 +259,7 @@ class User(
   @AttributeOverride(name = "hullId", column = Column(name = "equipment_hull_id"))
   @AttributeOverride(name = "weaponId", column = Column(name = "equipment_weapon_id"))
   @AttributeOverride(name = "paintId", column = Column(name = "equipment_paint_id"))
+  @AttributeOverride(name = "resistanceId", column = Column(name = "equipment_resistance_id"))
   @Embedded lateinit var equipment: UserEquipment
 
   @Transient

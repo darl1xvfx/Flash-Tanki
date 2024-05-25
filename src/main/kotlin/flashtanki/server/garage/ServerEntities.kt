@@ -80,6 +80,26 @@ class ServerGarageItemPaint(
   baseItemId
 )
 
+class ServerGarageItemResistance(
+  id: String,
+  index: Int,
+
+  name: LocalizedString,
+  description: LocalizedString,
+
+  baseItemId: Int,
+  @Json val previewResourceId: Int,
+
+  @Json val rank: Int,
+  @Json val price: Int,
+
+  @Json val properties: List<ServerGarageItemProperty>
+) : ServerGarageItem(
+  id, index, GarageItemType.Resistance,
+  name, description,
+  baseItemId
+)
+
 class ServerGarageItemSupply(
   id: String,
   index: Int,
@@ -416,6 +436,19 @@ class ServerGarageUserItemPaint(
 ) : ServerGarageUserItem(user, id) {
   @get:Transient
   override val marketItem: ServerGarageItemPaint
+    get() {
+      return marketRegistry.get(id.itemName).cast()
+    }
+}
+
+@Entity
+@DiscriminatorValue("resistance")
+class ServerGarageUserItemResistance(
+  user: User,
+  id: String,
+) : ServerGarageUserItem(user, id) {
+  @get:Transient
+  override val marketItem: ServerGarageItemResistance
     get() {
       return marketRegistry.get(id.itemName).cast()
     }
