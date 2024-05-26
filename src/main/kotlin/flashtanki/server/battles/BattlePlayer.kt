@@ -435,7 +435,8 @@ class BattlePlayer(
 
         else           -> NullWeaponHandler(this, user.equipment.weapon)
       },
-      coloring = user.equipment.paint
+      coloring = user.equipment.paint,
+	  resistance = user.equipment.resistance
     )
 
     this.tank = tank

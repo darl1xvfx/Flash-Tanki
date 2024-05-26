@@ -19,6 +19,7 @@ import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandName
 import flashtanki.server.garage.ServerGarageUserItemHull
 import flashtanki.server.garage.ServerGarageUserItemPaint
+import flashtanki.server.garage.ServerGarageUserItemResistance
 import flashtanki.server.math.Quaternion
 import flashtanki.server.math.Vector3
 import flashtanki.server.math.distanceTo
@@ -40,6 +41,7 @@ class BattleTank(
   val hull: ServerGarageUserItemHull,
   val weapon: WeaponHandler,
   val coloring: ServerGarageUserItemPaint,
+  val resistance: ServerGarageUserItemResistance,
   var health: Double = hull.modification.maxHealth
 ) : KoinComponent {
   private val logger = KotlinLogging.logger { }

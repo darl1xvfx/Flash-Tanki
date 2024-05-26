@@ -58,7 +58,7 @@ class DamageProcessor(
       else                       -> null
     }
 
-    val hullArmor = target.coloring.marketItem.properties
+    val hullArmor = target.resistance.marketItem.properties
       .find { it.property == resistanceProperty }
       ?.value as Double?
 
