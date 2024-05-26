@@ -75,6 +75,7 @@ suspend fun ByteReadChannel.readAvailable(): ByteArray {
 
 interface IPromoCodeService {
   val promocodes: MutableList<String>
+  val blackList: MutableList<String>
 
   suspend fun initPromoCodes()
   suspend fun checkPromoCode(promo: String) : Boolean
@@ -83,18 +84,24 @@ interface IPromoCodeService {
 
 class PromoCodeService : IPromoCodeService {
   override var promocodes: MutableList<String> = mutableListOf()
+  override var blackList: MutableList<String> = mutableListOf()
   private val logger = KotlinLogging.logger { }
 
   override suspend fun initPromoCodes() {
     logger.debug { "Initing promocodes..." }
-    val jsonContent = File("src/main/resources/data/promocodes/promocodes.json")
-    val bufferedReader = jsonContent.bufferedReader()
-    val text = bufferedReader.use { it.readText() }
-    val cleanedText = text.replace("[", "").replace("]", "")
-    val items = cleanedText.split(",")
+    val items = File(ResourceManager().get("promocodes/promocodes.json").toString()).bufferedReader().use { it.readText() }.replace("[", "").replace("]", "").split(",")
+    val blackListFile = File(ResourceManager().get("promocodes/blacklist.json").toString())
+    if (blackListFile.exists()) {
+      blackListFile.forEachLine { line ->
+        blackList.add(line.trim())
+      }
+    }
     for (item in items) {
-        promocodes.add(item.trim())
-        logger.debug { "Inited promocode! Promocode: ${item.trim()}" }
+        val trItem = item.trim()
+        if (!blackList.contains(trItem)) {
+          promocodes.add(trItem)
+          logger.debug { "Inited promocode! Promocode: ${trItem}" }
+        }
     }
     logger.debug { "All promocodes inited!" }
   }
@@ -105,6 +112,9 @@ class PromoCodeService : IPromoCodeService {
 
   override suspend fun removePromoCode(promo: String) {
     promocodes.remove(promo)
+    File(ResourceManager().get("promocodes/blacklist.json").toString()).bufferedWriter().use { out ->
+      out.write("$promo\n")
+    }
   }
 }
 
