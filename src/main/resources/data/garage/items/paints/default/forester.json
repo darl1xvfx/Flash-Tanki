@@ -14,10 +14,5 @@
   "rank": 4,
   "price": 1350,
   "coloring": 554337,
-  "properties": [
-    {
-      "property": "RAILGUN_RESISTANCE",
-      "value": 12
-    }
-  ]
+  "properties": []
 }

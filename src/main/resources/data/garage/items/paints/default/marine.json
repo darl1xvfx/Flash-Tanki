@@ -8,10 +8,5 @@
   "rank": 2,
   "price": 500,
   "coloring": 662824,
-  "properties": [
-    {
-      "property": "FIREBIRD_RESISTANCE",
-      "value": 10
-    }
-  ]
+  "properties": []
 }

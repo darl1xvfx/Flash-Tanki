@@ -14,18 +14,5 @@
   "rank": 27,
   "price": 216000,
   "coloring": 931954,
-  "properties": [
-    {
-      "property": "ISIS_RESISTANCE",
-      "value": 50
-    },
-    {
-      "property": "FREEZE_RESISTANCE",
-      "value": 27
-    },
-    {
-      "property": "RICOCHET_RESISTANCE",
-      "value": 23
-    }
-  ]
+  "properties": []
 }

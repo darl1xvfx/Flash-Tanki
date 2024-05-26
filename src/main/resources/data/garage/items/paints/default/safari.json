@@ -14,10 +14,5 @@
   "rank": 5,
   "price": 1750,
   "coloring": 258487,
-  "properties": [
-    {
-      "property": "ISIS_RESISTANCE",
-      "value": 15
-    }
-  ]
+  "properties": []
 }

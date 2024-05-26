@@ -14,18 +14,5 @@
   "rank": 15,
   "price": 42500,
   "coloring": 952497,
-  "properties": [
-    {
-      "property": "FIREBIRD_RESISTANCE",
-      "value": 13
-    },
-    {
-      "property": "FREEZE_RESISTANCE",
-      "value": 30
-    },
-    {
-      "property": "THUNDER_RESISTANCE",
-      "value": 9
-    }
-  ]
+  "properties": []
 }

@@ -14,18 +14,5 @@
   "rank": 18,
   "price": 76600,
   "coloring": 444408,
-  "properties": [
-    {
-      "property": "SMOKY_RESISTANCE",
-      "value": 21
-    },
-    {
-      "property": "RAILGUN_RESISTANCE",
-      "value": 32
-    },
-    {
-      "property": "SHAFT_RESISTANCE",
-      "value": 12
-    }
-  ]
+  "properties": []
 }

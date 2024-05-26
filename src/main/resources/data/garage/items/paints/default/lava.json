@@ -14,10 +14,5 @@
   "rank": 6,
   "price": 2100,
   "coloring": 498645,
-  "properties": [
-    {
-      "property": "FREEZE_RESISTANCE",
-      "value": 18
-    }
-  ]
+  "properties": []
 }

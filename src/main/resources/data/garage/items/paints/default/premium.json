@@ -14,15 +14,5 @@
   "rank": 1,
   "price": 0,
   "coloring": 703442,
-  "properties": [
-    { "property": "FIREBIRD_RESISTANCE", "value": 15 },
-    { "property": "FREEZE_RESISTANCE", "value": 15 },
-    { "property": "ISIS_RESISTANCE", "value": 15 },
-    { "property": "RAILGUN_RESISTANCE", "value": 15 },
-    { "property": "RICOCHET_RESISTANCE", "value": 15 },
-    { "property": "SHAFT_RESISTANCE", "value": 15 },
-    { "property": "SMOKY_RESISTANCE", "value": 15 },
-    { "property": "THUNDER_RESISTANCE", "value": 15 },
-    { "property": "TWINS_RESISTANCE", "value": 15 }
-  ]
+  "properties": []
 }

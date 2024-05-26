@@ -14,10 +14,5 @@
   "rank": 7,
   "price": 2500,
   "coloring": 192378,
-  "properties": [
-    {
-      "property": "RICOCHET_RESISTANCE",
-      "value": 20
-    }
-  ]
+  "properties": []
 }

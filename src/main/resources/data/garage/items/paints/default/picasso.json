@@ -14,22 +14,5 @@
   "rank": 30,
   "price": 250000,
   "coloring": 906593,
-  "properties": [
-    {
-      "property": "FREEZE_RESISTANCE",
-      "value": 20
-    },
-    {
-      "property": "THUNDER_RESISTANCE",
-      "value": 20
-    },
-    {
-      "property": "RAILGUN_RESISTANCE",
-      "value": 27
-    },
-    {
-      "property": "SHAFT_RESISTANCE",
-      "value": 33
-    }
-  ]
+  "properties": []
 }

@@ -14,10 +14,5 @@
   "rank": 8,
   "price": 3000,
   "coloring": 560996,
-  "properties": [
-    {
-      "property": "SHAFT_RESISTANCE",
-      "value": 22
-    }
-  ]
+  "properties": []
 }
