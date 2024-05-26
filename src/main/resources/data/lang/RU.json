@@ -2737,6 +2737,10 @@
       "value": "В бой!"
     },
 	{
+      "key": "GARAGE_CATEGORY_BUTTON_RESISTANCE_MODULES",
+      "value": "Защита"
+    },
+	{
       "key": "CLAN",
       "value": "Клан"
     },

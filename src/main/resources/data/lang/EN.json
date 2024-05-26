@@ -2733,6 +2733,10 @@
       "value": "Battle!"
     },
 	{
+      "key": "GARAGE_CATEGORY_BUTTON_RESISTANCE_MODULES",
+      "value": "Protection"
+    },
+	{
       "key": "CLAN",
       "value": "Clan"
     },
