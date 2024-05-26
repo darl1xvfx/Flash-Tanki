@@ -2,7 +2,6 @@ package flashtanki.server.commands.handlers
 
 import kotlin.time.Duration.Companion.seconds
 import com.squareup.moshi.Moshi
-import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -16,6 +15,7 @@ import flashtanki.server.commands.CommandHandler
 import flashtanki.server.commands.CommandName
 import flashtanki.server.commands.ICommandHandler
 import flashtanki.server.extensions.launchDelayed
+import kotlinx.coroutines.*
 
 class BattleHandler : ICommandHandler, KoinComponent {
   private val logger = KotlinLogging.logger { }
@@ -142,6 +142,12 @@ class BattleHandler : ICommandHandler, KoinComponent {
     ).sendTo(player.battle, exclude = player)
 
     logger.trace { "Synced movement control to $count players" }
+  }
+  
+  @CommandHandler(CommandName.DisablePause)
+  suspend fun disablePause(socket: UserSocket) {
+    val player = socket.battlePlayer ?: throw Exception("No BattlePlayer")
+    val tank = player.tank ?: throw Exception("No Tank")
   }
 
   @CommandHandler(CommandName.SelfDestruct)
