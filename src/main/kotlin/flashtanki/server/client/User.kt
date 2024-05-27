@@ -151,7 +151,7 @@ class UserRepository : IUserRepository {
     user.items += listOf(
       ServerGarageUserItemWeapon(user, "smoky", modificationIndex = 0),
       ServerGarageUserItemHull(user, "hunter", modificationIndex = 0),
-      ServerGarageUserItemResistance(user, "zero"),
+      ServerGarageUserItemResistance(user, "zero", modificationIndex = 1),
       ServerGarageUserItemPaint(user, "premium"),
       ServerGarageUserItemPaint(user, "green"),
       ServerGarageUserItemPaint(user, "holiday")

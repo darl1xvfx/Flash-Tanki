@@ -60,7 +60,7 @@ class GarageMarketRegistry : IGarageMarketRegistry, KoinComponent {
 
         items[item.id] = item
 
-        logger.debug { "  > Loaded garage item ${item.id} -> ${item.name.localized}" }
+        logger.debug { "  > Loaded garage item ${item.id} -> ${item.name.localized} " }
       }
     }
 
@@ -93,6 +93,7 @@ class GarageMarketRegistry : IGarageMarketRegistry, KoinComponent {
     // Client requires all items to have a unique previewResourceId
     items.values
       .filterIsInstance<IServerGarageItemWithModifications>()
+      .filterIsInstance<IServerGarageItemWithModificationsResistance>()
       .flatMap { item ->
         item.modifications.values.map { modification ->
           object {

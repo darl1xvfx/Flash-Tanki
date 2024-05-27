@@ -253,7 +253,7 @@ class GarageHandler : ICommandHandler, KoinComponent {
 
         is ServerGarageItemResistance  -> {
           if(currentItem == null) {
-            currentItem = ServerGarageUserItemResistance(user, marketItem.id)
+            currentItem = ServerGarageUserItemResistance(user, marketItem.id, 0)
             user.items.add(currentItem)
             isNewItem = true
 

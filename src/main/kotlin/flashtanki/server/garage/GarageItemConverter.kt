@@ -6,7 +6,7 @@ interface IGarageItemConverter {
   fun toClientWeapon(item: ServerGarageItemWeapon, locale: SocketLocale): List<GarageItem>
   fun toClientHull(item: ServerGarageItemHull, locale: SocketLocale): List<GarageItem>
   fun toClientPaint(item: ServerGarageItemPaint, locale: SocketLocale): GarageItem
-  fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): GarageItem
+  fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): List<GarageItem>
   fun toClientSupply(item: ServerGarageItemSupply, userItem: ServerGarageUserItemSupply?, locale: SocketLocale): GarageItem
   fun toClientSubscription(item: ServerGarageItemSubscription, userItem: ServerGarageUserItemSubscription?, locale: SocketLocale): GarageItem
   fun toClientKit(item: ServerGarageItemKit, locale: SocketLocale): GarageItem
@@ -154,47 +154,53 @@ class GarageItemConverter : IGarageItemConverter {
       kit = null
     )
   }
-  
-  override fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): GarageItem {
-    return GarageItem(
-      id = item.id,
-      index = item.index,
-      type = item.type,
-      category = item.type.categoryKey,
-      isInventory = false,
 
-      name = item.name.get(locale),
-      description = item.description.get(locale),
+  override fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): List<GarageItem> {
+    return item.modifications.map { (index, modification) ->
+      val nextModification = item.modifications.getOrDefault(index + 1, null)
 
-      baseItemId = item.baseItemId,
-      previewResourceId = item.previewResourceId,
+      GarageItem(
+        id = item.id,
+        index = item.index,
+        type = item.type,
+        category = item.type.categoryKey,
+        isInventory = false,
 
-      rank = item.rank,
-      next_rank = item.rank,
+        name = item.name.get(locale),
+        description = item.description.get(locale),
 
-      price = item.price,
-      next_price = item.price,
-      discount = Discount(
-        percent = 0,
-        timeLeftInSeconds = -1,
-        timeToStartInSeconds = -1
-      ),
+        baseItemId = item.baseItemId,
+        previewResourceId = modification.previewResourceId,
 
-      timeLeft = -1,
+        rank = modification.rank,
+        next_rank = nextModification?.rank ?: modification.rank,
 
-      properties = toClientProperties(item.properties),
+        price = modification.price,
+        next_price = nextModification?.price ?: modification.price,
+        discount = Discount(
+          percent = 0,
+          timeLeftInSeconds = -1,
+          timeToStartInSeconds = -1
+        ),
 
-      modificationID = null,
-      object3ds = null,
+        timeLeft = -1,
 
-      coloring = null,
-      animatedColoring = null,
+        properties = toClientProperties(modification.properties),
 
-      count = null,
+        modificationID = index,
+        object3ds = modification.object3ds,
 
-      kit = null
-    )
+        coloring = null,
+        animatedColoring = null,
+
+        count = null,
+
+        kit = null
+      )
+    }
   }
+
+
 
   override fun toClientSupply(item: ServerGarageItemSupply, userItem: ServerGarageUserItemSupply?, locale: SocketLocale): GarageItem {
     return GarageItem(

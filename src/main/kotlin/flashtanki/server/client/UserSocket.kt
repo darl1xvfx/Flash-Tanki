@@ -576,7 +576,7 @@ suspend fun initBattleList() {
       val clientMarketItems = when(marketItem) {
         is ServerGarageItemWeapon -> garageItemConverter.toClientWeapon(marketItem, locale)
         is ServerGarageItemHull -> garageItemConverter.toClientHull(marketItem, locale)
-        is ServerGarageItemResistance -> listOf(garageItemConverter.toClientResistance(marketItem, locale))
+        is ServerGarageItemResistance -> (garageItemConverter.toClientResistance(marketItem, locale))
         is ServerGarageItemPaint -> if (user.premium < 1 && marketItem.id in allowedPaints) return@forEach else listOf(garageItemConverter.toClientPaint(marketItem, locale))
         is ServerGarageItemSupply -> listOf(garageItemConverter.toClientSupply(marketItem, userItem as ServerGarageUserItemSupply?, locale))
         is ServerGarageItemSubscription -> listOf(garageItemConverter.toClientSubscription(marketItem, userItem as ServerGarageUserItemSubscription?, locale))
