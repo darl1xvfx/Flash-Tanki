@@ -6,7 +6,7 @@ interface IGarageItemConverter {
   fun toClientWeapon(item: ServerGarageItemWeapon, locale: SocketLocale): List<GarageItem>
   fun toClientHull(item: ServerGarageItemHull, locale: SocketLocale): List<GarageItem>
   fun toClientPaint(item: ServerGarageItemPaint, locale: SocketLocale): GarageItem
-  fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): List<GarageItem>
+  fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): GarageItem
   fun toClientSupply(item: ServerGarageItemSupply, userItem: ServerGarageUserItemSupply?, locale: SocketLocale): GarageItem
   fun toClientSubscription(item: ServerGarageItemSubscription, userItem: ServerGarageUserItemSubscription?, locale: SocketLocale): GarageItem
   fun toClientKit(item: ServerGarageItemKit, locale: SocketLocale): GarageItem
@@ -155,11 +155,8 @@ class GarageItemConverter : IGarageItemConverter {
     )
   }
 
-  override fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): List<GarageItem> {
-    return item.modifications.map { (index, modification) ->
-      val nextModification = item.modifications.getOrDefault(index + 1, null)
-
-      GarageItem(
+  override fun toClientResistance(item: ServerGarageItemResistance, locale: SocketLocale): GarageItem {
+      return GarageItem(
         id = item.id,
         index = item.index,
         type = item.type,
@@ -170,13 +167,13 @@ class GarageItemConverter : IGarageItemConverter {
         description = item.description.get(locale),
 
         baseItemId = item.baseItemId,
-        previewResourceId = modification.previewResourceId,
+        previewResourceId = item.previewResourceId,
 
-        rank = modification.rank,
-        next_rank = nextModification?.rank ?: modification.rank,
+        rank = item.rank,
+        next_rank = item.rank,
 
-        price = modification.price,
-        next_price = nextModification?.price ?: modification.price,
+        price = item.price,
+        next_price = item.price,
         discount = Discount(
           percent = 0,
           timeLeftInSeconds = -1,
@@ -185,10 +182,9 @@ class GarageItemConverter : IGarageItemConverter {
 
         timeLeft = -1,
 
-        properties = toClientProperties(modification.properties),
-
-        modificationID = index,
-        object3ds = modification.object3ds,
+        properties = toClientProperties(item.properties),
+        modificationID = null,
+        object3ds = null,
 
         coloring = null,
         animatedColoring = null,

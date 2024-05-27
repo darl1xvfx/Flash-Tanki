@@ -93,7 +93,6 @@ class GarageMarketRegistry : IGarageMarketRegistry, KoinComponent {
     // Client requires all items to have a unique previewResourceId
     items.values
       .filterIsInstance<IServerGarageItemWithModifications>()
-      .filterIsInstance<IServerGarageItemWithModificationsResistance>()
       .flatMap { item ->
         item.modifications.values.map { modification ->
           object {

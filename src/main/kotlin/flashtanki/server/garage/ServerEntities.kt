@@ -25,11 +25,6 @@ interface IServerGarageItemWithModifications {
   val modifications: Map<Int, ServerGarageItemModification>
 }
 
-interface IServerGarageItemWithModificationsResistance : IServerGarageItemWithModifications {
-  override val modifications: Map<Int, ServerGarageItemModificationResistances>
-}
-
-
 class ServerGarageItemWeapon(
   id: String,
   index: Int,
@@ -88,18 +83,22 @@ class ServerGarageItemPaint(
 class ServerGarageItemResistance(
   id: String,
   index: Int,
+
   name: LocalizedString,
   description: LocalizedString,
+
   baseItemId: Int,
   @Json val previewResourceId: Int,
+
   @Json val rank: Int,
   @Json val price: Int,
-  @Json override val modifications: Map<Int, ServerGarageItemModificationResistances>,
+
   @Json val properties: List<ServerGarageItemProperty>
 ) : ServerGarageItem(
-  id, index, GarageItemType.Resistance, name, description, baseItemId
-), IServerGarageItemWithModifications
-
+  id, index, GarageItemType.Resistance,
+  name, description,
+  baseItemId
+)
 
 class ServerGarageItemSupply(
   id: String,
@@ -236,15 +235,6 @@ abstract class ServerGarageItemModification(
   @Json open val physics: IPhysics
 )
 
-abstract class ServerGarageItemModificationResistance(
-  @Json val previewResourceId: Int,
-
-  @Json val rank: Int,
-  @Json val price: Int,
-
-  @Json val properties: List<ServerGarageItemProperty>,
-)
-
 data class WeaponDamage(
   // One of the following
   @Json val discrete: Discrete? = null,
@@ -295,13 +285,6 @@ data class WeaponDamage(
     @Json val range: Range? = null
   )
 }
-
-class ServerGarageItemModificationResistances(
-  previewResourceId: Int,
-  rank: Int,
-  price: Int,
-  properties: List<ServerGarageItemProperty>
-) : ServerGarageItemModification(previewResourceId, 0, rank, price, properties, object : IPhysics {})
 
 class ServerGarageItemWeaponModification(
   previewResourceId: Int,
@@ -463,17 +446,13 @@ class ServerGarageUserItemPaint(
 class ServerGarageUserItemResistance(
   user: User,
   id: String,
-  modificationIndex: Int
-) : ServerGarageUserItemWithModification(user, id, modificationIndex) {
-
+) : ServerGarageUserItem(user, id) {
   @get:Transient
   override val marketItem: ServerGarageItemResistance
-    get() = marketRegistry.get(id.itemName).cast()
-
-  override val modification: ServerGarageItemModificationResistances
-    get() = marketItem.modifications[modificationIndex]!!
+    get() {
+      return marketRegistry.get(id.itemName).cast()
+    }
 }
-
 
 @Entity
 @DiscriminatorValue("supply")
