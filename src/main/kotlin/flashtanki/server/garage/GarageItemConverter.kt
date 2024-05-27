@@ -193,7 +193,6 @@ class GarageItemConverter : IGarageItemConverter {
 
         kit = null
       )
-    }
   }
 
 
