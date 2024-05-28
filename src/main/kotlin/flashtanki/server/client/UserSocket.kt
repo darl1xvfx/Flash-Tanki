@@ -650,6 +650,10 @@ suspend fun initBattleList() {
       CommandName.InitMountedItem,
       user.equipment.weapon.mountName, user.equipment.weapon.modification.object3ds.toString()
     ).send(this)
+	Command(
+      CommandName.InitMountedItem,
+      user.equipment.resistance.mountName, ""
+    ).send(this)
     val coloring = user.equipment.paint.marketItem.animatedColoring ?: user.equipment.paint.marketItem.coloring
     Command(CommandName.InitMountedItem, user.equipment.paint.mountName, coloring.toString()).send(this)
     Command(CommandName.InitGarageMarket, InitGarageMarketData(items = marketParsed, delayMountArmorInSec = hullDelayMount, delayMountWeaponInSec = weaponDelayMount, delayMountColorInSec = colormapDelayMount).toJson()).send(this)
