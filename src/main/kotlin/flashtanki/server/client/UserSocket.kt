@@ -1,49 +1,12 @@
 package flashtanki.server.client
 
-import java.io.IOException
-import java.lang.reflect.InvocationTargetException
-import java.time.format.DateTimeFormatter
-import java.util.*
-import jakarta.persistence.*
-import kotlin.coroutines.CoroutineContext
-import kotlin.io.path.readText
-import kotlin.reflect.KParameter
-import kotlin.reflect.full.callSuspendBy
-import kotlin.time.ExperimentalTime
-import kotlin.random.Random
-import kotlin.reflect.full.primaryConstructor
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.Duration
 import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import io.ktor.network.sockets.*
-import io.ktor.utils.io.*
-import kotlin.coroutines.coroutineContext
-import kotlinx.coroutines.*
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
-import mu.KotlinLogging
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent
 import flashtanki.server.*
 import flashtanki.server.battles.*
-import flashtanki.server.battles.map.IMapRegistry
-import flashtanki.server.battles.map.get
-import flashtanki.server.battles.map.getProplib
-import flashtanki.server.battles.map.getSkybox
-import flashtanki.server.battles.mode.*
 import flashtanki.server.battles.bonus.BattleBonus
-import flashtanki.server.exceptions.NoSuchProplibException
+import flashtanki.server.battles.map.IMapRegistry
 import flashtanki.server.commands.*
 import flashtanki.server.exceptions.UnknownCommandCategoryException
 import flashtanki.server.exceptions.UnknownCommandException
@@ -51,9 +14,59 @@ import flashtanki.server.garage.*
 import flashtanki.server.invite.IInviteService
 import flashtanki.server.invite.Invite
 import flashtanki.server.lobby.chat.ILobbyChatManager
-//import flashtanki.server.friends.*
-import flashtanki.server.news.*
+import flashtanki.server.news.NewsLoader
+import flashtanki.server.news.ServerNewsData
+import io.ktor.network.sockets.*
+import io.ktor.utils.io.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import mu.KotlinLogging
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent
+import java.io.IOException
+import java.lang.reflect.InvocationTargetException
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.Iterable
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.MutableMap
+import kotlin.collections.all
+import kotlin.collections.any
+import kotlin.collections.associateBy
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.drop
+import kotlin.collections.filter
+import kotlin.collections.flatMap
+import kotlin.collections.forEach
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.mapIndexed
+import kotlin.collections.mapOf
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.none
+import kotlin.collections.plusAssign
+import kotlin.collections.putAll
+import kotlin.collections.set
+import kotlin.collections.single
+import kotlin.collections.singleOrNull
+import kotlin.coroutines.CoroutineContext
+import kotlin.io.path.readText
+import kotlin.random.Random
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.callSuspendBy
+import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 suspend fun Command.send(socket: UserSocket) = socket.send(this)
 suspend fun Command.send(player: BattlePlayer) = player.socket.send(this)
@@ -232,32 +245,59 @@ class UserSocket(
 
   suspend fun addPremiumAccount(premium: Int) {
     val user = user ?: throw Exception("No User")
-    //val entityManager = HibernateUtils.createEntityManager()
+    val entityManager = HibernateUtils.createEntityManager()
+    val transaction = entityManager.transaction
 
     var showWelcomeAlert: Boolean = false
     var showAlertForFirstPurchasePremium: Boolean = false
 
-    val currentInstant = Clock.System.now()
-    if (user.premium <= 0) {
-      showWelcomeAlert = true
-      showAlertForFirstPurchasePremium = true
+    try {
+      transaction.begin()
+
+      val currentInstant = Clock.System.now()
+      if (user.premium <= 0) {
+        // Create the identifier for ServerGarageUserItemPaint
+        val paintItemId = ServerGarageItemId(user, "premium")
+        val existingPaintItem = entityManager.find(ServerGarageUserItemPaint::class.java, paintItemId)
+
+        if (existingPaintItem == null) {
+          //val paintItem = ServerGarageUserItemPaint(user, "premium")
+          //user.items += paintItem
+          //entityManager.persist(paintItem)
+          showWelcomeAlert = true
+          showAlertForFirstPurchasePremium = true
+        }
+      }
+
+      val nextDayInstant = currentInstant.plus((user.premium / 86400).days)
+      val subscriptionItem = ServerGarageUserItemSubscription(user, "premium_effect", nextDayInstant)
+      user.items += subscriptionItem
+      entityManager.persist(subscriptionItem)
+
+      user.premium += premium * 86400
+
+      userRepository.updateUser(user)
+
+      transaction.commit()
+
+      Command(
+        CommandName.InitPremium,
+        InitPremiumData(
+          left_time = user.premium,
+          needShowNotificationCompletionPremium = false,
+          needShowWelcomeAlert = showWelcomeAlert,
+          wasShowAlertForFirstPurchasePremium = showAlertForFirstPurchasePremium,
+          wasShowReminderCompletionPremium = false
+        ).toJson()
+      ).send(this)
+
+    } catch (e: Exception) {
+      transaction.rollback()
+      throw e
+    } finally {
+      entityManager.close()
     }
-
-    user.premium += premium * 86400
-    val nextDayInstant = currentInstant.plus((user.premium / 86400).days)
-    /*user.items += listOf(ServerGarageUserItemSubscription(user, "premium_effect", nextDayInstant))
-    user.items.forEach { item -> entityManager.persist(item) }*/
-    Command(CommandName.InitPremium, InitPremiumData(
-      left_time = user.premium,
-      needShowNotificationCompletionPremium = false,
-      needShowWelcomeAlert = showWelcomeAlert,
-      wasShowAlertForFirstPurchasePremium = showAlertForFirstPurchasePremium,
-      wasShowReminderCompletionPremium = false
-    ).toJson()
-    ).send(this)
-    userRepository.updateUser(user)
   }
-
 
   private suspend fun processPacket(packet: String) {
     var decrypted: String? = null
@@ -430,8 +470,6 @@ class UserSocket(
     }
 
     val user = user ?: throw Exception("No User")
-    var showReminderCompletionPremium: Boolean = false
-    var showNotificationCompletionPremium: Boolean = false
 
     clientRank = user.rank
     Command(
@@ -555,7 +593,6 @@ suspend fun initBattleList() {
 
   suspend fun initGarage() {
 
-    val allowedPaints = setOf("premium")
     val entityManager = HibernateUtils.createEntityManager()
 
     val user = user ?: throw Exception("No User")
@@ -577,7 +614,7 @@ suspend fun initBattleList() {
         is ServerGarageItemWeapon -> garageItemConverter.toClientWeapon(marketItem, locale)
         is ServerGarageItemHull -> garageItemConverter.toClientHull(marketItem, locale)
         is ServerGarageItemResistance -> listOf(garageItemConverter.toClientResistance(marketItem, locale))
-        is ServerGarageItemPaint -> if (user.premium < 1 && marketItem.id in allowedPaints) return@forEach else listOf(garageItemConverter.toClientPaint(marketItem, locale))
+        is ServerGarageItemPaint -> listOf(garageItemConverter.toClientPaint(marketItem, locale))
         is ServerGarageItemSupply -> listOf(garageItemConverter.toClientSupply(marketItem, userItem as ServerGarageUserItemSupply?, locale))
         is ServerGarageItemSubscription -> listOf(garageItemConverter.toClientSubscription(marketItem, userItem as ServerGarageUserItemSubscription?, locale))
         is ServerGarageItemKit -> listOf(garageItemConverter.toClientKit(marketItem, locale))

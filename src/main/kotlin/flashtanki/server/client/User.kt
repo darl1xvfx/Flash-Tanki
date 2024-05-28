@@ -152,7 +152,6 @@ class UserRepository : IUserRepository {
       ServerGarageUserItemWeapon(user, "smoky", modificationIndex = 0),
       ServerGarageUserItemHull(user, "hunter", modificationIndex = 0),
       ServerGarageUserItemResistance(user, "zero"),
-      ServerGarageUserItemPaint(user, "premium"),
       ServerGarageUserItemPaint(user, "green"),
       ServerGarageUserItemPaint(user, "holiday")
     )
