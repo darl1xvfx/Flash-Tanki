@@ -55,6 +55,7 @@ class DamageProcessor(
       is FreezeWeaponHandler     -> "FREEZE_RESISTANCE"
       is RicochetWeaponHandler   -> "RICOCHET_RESISTANCE"
       is SmokyWeaponHandler      -> "SMOKY_RESISTANCE"
+	  is FlamethrowerWeaponHandler -> "FIREBIRD_RESISTANCE"
       else                       -> null
     }
 
