@@ -1,7 +1,7 @@
-<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
-             version="2.2">
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
   <persistence-unit name="flashtanki.server">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
@@ -14,6 +14,7 @@
     <class>flashtanki.server.garage.ServerGarageUserItemWeapon</class>
     <class>flashtanki.server.garage.ServerGarageUserItemHull</class>
     <class>flashtanki.server.garage.ServerGarageUserItemPaint</class>
+	<class>flashtanki.server.garage.ServerGarageUserItemResistance</class>
     <class>flashtanki.server.garage.ServerGarageUserItemSupply</class>
     <class>flashtanki.server.garage.ServerGarageUserItemSubscription</class>
 
@@ -31,30 +32,15 @@
 
     <class>flashtanki.server.invite.Invite</class>
 
-        <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
-
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
       <property name="hibernate.show_sql" value="false" />
       <property name="hibernate.format_sql" value="false" />
-
       <property name="hibernate.hbm2ddl.auto" value="update" />
-      <!-- <property name="hibernate.hbm2ddl.auto" value="update" /> -->
-      <!-- <property name="hibernate.hbm2ddl.auto" value="create-drop" /> -->
-      <!-- <property name="hibernate.hbm2ddl.auto" value="validate" /> -->
-
-      <!-- HikariCP -->
-      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
-
-      <property name="hibernate.hikari.dataSourceClassName" value="org.h2.jdbcx.JdbcDataSource" />
-
-      <property name="hibernate.hikari.dataSource.url" value="jdbc:h2:file:./FlashTanki" />
-
-      <property name="hibernate.hikari.username" value="username" />
-      <property name="hibernate.hikari.password" value="password" />
-
-      <property name="hibernate.hikari.minimumIdle" value="20" />
-      <property name="hibernate.hikari.maximumPoolSize" value="100" />
-      <property name="hibernate.hikari.idleTimeout" value="30000" />
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.1/flashtanki"/>
+      <property name="javax.persistence.jdbc.user" value="root"/>
+      <property name="javax.persistence.jdbc.password" value=""/>
     </properties>
   </persistence-unit>
 </persistence>
