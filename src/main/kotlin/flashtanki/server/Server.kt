@@ -42,6 +42,7 @@ import flashtanki.server.extensions.toString
 import flashtanki.server.garage.IGarageMarketRegistry
 import flashtanki.server.garage.ServerGarageUserItemHull
 import flashtanki.server.garage.ServerGarageUserItemPaint
+import flashtanki.server.garage.ServerGarageUserItemResistance
 import flashtanki.server.garage.ServerGarageUserItemWeapon
 import flashtanki.server.invite.IInviteRepository
 import flashtanki.server.invite.IInviteService
@@ -659,11 +660,13 @@ class Server : KoinComponent {
             user.items += listOf(
               ServerGarageUserItemWeapon(user, "smoky", modificationIndex = 0),
               ServerGarageUserItemHull(user, "hunter", modificationIndex = 0),
-              ServerGarageUserItemPaint(user, "green")
+              ServerGarageUserItemPaint(user, "green"),
+			  ServerGarageUserItemResistance(user, "zero")
             )
             user.equipment.hullId = "hunter"
             user.equipment.weaponId = "smoky"
             user.equipment.paintId = "green"
+			user.equipment.resistanceId = "zero"
 
             withContext(Dispatchers.IO) {
               entityManager
