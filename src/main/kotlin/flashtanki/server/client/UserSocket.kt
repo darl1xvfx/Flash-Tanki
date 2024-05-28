@@ -246,7 +246,10 @@ class UserSocket(
   suspend fun addPremiumAccount(premium: Int) {
     val user = user ?: throw Exception("No User")
     val entityManager = HibernateUtils.createEntityManager()
+<<<<<<< HEAD
     val transaction = entityManager.transaction
+=======
+>>>>>>> f8e3aa467a9b378b1f491d850cbaaeddf4dc9adc
 
     var showWelcomeAlert: Boolean = false
     var showAlertForFirstPurchasePremium: Boolean = false
@@ -297,6 +300,23 @@ class UserSocket(
     } finally {
       entityManager.close()
     }
+<<<<<<< HEAD
+=======
+
+    user.premium += premium * 86400
+    val nextDayInstant = currentInstant.plus((user.premium / 86400).days)
+    user.items += listOf(ServerGarageUserItemSubscription(user, "premium_effect", nextDayInstant))
+    user.items.forEach { item -> entityManager.persist(item) }
+    Command(CommandName.InitPremium, InitPremiumData(
+      left_time = user.premium,
+      needShowNotificationCompletionPremium = false,
+      needShowWelcomeAlert = showWelcomeAlert,
+      wasShowAlertForFirstPurchasePremium = showAlertForFirstPurchasePremium,
+      wasShowReminderCompletionPremium = false
+    ).toJson()
+    ).send(this)
+    userRepository.updateUser(user)
+>>>>>>> f8e3aa467a9b378b1f491d850cbaaeddf4dc9adc
   }
 
   private suspend fun processPacket(packet: String) {
