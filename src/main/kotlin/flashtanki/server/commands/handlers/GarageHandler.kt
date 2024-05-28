@@ -97,7 +97,7 @@ class GarageHandler : ICommandHandler, KoinComponent {
       when(currentItem) {
         is ServerGarageUserItemWeapon -> socket.weaponDelayMount = 15.minutes.inWholeSeconds.toInt()
         is ServerGarageUserItemHull   -> socket.hullDelayMount = 15.minutes.inWholeSeconds.toInt()
-        is ServerGarageUserItemPaint  -> socket.colormapDelayMount = 15.minutes.inWholeSeconds.toInt()
+        is ServerGarageUserItemResistance  -> socket.colormapDelayMount = 15.minutes.inWholeSeconds.toInt()
 
         else                          -> {
           return
