@@ -23,6 +23,13 @@ class QuestsHandler : ICommandHandler, KoinComponent {
   suspend fun openQuests(socket: UserSocket) {
     val user = socket.user ?: throw Exception("No User")
     val locale = socket.locale ?: throw IllegalStateException("Socket locale is null")
+	user.dailyQuests
+      .forEach { quest ->
+         if (quest.current >= quest.required) {
+		    quest.current = quest.required
+			quest.completed = true
+		 }
+      }
     if (user.dailyQuests.size > 0) {
       Command(
               CommandName.ClientOpenQuests,
@@ -100,9 +107,6 @@ class QuestsHandler : ICommandHandler, KoinComponent {
       if (reward.type == ServerDailyRewardType.Crystals) {
         user.crystals += reward.count
         socket.updateCrystals() // Перемещено внутрь блока обновления кристаллов
-      }
-      if (reward.type == ServerDailyRewardType.Premium) {
-        socket.addPremiumAccount(reward.count)
       }
     }
 
