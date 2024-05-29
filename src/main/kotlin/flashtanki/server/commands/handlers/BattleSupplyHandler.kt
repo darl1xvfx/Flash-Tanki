@@ -184,12 +184,8 @@ suspend fun activateUltimate(socket: UserSocket) {
     val tank = player.tank ?: throw Exception("No Tank")
     val battle = player.battle
     Command(CommandName.ActivateUltimate2, user.username, "10013694").sendTo(battle)
-    
-    val maxHealth = tank.hull.modification.maxHealth
-    if (tank.health < maxHealth) {
-        activateItem(socket, "health")
-    }
-    
+	
+    activateItem(socket, "health")
     activateItem(socket, "armor")
     activateItem(socket, "double_damage")
     activateItem(socket, "n2o")
