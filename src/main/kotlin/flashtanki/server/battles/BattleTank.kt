@@ -1,9 +1,7 @@
 package flashtanki.server.battles
 
 import kotlin.math.floor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -248,6 +246,18 @@ class BattleTank(
       id,
       "${position.x}@${position.y}@${position.z}@${orientation.toEulerAngles().z}"
     ).send(this)
+    updateUltimateCharge()
+  }
+  
+  suspend fun updateUltimateCharge() {
+    while (player.ultimateCharge < 100) {
+	   delay(75)
+	   Command(CommandName.AddUltimateCharge, 1.toString()).send(this)
+	   player.ultimateCharge++
+	   if (player.ultimateCharge >= 100) {
+	      Command(CommandName.ShowUltimateCharged).send(this)
+	   }
+	}
   }
 
   suspend fun initSelf() {

@@ -46,6 +46,8 @@ class BattlePlayer(
 
   private val mapRegistry: IMapRegistry by inject()
   private val server: ISocketServer by inject()
+  
+  var ultimateCharge: Int = 0
 
   var sequence: Long = 0
   var incarnation: Int = 0
@@ -278,6 +280,10 @@ class BattlePlayer(
           )
         ).toJson()
       ).send(socket)
+	  
+	  Command(
+	   CommandName.InitUltimateModel
+	  ).send(socket) 
 
     Command(
       CommandName.InitMineModel,
