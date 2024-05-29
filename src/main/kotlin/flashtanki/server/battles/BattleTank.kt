@@ -246,12 +246,11 @@ class BattleTank(
       id,
       "${position.x}@${position.y}@${position.z}@${orientation.toEulerAngles().z}"
     ).send(this)
-    updateUltimateCharge()
   }
   
   suspend fun updateUltimateCharge() {
     while (player.ultimateCharge < 100) {
-	   delay(10000)
+	   delay(1000)
 	   Command(CommandName.AddUltimateCharge, 1.toString()).send(this)
 	   player.ultimateCharge++
 	   if (player.ultimateCharge >= 100) {

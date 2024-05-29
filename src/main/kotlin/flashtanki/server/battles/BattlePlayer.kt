@@ -336,6 +336,7 @@ class BattlePlayer(
     if(!isSpectator && tank != null) {
       tank.updateSpawnPosition()
       tank.prepareToSpawn()
+	  tank.updateUltimateCharge()
     }
 
     spawnAnotherTanks()
