@@ -29,17 +29,22 @@ class RepairKitEffect(
         )
 
     override suspend fun activate() {
+        val maxHealth = tank.hull.modification.maxHealth
+
+        // Проверка, есть ли у танка полное здоровье
+        if (tank.health >= maxHealth) {
+            return
+        }
+
         isActive = true
         val battle = tank.battle
         val damageProcessor = battle.damageProcessor
 
         val initialHealth = tank.health
-        val maxHealth = tank.hull.modification.maxHealth
 
         damageProcessor.heal(tank, 1000.0)
         Command(CommandName.DamageTank, tank.id, "1000", DamageType.Heal.key).send(tank)
         damageProcessor.heal(tank, 100.0)
-
 
         val initialHealingAmount = minOf(100.0, maxHealth - initialHealth)
         if (initialHealingAmount > 0) {
