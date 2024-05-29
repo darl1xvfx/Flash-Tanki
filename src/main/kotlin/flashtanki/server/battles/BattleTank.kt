@@ -255,7 +255,7 @@ class BattleTank(
 	   Command(CommandName.AddUltimateCharge, 1.toString()).send(this)
 	   player.ultimateCharge++
 	   if (player.ultimateCharge >= 100) {
-	      Command(CommandName.ShowUltimateCharged).send(this)
+	      Command(CommandName.ShowUltimateCharged, id).send(this)
 	   }
 	}
   }
