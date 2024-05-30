@@ -17,6 +17,6 @@ class BattleRepairKitBonus(battle: Battle, id: Int, position: Vector3, rotation:
     val effect = RepairKitEffect(tank)
     tank.effects.add(effect)
     effect.run()
-	battle.spawnBonusAfterTake(type, 103.seconds, position, rotation)
+    battle.spawnBonusAfterTake(type, 103.seconds, position, rotation)
   }
 }
