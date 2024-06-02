@@ -152,7 +152,7 @@ class ControlPointsModeHandler(battle: Battle) : ICommandHandler, TeamModeHandle
 	suspend fun addScoreToTeam(point: PointState, tank: BattleTank) {
 	 val scoreLimit = tank.battle.properties[BattleProperty.ScoreLimit]
 	 while (point.progress <= -100 || point.progress >= 100) {
-	 delay(25)
+	 delay(2000)
 	 teamScores.merge(tank.player.team, 1, Int::plus)
 	 updateScores()
     when {

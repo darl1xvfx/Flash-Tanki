@@ -665,6 +665,122 @@
       "value": "m/sec"
     },
     {
+      "key": "GARAGE_SMOKY_PROTECTION_PROPERTY",
+      "value": "Защита от Смоки"
+    },
+    {
+      "key": "GARAGE_FIREBIRD_PROTECTION_PROPERTY",
+      "value": "Защита от Огнимёта"
+    },
+    {
+      "key": "GARAGE_TWINS_PROTECTION_PROPERTY",
+      "value": "Защита от Твинса"
+    },
+    {
+      "key": "GARAGE_RAILGUN_PROTECTION_PROPERTY",
+      "value": "Защита от Рельсы"
+    },
+    {
+      "key": "GARAGE_ISIDA_PROTECTION_PROPERTY",
+      "value": "Защита от Изиды"
+    },
+    {
+      "key": "GARAGE_THUNDER_PROTECTION_PROPERTY",
+      "value": "Защита от Грома"
+    },
+    {
+      "key": "GARAGE_FREEZE_PROTECTION_PROPERTY",
+      "value": "Защита от Фриза"
+    },
+    {
+      "key": "GARAGE_RICOCHET_PROTECTION_PROPERTY",
+      "value": "Защита от Рикошета"
+    },
+    {
+      "key": "GARAGE_SHAFT_PROTECTION_PROPERTY",
+      "value": "Защита от Шафта"
+    },
+    {
+      "key": "GARAGE_UPGRADE_TEXT",
+      "value": "Улучшить"
+    },
+    {
+      "key": "GARAGE_SPEED_UP_TEXT",
+      "value": "Ускорить"
+    },
+    {
+      "key": "GARAGE_DAMAGE_PROPERTY",
+      "value": "Урон навскидку"
+    },
+    {
+      "key": "GARAGE_SNIPING_DAMAGE_PROPERTY",
+      "value": "Урон прицельный"
+    },
+    {
+      "key": "GARAGE_CRITICAL_CHANCE_PROPERTY",
+      "value": "Шанс критического урона"
+    },
+    {
+      "key": "GARAGE_CRITICAL_DAMAGE_PROPERTY",
+      "value": "Критический урон"
+    },
+    {
+      "key": "GARAGE_PENETRATING_PROPERTY",
+      "value": "Прострел"
+    },
+    {
+      "key": "GARAGE_IMPACT_PROPERTY",
+      "value": "Сила удара"
+    },
+    {
+      "key": "GARAGE_RELOAD_PROPERTY",
+      "value": "Перезарядка"
+    },
+    {
+      "key": "GARAGE_ROTATION_PROPERTY",
+      "value": "Скорость поворота"
+    },
+    {
+      "key": "GARAGE_RANGE_PROPERTY",
+      "value": "Дальность"
+    },
+    {
+      "key": "GARAGE_DISTANT_DAMAGE_PROPERTY",
+      "value": "Дистнация урона"
+    },
+    {
+      "key": "GARAGE_BURN_PROPERTY",
+      "value": "Урон от горения"
+    },
+    {
+      "key": "GARAGE_HEAL_PROPERTY",
+      "value": "Лечение"
+    },
+    {
+      "key": "GARAGE_SELF_HEAL_PROPERTY",
+      "value": "Процент самолечения"
+    },
+    {
+      "key": "GARAGE_PROTECTION_PROPERTY",
+      "value": "Броня"
+    },
+    {
+      "key": "GARAGE_MAX_SPEED_PROPERTY",
+      "value": "Максимальная Скорость"
+    },
+    {
+      "key": "GARAGE_TURN_PROPERTY",
+      "value": "Скорость поворота"
+    },
+    {
+      "key": "GARAGE_WEIGHT_PROPERTY",
+      "value": "Масса"
+    },
+    {
+      "key": "GARAGE_POWER_PROPERTY",
+      "value": "Мощность"
+    },
+    {
       "key": "GAME_ACTION_SCREEN_SIZE_INCREASE",
       "value": "Увеличить размер окна битвы"
     },

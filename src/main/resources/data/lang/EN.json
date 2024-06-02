@@ -664,6 +664,124 @@
       "key": "GARAGE_INFO_PANEL_SPEED_UNIT_TEXT",
       "value": "m/sec"
     },
+
+    {
+      "key": "GARAGE_SMOKY_PROTECTION_PROPERTY",
+      "value": "Smoky Protection"
+    },
+    {
+      "key": "GARAGE_FIREBIRD_PROTECTION_PROPERTY",
+      "value": "Flamethrower Protection"
+    },
+    {
+      "key": "GARAGE_TWINS_PROTECTION_PROPERTY",
+      "value": "Twins Protection"
+    },
+    {
+      "key": "GARAGE_RAILGUN_PROTECTION_PROPERTY",
+      "value": "Railgun Protection"
+    },
+    {
+      "key": "GARAGE_ISIDA_PROTECTION_PROPERTY",
+      "value": "Isida Protection"
+    },
+    {
+      "key": "GARAGE_THUNDER_PROTECTION_PROPERTY",
+      "value": "Thunder Protection"
+    },
+    {
+      "key": "GARAGE_FREEZE_PROTECTION_PROPERTY",
+      "value": "Freeze Protection"
+    },
+    {
+      "key": "GARAGE_RICOCHET_PROTECTION_PROPERTY",
+      "value": "Ricochet Protection"
+    },
+    {
+      "key": "GARAGE_SHAFT_PROTECTION_PROPERTY",
+      "value": "Shaft Protection"
+    },
+
+    {
+      "key": "GARAGE_UPGRADE_TEXT",
+      "value": "Improve"
+    },
+    {
+      "key": "GARAGE_SPEED_UP_TEXT",
+      "value": "Speed up"
+    },
+    {
+      "key": "GARAGE_DAMAGE_PROPERTY",
+      "value": "Damage offhand"
+    },
+    {
+      "key": "GARAGE_SNIPING_DAMAGE_PROPERTY",
+      "value": "Targeted damage"
+    },
+    {
+      "key": "GARAGE_CRITICAL_CHANCE_PROPERTY",
+      "value": "Critical damage chance"
+    },
+    {
+      "key": "GARAGE_CRITICAL_DAMAGE_PROPERTY",
+      "value": "Critical damage"
+    },
+    {
+      "key": "GARAGE_PENETRATING_PROPERTY",
+      "value": "Penetration"
+    },
+    {
+      "key": "GARAGE_IMPACT_PROPERTY",
+      "value": "Impact force"
+    },
+    {
+      "key": "GARAGE_RELOAD_PROPERTY",
+      "value": "Reload"
+    },
+    {
+      "key": "GARAGE_ROTATION_PROPERTY",
+      "value": "Turning speed"
+    },
+    {
+      "key": "GARAGE_RANGE_PROPERTY",
+      "value": "Range"
+    },
+    {
+      "key": "GARAGE_DISTANT_DAMAGE_PROPERTY",
+      "value": "Damage distance"
+    },
+    {
+      "key": "GARAGE_BURN_PROPERTY",
+      "value": "Burn damage"
+    },
+    {
+      "key": "GARAGE_HEAL_PROPERTY",
+      "value": "Healing"
+    },
+    {
+      "key": "GARAGE_SELF_HEAL_PROPERTY",
+      "value": "Percentage of self-medication"
+    },
+    {
+      "key": "GARAGE_PROTECTION_PROPERTY",
+      "value": "Armor"
+    },
+    {
+      "key": "GARAGE_MAX_SPEED_PROPERTY",
+      "value": "Maximum Speed"
+    },
+    {
+      "key": "GARAGE_TURN_PROPERTY",
+      "value": "Turning speed"
+    },
+    {
+      "key": "GARAGE_WEIGHT_PROPERTY",
+      "value": "Mass"
+    },
+    {
+      "key": "GARAGE_POWER_PROPERTY",
+      "value": "Power"
+    },
     {
       "key": "GAME_ACTION_SCREEN_SIZE_INCREASE",
       "value": "Increase battle screen size"
