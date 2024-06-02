@@ -105,7 +105,7 @@ class BattleTank(
         handler.dropFlag(flag.team, this, position)
       }
     }
-
+    Command(CommandName.BossKilled).send(battle.players.ready())
     Command(CommandName.KillLocalTank).send(socket)
   }
 
@@ -276,6 +276,8 @@ class BattleTank(
     }
 
     updateHealth()
+	
+	Command(CommandName.BossChanged, id).send(battle.players.ready())
 
     Command(
       CommandName.SpawnTank,

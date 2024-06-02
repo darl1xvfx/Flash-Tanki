@@ -188,6 +188,8 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   InitMineModel(CommandCategory.Battle, "init_mine_model", CommandSide.Client),
   InitEffects(CommandCategory.Battle, "init_effects", CommandSide.Client),
   InitFlags(CommandCategory.Battle, "init_flags", CommandSide.Client),
+  BossChanged(CommandCategory.Battle, "bossChanged", CommandSide.Client),
+  BossKilled(CommandCategory.Battle, "bossKilled", CommandSide.Client),
 
   ChangeFund(CommandCategory.Battle, "change_fund", CommandSide.Client),
   ChangeTeamScore(CommandCategory.Battle, "change_team_scores", CommandSide.Client),
