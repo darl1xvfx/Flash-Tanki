@@ -664,6 +664,44 @@
       "key": "GARAGE_INFO_PANEL_SPEED_UNIT_TEXT",
       "value": "m/sec"
     },
+
+    {
+      "key": "GARAGE_SMOKY_PROTECTION_PROPERTY",
+      "value": "Smoky Protection"
+    },
+    {
+      "key": "GARAGE_FIREBIRD_PROTECTION_PROPERTY",
+      "value": "Flamethrower Protection"
+    },
+    {
+      "key": "GARAGE_TWINS_PROTECTION_PROPERTY",
+      "value": "Twins Protection"
+    },
+    {
+      "key": "GARAGE_RAILGUN_PROTECTION_PROPERTY",
+      "value": "Railgun Protection"
+    },
+    {
+      "key": "GARAGE_ISIDA_PROTECTION_PROPERTY",
+      "value": "Isida Protection"
+    },
+    {
+      "key": "GARAGE_THUNDER_PROTECTION_PROPERTY",
+      "value": "Thunder Protection"
+    },
+    {
+      "key": "GARAGE_FREEZE_PROTECTION_PROPERTY",
+      "value": "Freeze Protection"
+    },
+    {
+      "key": "GARAGE_RICOCHET_PROTECTION_PROPERTY",
+      "value": "Ricochet Protection"
+    },
+    {
+      "key": "GARAGE_SHAFT_PROTECTION_PROPERTY",
+      "value": "Shaft Protection"
+    },
+
     {
       "key": "GARAGE_UPGRADE_TEXT",
       "value": "Improve"

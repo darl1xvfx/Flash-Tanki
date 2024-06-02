@@ -665,6 +665,42 @@
       "value": "m/sec"
     },
     {
+      "key": "GARAGE_SMOKY_PROTECTION_PROPERTY",
+      "value": "Защита от Смоки"
+    },
+    {
+      "key": "GARAGE_FIREBIRD_PROTECTION_PROPERTY",
+      "value": "Защита от Огнимёта"
+    },
+    {
+      "key": "GARAGE_TWINS_PROTECTION_PROPERTY",
+      "value": "Защита от Твинса"
+    },
+    {
+      "key": "GARAGE_RAILGUN_PROTECTION_PROPERTY",
+      "value": "Защита от Рельсы"
+    },
+    {
+      "key": "GARAGE_ISIDA_PROTECTION_PROPERTY",
+      "value": "Защита от Изиды"
+    },
+    {
+      "key": "GARAGE_THUNDER_PROTECTION_PROPERTY",
+      "value": "Защита от Грома"
+    },
+    {
+      "key": "GARAGE_FREEZE_PROTECTION_PROPERTY",
+      "value": "Защита от Фриза"
+    },
+    {
+      "key": "GARAGE_RICOCHET_PROTECTION_PROPERTY",
+      "value": "Защита от Рикошета"
+    },
+    {
+      "key": "GARAGE_SHAFT_PROTECTION_PROPERTY",
+      "value": "Защита от Шафта"
+    },
+    {
       "key": "GARAGE_UPGRADE_TEXT",
       "value": "Улучшить"
     },
