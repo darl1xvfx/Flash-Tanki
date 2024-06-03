@@ -55,8 +55,8 @@
       "damage": {
         "discrete": {},
         "range": {
-          "from": 420,
-          "to": 810
+          "from": 99999,
+          "to": 99999
         }
       },
       "physics": {

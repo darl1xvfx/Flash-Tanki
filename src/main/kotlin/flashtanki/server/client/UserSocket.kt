@@ -13,6 +13,7 @@ import flashtanki.server.exceptions.UnknownCommandException
 import flashtanki.server.garage.*
 import flashtanki.server.invite.IInviteService
 import flashtanki.server.invite.Invite
+import flashtanki.server.battles.killstreak.*
 import flashtanki.server.lobby.chat.ILobbyChatManager
 import flashtanki.server.news.NewsLoader
 import flashtanki.server.news.ServerNewsData
@@ -1114,6 +1115,10 @@ class TeamBattleData(
 
 data class InitBattleSelectData(
   @Json val battles: List<BattleData>
+)
+
+data class KillStreaksData(
+  @Json val killStreaks: List<KillStreak>
 )
 
 data class ShowBonusesPresentData(

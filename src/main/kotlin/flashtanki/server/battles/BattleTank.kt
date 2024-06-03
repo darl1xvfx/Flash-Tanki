@@ -121,9 +121,11 @@ class BattleTank(
     if (battle.modeHandler is JuggernautModeHandler && battle.modeHandler.mode == BattleMode.Juggernaut)
     {
       val mh = (battle.modeHandler as JuggernautModeHandler)
+      mh.addBossKillsAndCheckKillStreak(killer.player.user.username)
       if (mh.bossId == player.user.username)
       {
         mh.bossId = killer.player.user.username
+        mh.bossKills = 0
         Command(CommandName.BossKilled).send(battle.players.ready())
         Command(CommandName.BattleMessage, 0xFF00.toString(), "Ты следующий Джаггернаут, приготовься!").send(killer)
         killer.selfDestructing = true
@@ -139,6 +141,8 @@ class BattleTank(
       id != killer.id                            -> killer.player.kills + 1
       else                                       -> killer.player.kills
     }
+
+
 
     if(killer.id != id && battle.players.count { it.team == player.team.opposite } != 0 && !battle.properties[BattleProperty.ParkourMode]) {
       val fund = when(player.user.rank.value) {
@@ -243,6 +247,7 @@ class BattleTank(
         if (mh.bossId == player.user.username)
         {
           mh.bossId = ""
+          mh.bossKills = 0
           Command(CommandName.BossKilled).send(battle.players.ready())
         }
       }
@@ -271,14 +276,14 @@ class BattleTank(
   }
   
   suspend fun updateUltimateCharge() {
-    while (player.ultimateCharge < 100) {
+    /*while (player.ultimateCharge < 100) {
 	   delay(1000)
 	   Command(CommandName.AddUltimateCharge, 1.toString()).send(this)
 	   player.ultimateCharge++
 	   if (player.ultimateCharge >= 100) {
 	      Command(CommandName.ShowUltimateCharged, id).send(this)
 	   }
-	}
+	}*/
   }
 
   suspend fun initSelf() {
