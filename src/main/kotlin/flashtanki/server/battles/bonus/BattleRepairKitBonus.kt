@@ -14,7 +14,7 @@ class BattleRepairKitBonus(battle: Battle, id: Int, position: Vector3, rotation:
   override val type: BonusType = BonusType.Health
 
   override suspend fun activate(tank: BattleTank) {
-    val effect = RepairKitEffect(tank)
+    val effect = RepairKitEffect(tank, forceDuration = 3.seconds)
     tank.effects.add(effect)
     effect.run()
     battle.spawnBonusAfterTake(type, 103.seconds, position, rotation)
