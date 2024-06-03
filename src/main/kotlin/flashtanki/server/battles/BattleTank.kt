@@ -129,7 +129,7 @@ class BattleTank(
         killer.selfDestructing = true
         killer.coroutineScope.launchDelayed(3.seconds) {
           killer.selfDestructing = false
-          killer.selfDestruct()
+          killer.selfDestruct(silent = true)
         }
       }
     }
@@ -220,7 +220,6 @@ class BattleTank(
   suspend fun selfDestruct(silent: Boolean = false) {
     if(state == TankState.Dead) return
     killSelf()
-
     if(silent) {
       Command(CommandName.KillTankSilent, id).sendTo(battle)
     } else {
@@ -238,13 +237,22 @@ class BattleTank(
         if(handler !is TeamDeathmatchModeHandler) return
         handler.decreaseScore(player)
       }
+      if (battle.modeHandler is JuggernautModeHandler && battle.modeHandler.mode == BattleMode.Juggernaut)
+      {
+        val mh = (battle.modeHandler as JuggernautModeHandler)
+        if (mh.bossId == player.user.username)
+        {
+          mh.bossId = ""
+          Command(CommandName.BossKilled).send(battle.players.ready())
+        }
+      }
     }
   }
 
   fun updateSpawnPosition() {
     // TODO(Assasans): Special handling for CP: https://web.archive.org/web/20160310101712/http://ru.tankiwiki.com/%D0%9A%D0%BE%D0%BD%D1%82%D1%80%D0%BE%D0%BB%D1%8C_%D1%82%D0%BE%D1%87%D0%B5%D0%BA
     val point = battle.map.spawnPoints
-      .filter { point -> point.mode == null || point.mode == battle.modeHandler.mode }
+      .filter { point -> point.mode == null || point.mode == if (battle.modeHandler.mode != BattleMode.Juggernaut) battle.modeHandler.mode else BattleMode.Deathmatch }
       .filter { point -> point.team == null || point.team == player.team }
       .random()
     position = point.position.toVector()
