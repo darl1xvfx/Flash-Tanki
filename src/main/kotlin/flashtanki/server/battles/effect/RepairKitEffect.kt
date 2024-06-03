@@ -36,13 +36,13 @@ class RepairKitEffect(
         val battle = tank.battle
         val damageProcessor = battle.damageProcessor
 
-        
+
         if (duration == null) return
 
         tank.coroutineScope.launch {
             val startTime = Clock.System.now()
             val endTime = startTime + duration
-            var extraHealTime = 1.5.seconds
+            var extraHealTime = 2.0.seconds
             while (Clock.System.now() < endTime + extraHealTime && isActive) {
                 delay(1000)
                 if (tank.health < maxHealth) {
@@ -88,7 +88,7 @@ class RepairKitEffect(
                 0.seconds
             }
 
-            return durationInSeconds + 1.5.seconds
+            return durationInSeconds + 2.0.seconds
         }
     }
 }
