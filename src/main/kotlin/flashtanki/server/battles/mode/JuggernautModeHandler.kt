@@ -32,6 +32,9 @@ class JuggernautModeHandler(battle: Battle) : BattleModeHandler(battle) {
         players = players
       ).toJson()
     ).send(battle.players.exclude(player).ready())
+    if (bossId == "") {
+      bossId = battle.players.get(0).user.username
+    }
   }
 
   suspend fun addBossKillsAndCheckKillStreak(tankId: String)

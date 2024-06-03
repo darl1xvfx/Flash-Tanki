@@ -16,13 +16,13 @@ class KillStreakParser : KoinComponent {
     private val resourceManager by inject<IResourceManager>()
 
     fun parse(locale: SocketLocale?): List<KillStreak> {
-        val newsFileName = when (locale) {
+        val fileName = when (locale) {
             SocketLocale.Russian -> "battle_resources/killstreaks_ru.json"
             SocketLocale.English -> "battle_resources/killstreaks_en.json"
             else -> "battle_resources/killstreaks_en.json"
         }
 
-        val jsonValue = resourceManager.get(newsFileName)
+        val jsonValue = resourceManager.get(fileName)
 
         val adapt: JsonAdapter<List<KillStreak>> = json.adapter(
             Types.newParameterizedType(List::class.java, KillStreak::class.java)

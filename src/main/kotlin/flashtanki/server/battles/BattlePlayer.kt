@@ -408,12 +408,14 @@ class BattlePlayer(
     }
   }
 
-  suspend fun changeEquipment() {
+  suspend fun changeEquipment(silent: Boolean=false) {
     val tank = tank ?: throw Exception("No Tank")
 
     Command(CommandName.BattlePlayerRemove, user.username).sendTo(battle)
     tank.initSelf()
-    Command(CommandName.EquipmentChanged, user.username).sendTo(battle)
+    if (!silent) {
+      Command(CommandName.EquipmentChanged, user.username).sendTo(battle)
+    }
   }
 
   suspend fun createTank(): BattleTank {
