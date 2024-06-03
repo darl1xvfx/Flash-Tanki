@@ -569,7 +569,8 @@ suspend fun initBattleList() {
           BattleLimit(battleMode = BattleMode.Deathmatch, scoreLimit = 999, timeLimitInSec = 59940),
           BattleLimit(battleMode = BattleMode.TeamDeathmatch, scoreLimit = 999, timeLimitInSec = 59940),
           BattleLimit(battleMode = BattleMode.CaptureTheFlag, scoreLimit = 999, timeLimitInSec = 59940),
-          BattleLimit(battleMode = BattleMode.ControlPoints, scoreLimit = 999, timeLimitInSec = 59940)
+          BattleLimit(battleMode = BattleMode.ControlPoints, scoreLimit = 999, timeLimitInSec = 59940),
+		  BattleLimit(battleMode = BattleMode.Juggernaut, scoreLimit = 999, timeLimitInSec = 59940)
         ),
         maps = mapsParsed,
         battleCreationDisabled = (user?.rank?.value ?: 1) < 3,

@@ -13,9 +13,7 @@ import flashtanki.server.battles.effect.TankEffect
 import flashtanki.server.battles.effect.toTankEffectData
 import flashtanki.server.battles.map.IMapRegistry
 import flashtanki.server.battles.map.getSkybox
-import flashtanki.server.battles.mode.DeathmatchModeHandler
-import flashtanki.server.battles.mode.TeamDeathmatchModeHandler
-import flashtanki.server.battles.mode.TeamModeHandler
+import flashtanki.server.battles.mode.*
 import flashtanki.server.battles.weapons.*
 import flashtanki.server.client.*
 import flashtanki.server.commands.Command
@@ -77,6 +75,7 @@ class BattlePlayer(
 
       when(battle.modeHandler) {
         is DeathmatchModeHandler -> Command(CommandName.ReleaseSlotDm, battle.id, user.username)
+		is JuggernautModeHandler -> Command(CommandName.ReleaseSlotDm, battle.id, user.username)
         is TeamModeHandler       -> Command(CommandName.ReleaseSlotTeam, battle.id, user.username)
         else                     -> throw IllegalStateException("Unknown battle mode: ${battle.modeHandler::class}")
       }.let { command ->
