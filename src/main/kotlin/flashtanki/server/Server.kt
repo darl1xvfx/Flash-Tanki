@@ -7,11 +7,8 @@ import flashtanki.server.battles.BattleTeam
 import flashtanki.server.battles.IBattleProcessor
 import flashtanki.server.battles.map.IMapRegistry
 import flashtanki.server.battles.map.get
-<<<<<<< HEAD
 import flashtanki.server.battles.mode.DeathmatchModeHandler
-=======
 import flashtanki.server.battles.mode.*
->>>>>>> cbd97c53a39606966b87ad2418df0d53edca9df9
 import flashtanki.server.bot.discord.CommandHandler
 import flashtanki.server.bot.discord.DiscordBot
 import flashtanki.server.bot.discord.autoResponsesHandlers
