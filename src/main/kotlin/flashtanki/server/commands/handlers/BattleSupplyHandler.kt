@@ -176,24 +176,40 @@ class BattleSupplyHandler : ICommandHandler, KoinComponent {
       }
     }
   }
-  
-@CommandHandler(CommandName.ActivateUltimate)
-suspend fun activateUltimate(socket: UserSocket) {
-    val user = socket.user ?: throw Exception("No User")
-    val player = socket.battlePlayer ?: throw Exception("No BattlePlayer")
-    val tank = player.tank ?: throw Exception("No Tank")
-    val battle = player.battle
-    Command(CommandName.ActivateUltimate2, user.username, "10013694").sendTo(battle)
-	
-    activateItem(socket, "health")
-    activateItem(socket, "armor")
-    activateItem(socket, "double_damage")
-    activateItem(socket, "n2o")
-    activateItem(socket, "mine")
-    
-    player.ultimateCharge = 0
-    tank.updateUltimateCharge()
-}
+
+    @CommandHandler(CommandName.ActivateUltimate)
+    suspend fun activateUltimate(socket: UserSocket) {
+        val user = socket.user ?: throw Exception("No User")
+        val player = socket.battlePlayer ?: throw Exception("No BattlePlayer")
+        val tank = player.tank ?: throw Exception("No Tank")
+        val battle = player.battle
+        val coroutineScope = CoroutineScope(player.coroutineScope.coroutineContext + SupervisorJob())
+
+        try {
+            Command(CommandName.ActivateUltimate2, user.username, "10013694").sendTo(battle)
+
+            coroutineScope.launch {
+                tank.effects.forEach { effect ->
+                    effect.deactivate()
+                }
+                tank.effects.clear()
+            }.join()
+
+            coroutineScope.cancel()
+
+            activateItem(socket, "health")
+            activateItem(socket, "armor")
+            activateItem(socket, "double_damage")
+            activateItem(socket, "n2o")
+            activateItem(socket, "mine")
+
+            player.ultimateCharge = 0
+            tank.updateUltimateCharge()
+        } finally {
+            coroutineScope.cancel()
+        }
+    }
+
 
 
 

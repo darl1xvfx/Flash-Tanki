@@ -34,31 +34,9 @@ import java.io.IOException
 import java.lang.reflect.InvocationTargetException
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.Iterable
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.MutableMap
-import kotlin.collections.all
-import kotlin.collections.any
-import kotlin.collections.associateBy
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.drop
-import kotlin.collections.filter
-import kotlin.collections.flatMap
-import kotlin.collections.forEach
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mapIndexed
-import kotlin.collections.mapOf
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
-import kotlin.collections.none
-import kotlin.collections.plusAssign
-import kotlin.collections.putAll
 import kotlin.collections.set
-import kotlin.collections.single
-import kotlin.collections.singleOrNull
 import kotlin.coroutines.CoroutineContext
 import kotlin.io.path.readText
 import kotlin.random.Random
@@ -67,6 +45,7 @@ import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
 
 suspend fun Command.send(socket: UserSocket) = socket.send(this)
 suspend fun Command.send(player: BattlePlayer) = player.socket.send(this)
@@ -258,7 +237,9 @@ class UserSocket(
       if (user.premium <= 0) {
         // Create the identifier for ServerGarageUserItemPaint
         val paintItemId = ServerGarageItemId(user, "premium")
-        val existingPaintItem = entityManager.find(ServerGarageUserItemPaint::class.java, paintItemId)
+        val existingPaintItem = withContext(Dispatchers.IO) {
+          entityManager.find(ServerGarageUserItemPaint::class.java, paintItemId)
+        }
 
         if (existingPaintItem == null) {
           //val paintItem = ServerGarageUserItemPaint(user, "premium")
@@ -459,6 +440,7 @@ class UserSocket(
     Command(CommandName.UpdateRating, Random.nextInt(1000, 9999).toString(), Random.nextInt(1000, 9999).toString(), Random.nextInt(1000, 9999).toString()).send(this)
   }
 
+  @OptIn(ExperimentalTime::class)
   suspend fun loadLobby() {
     Command(CommandName.StartLayoutSwitch, "BATTLE_SELECT").send(this)
 
@@ -517,6 +499,18 @@ class UserSocket(
 
     initChatMessages()
     initBattleList()
+
+    if(user.premium > 1){
+      val user = user ?: throw Exception("No User")
+      println("User Premium: ${user.premium}")
+      while(user.premium > 1 && user.premium != 1) {
+        delay(60.seconds)
+        user.premium -= 60
+        userRepository.updateUser(user)
+        println("Withdrawn 60 seconds User Premium: ${user.premium}")
+      }
+    }
+
   }
 
   suspend fun initClient() {

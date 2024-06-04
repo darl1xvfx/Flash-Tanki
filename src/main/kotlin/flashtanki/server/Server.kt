@@ -1,31 +1,12 @@
 package flashtanki.server
 
-import java.math.BigInteger
-import kotlin.coroutines.coroutineContext
-import kotlin.random.Random
-import kotlin.reflect.KClass
-import kotlin.time.Duration
-import com.squareup.moshi.Json
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import mu.KotlinLogging
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.reflections.Reflections
-import org.reflections.scanners.Scanners
-import flashtanki.server.extensions.launchDelayed
 import flashtanki.server.api.IApiServer
 import flashtanki.server.battles.Battle
 import flashtanki.server.battles.BattleProperty
 import flashtanki.server.battles.BattleTeam
 import flashtanki.server.battles.IBattleProcessor
-import flashtanki.server.battles.bonus.*
 import flashtanki.server.battles.map.IMapRegistry
 import flashtanki.server.battles.map.get
-import flashtanki.server.battles.mode.CaptureTheFlagModeHandler
 import flashtanki.server.battles.mode.DeathmatchModeHandler
 import flashtanki.server.bot.discord.CommandHandler
 import flashtanki.server.bot.discord.DiscordBot
@@ -36,28 +17,36 @@ import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandName
 import flashtanki.server.commands.ICommandHandler
 import flashtanki.server.commands.ICommandRegistry
-import flashtanki.server.commands.handlers.CtfBattleHandler
 import flashtanki.server.extensions.cast
 import flashtanki.server.extensions.toString
-import flashtanki.server.garage.IGarageMarketRegistry
-import flashtanki.server.garage.ServerGarageUserItemHull
-import flashtanki.server.garage.ServerGarageUserItemPaint
-import flashtanki.server.garage.ServerGarageUserItemResistance
-import flashtanki.server.garage.ServerGarageUserItemWeapon
+import flashtanki.server.garage.*
 import flashtanki.server.invite.IInviteRepository
 import flashtanki.server.invite.IInviteService
-import flashtanki.server.ipc.*
-import flashtanki.server.lobby.chat.*
-import flashtanki.server.math.Quaternion
-import flashtanki.server.math.Vector3
-import flashtanki.server.math.nextVector3
+import flashtanki.server.ipc.IProcessNetworking
+import flashtanki.server.ipc.ServerStartedMessage
+import flashtanki.server.ipc.ServerStartingMessage
+import flashtanki.server.ipc.send
+import flashtanki.server.lobby.chat.ILobbyChatManager
 import flashtanki.server.resources.IResourceServer
 import flashtanki.server.store.IStoreRegistry
+import kotlinx.coroutines.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import mu.KotlinLogging
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.reflections.Reflections
+import org.reflections.scanners.Scanners
+import java.math.BigInteger
+import kotlin.coroutines.coroutineContext
+import kotlin.reflect.KClass
 import kotlin.system.exitProcess
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
 
+@Suppress("NAME_SHADOWING")
 class Server : KoinComponent {
   private val logger = KotlinLogging.logger { }
 
@@ -79,6 +68,7 @@ class Server : KoinComponent {
 
   private var networkingEventsJob: Job? = null
 
+  @OptIn(ExperimentalTime::class)
   suspend fun run() {
     logger.info { "Starting server..." }
     processNetworking.run()
@@ -613,21 +603,7 @@ class Server : KoinComponent {
         handler {
           reply("Остановка сервера через 50 секунд...")
 
-          Command(CommandName.ShowServerStop).let { command ->
-            socketServer.players.forEach { player ->
-              player.send(
-                      command
-              )
-            }
-          }
-
-          delay(40000)
-          logger.info("Restart all battles...")
-          battleProcessor.battles.forEach { GlobalScope.launch { it.restart() } }
-
-          delay(10000)
-          logger.info("\u001B[31mServer stop!\u001B[0m")
-          exitProcess(0)
+          scheduleServerStop()
         }
       }
 
@@ -997,53 +973,49 @@ class Server : KoinComponent {
       }
     }
 
-// Initialize database
     HibernateUtils.createEntityManager().close()
 
-    // inviteRepository.createInvite("2112")
+    runBlocking {
+      coroutineScope {
 
-coroutineScope {
-	DiscordBot.run(
-          token = "MTI0MTA4NTEyMzY3NjYwMjQ4OA.G0EGAB.irlr4OKAZiEsMFK4X2PaUear7l8Lvqx4EDSslg",
-          discordCommandHandler = CommandHandler(),
-          autoResponsesHandlers = autoResponsesHandlers()
-        )
-      socketServer.run(this)
-      launch { resourceServer.run() }
-      launch { apiServer.run() }
+        socketServer.run(this)
+        launch { resourceServer.run() }
+        launch { apiServer.run() }
+        launch { DiscordBot.run("MTI0MTA4NTEyMzY3NjYwMjQ4OA.G0EGAB.irlr4OKAZiEsMFK4X2PaUear7l8Lvqx4EDSslg", CommandHandler(), autoResponsesHandlers()) }
 
-      ServerStartedMessage().send()
-      logger.info("Server started...")
+        ServerStartedMessage().send()
+        logger.info("Server started...")
 
-      logger.info("The server will be restarted in 1 hour...")
-      GlobalScope.launchDelayed(1.hours) {
-        logger.info("Server stops after 50 seconds...")
-        Command(CommandName.ShowServerStop).let { command ->
-          socketServer.players.forEach { player ->
-            player.send(
-                    command
-            )
+        launch {
+          while (isActive) {
+            logger.info("The server will be restarted in 24 hours...")
+            delay(24.hours)
+            scheduleServerStop()
           }
         }
-
-        delay(40000)
-        logger.info("Restart all battles...")
-        battleProcessor.battles.forEach { launch { it.restart() } }
-
-        delay(10000)
-        logger.info("Server stopped...")
-        launch { stop() }
-        launch { exitProcess(0) }
       }
     }
   }
-  suspend fun stop() {
-    coroutineScope {
-      launch { socketServer.stop() }
-      launch { resourceServer.stop() }
-      launch { apiServer.stop() }
-      launch { HibernateUtils.close() }
-      launch { exitProcess(0) }
+
+  @OptIn(ExperimentalTime::class)
+  suspend fun scheduleServerStop() {
+    runBlocking {
+      logger.info("Server stops after 50 seconds...")
+
+      Command(CommandName.ShowServerStop).let {
+        command -> socketServer.players.forEach {
+          player -> player.send(command) }
+      }
+
+      delay(40.seconds)
+      logger.info("Restart all battles...")
+      battleProcessor.battles.forEach {
+        launch { it.restart() }
+      }
+
+      delay(10.seconds)
+      logger.info("Server stopped...")
+      exitProcess(0)
     }
   }
 }
