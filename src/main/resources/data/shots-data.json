@@ -324,6 +324,21 @@
         "weakeningCoeff": 1
       }
     },
+
+    {
+      "auto_aiming_down": 0.15707963267948966,
+      "auto_aiming_up": 0.10471975511965978,
+      "num_rays_down": 72,
+      "num_rays_up": 48,
+      "reload": 4440,
+      "id": "railgun_terminator_m0",
+      "has_wwd": false,
+      "special_entity": {
+        "chargingTimeMsec": 1060,
+        "weakeningCoeff": 1
+      }
+    },
+
     {
       "auto_aiming_down": 0,
       "auto_aiming_up": 0,

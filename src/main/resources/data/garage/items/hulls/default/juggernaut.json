@@ -46,15 +46,15 @@
       ],
       "physics": {
         "speed": 18.00,
-        "turnSpeed": 3,
-        "acceleration": 10,
-        "reverseAcceleration": 13.26,
+        "turnSpeed": 2.617994,
+        "acceleration": 16.00,
+        "reverseAcceleration": 23.00,
         "sideAcceleration": 17.27,
-        "turnAcceleration": 2.968107,
-        "reverseTurnAcceleration": 5.0204396,
-        "damping": 900,
+        "turnAcceleration": 2.617994,
+        "reverseTurnAcceleration": 6.283185,
+        "damping": 3000,
         "mass": 5000,
-        "power": 10
+        "power": 1600
       }
     }
   }

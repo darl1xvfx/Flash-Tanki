@@ -66,7 +66,7 @@
         "kickback": 2.138
       },
       "visual": {
-        "$type": "railgun_xt",
+        "$type": "railgun_terminator",
         "chargingPart1": 114425,
         "chargingPart2": 468380,
         "chargingPart3": 932242,

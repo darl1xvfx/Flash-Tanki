@@ -24,6 +24,7 @@ class ShotHandler : ICommandHandler, KoinComponent {
     when(tank.weapon) {
       is RailgunWeaponHandler      -> tank.weapon.fireStart()
       is Railgun_XTWeaponHandler   -> tank.weapon.fireStart()
+      is Railgun_TERMINATORWeaponHandler   -> tank.weapon.fireStart()
       is IsidaWeaponHandler        -> tank.weapon.fireStart(args.getAs(0))
       is FlamethrowerWeaponHandler -> tank.weapon.fireStart(args.getAs(0))
       is FreezeWeaponHandler       -> tank.weapon.fireStart(args.getAs(0))
@@ -87,6 +88,7 @@ class ShotHandler : ICommandHandler, KoinComponent {
     when(tank.weapon) {
       is RailgunWeaponHandler      -> tank.weapon.fireTarget(args.getAs(0))
       is Railgun_XTWeaponHandler   -> tank.weapon.fireTarget(args.getAs(0))
+      is Railgun_TERMINATORWeaponHandler   -> tank.weapon.fireTarget(args.getAs(0))
       is ThunderWeaponHandler      -> tank.weapon.fireTarget(args.getAs(0))
       is SmokyWeaponHandler        -> tank.weapon.fireTarget(args.getAs(0))
       is TwinsWeaponHandler        -> tank.weapon.fireTarget(args.getAs(0))

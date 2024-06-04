@@ -50,6 +50,7 @@ class DamageProcessor(
       is ThunderWeaponHandler    -> "THUNDER_RESISTANCE"
       is RailgunWeaponHandler    -> "RAILGUN_RESISTANCE"
       is Railgun_XTWeaponHandler -> "RAILGUN_RESISTANCE"
+      is Railgun_TERMINATORWeaponHandler -> "RAILGUN_RESISTANCE"
       is ShaftWeaponHandler      -> "SHAFT_RESISTANCE"
       is IsidaWeaponHandler      -> "ISIS_RESISTANCE"
       is FreezeWeaponHandler     -> "FREEZE_RESISTANCE"

@@ -234,6 +234,7 @@ fun main(args: Array<String>) = object : CliktCommand() {
               .withSubtype(SmokyVisual::class.java, "smoky")
               .withSubtype(RailgunVisual::class.java, "railgun")
               .withSubtype(Railgun_XTVisual::class.java, "railgun_xt")
+              .withSubtype(Railgun_TERMINATORVisual::class.java, "railgun_terminator")
               .withSubtype(ThunderVisual::class.java, "thunder")
               .withSubtype(FlamethrowerVisual::class.java, "flamethrower")
               .withSubtype(FreezeVisual::class.java, "freeze")

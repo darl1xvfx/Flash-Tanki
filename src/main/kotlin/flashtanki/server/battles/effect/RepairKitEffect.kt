@@ -15,7 +15,7 @@ import kotlin.time.ExperimentalTime
 class RepairKitEffect(
     tank: BattleTank,
     private var isActive: Boolean = false,
-    private val forceDuration: Duration? = null,
+    forceDuration: Duration? = null,
 ) : TankEffect(
     tank,
     duration = forceDuration ?: calculateHealingDuration(tank),

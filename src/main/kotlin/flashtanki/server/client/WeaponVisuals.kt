@@ -92,6 +92,23 @@ class Railgun_XTVisual(
   bcsh: List<WeaponVisualColor>
 ) : WeaponVisual(lighting, bcsh)
 
+class Railgun_TERMINATORVisual(
+  @Json val chargingPart1: Int,
+  @Json val chargingPart2: Int,
+  @Json val chargingPart3: Int,
+
+  @Json val hitMarkTexture: Int,
+  @Json val powTexture: Int,
+  @Json val ringsTexture: Int,
+  @Json val shotSound: Int,
+  @Json val smokeImage: Int,
+  @Json val sphereTexture: Int,
+  @Json val trailImage: Int,
+
+  lighting: List<WeaponLightningGroup>,
+  bcsh: List<WeaponVisualColor>
+) : WeaponVisual(lighting, bcsh)
+
 class ThunderVisual(
   @Json val explosionMarkTexture: Int,
   @Json val explosionSize: Int,
