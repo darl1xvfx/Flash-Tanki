@@ -112,6 +112,7 @@ class LobbyHandler : ICommandHandler, KoinComponent {
       if(!player.isSpectator) {
         when(battle.modeHandler) {
           is DeathmatchModeHandler -> Command(CommandName.ReserveSlotDm, battle.id, player.user.username)
+		  is JuggernautModeHandler -> Command(CommandName.ReserveSlotDm, battle.id, player.user.username)
           is TeamModeHandler       -> Command(CommandName.ReserveSlotTeam, battle.id, player.user.username, team.key)
           else                     -> throw IllegalStateException("Unknown battle mode: ${battle.modeHandler::class}")
         }.let { command ->
@@ -143,6 +144,7 @@ class LobbyHandler : ICommandHandler, KoinComponent {
         Command(
           when(battle.modeHandler) {
             is DeathmatchModeHandler -> CommandName.AddBattlePlayerDm
+			is JuggernautModeHandler -> CommandName.AddBattlePlayerDm
             is TeamModeHandler       -> CommandName.AddBattlePlayerTeam
             else                     -> throw IllegalStateException("Unknown battle mode: ${battle.modeHandler::class}")
           },
@@ -408,6 +410,7 @@ class LobbyHandler : ICommandHandler, KoinComponent {
       BattleMode.TeamDeathmatch -> TeamDeathmatchModeHandler.builder()
       BattleMode.CaptureTheFlag -> CaptureTheFlagModeHandler.builder()
       BattleMode.ControlPoints -> ControlPointsModeHandler.builder()
+	  BattleMode.Juggernaut -> JuggernautModeHandler.builder()
     }
 
     // TODO(Assasans): Advanced map configuration

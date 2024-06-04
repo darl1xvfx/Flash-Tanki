@@ -13,6 +13,7 @@ import flashtanki.server.exceptions.UnknownCommandException
 import flashtanki.server.garage.*
 import flashtanki.server.invite.IInviteService
 import flashtanki.server.invite.Invite
+import flashtanki.server.battles.killstreak.*
 import flashtanki.server.lobby.chat.ILobbyChatManager
 import flashtanki.server.news.NewsLoader
 import flashtanki.server.news.ServerNewsData
@@ -563,7 +564,8 @@ suspend fun initBattleList() {
           BattleLimit(battleMode = BattleMode.Deathmatch, scoreLimit = 999, timeLimitInSec = 59940),
           BattleLimit(battleMode = BattleMode.TeamDeathmatch, scoreLimit = 999, timeLimitInSec = 59940),
           BattleLimit(battleMode = BattleMode.CaptureTheFlag, scoreLimit = 999, timeLimitInSec = 59940),
-          BattleLimit(battleMode = BattleMode.ControlPoints, scoreLimit = 999, timeLimitInSec = 59940)
+          BattleLimit(battleMode = BattleMode.ControlPoints, scoreLimit = 999, timeLimitInSec = 59940),
+		  BattleLimit(battleMode = BattleMode.Juggernaut, scoreLimit = 999, timeLimitInSec = 59940)
         ),
         maps = mapsParsed,
         battleCreationDisabled = (user?.rank?.value ?: 1) < 3,
@@ -1107,6 +1109,10 @@ class TeamBattleData(
 
 data class InitBattleSelectData(
   @Json val battles: List<BattleData>
+)
+
+data class KillStreaksData(
+  @Json val killStreaks: List<KillStreak>
 )
 
 data class ShowBonusesPresentData(

@@ -72,7 +72,8 @@ enum class BattleMode(val key: String, val id: Int) {
   Deathmatch("DM", 1),
   TeamDeathmatch("TDM", 2),
   CaptureTheFlag("CTF", 3),
-  ControlPoints("CP", 4);
+  ControlPoints("CP", 4),
+  Juggernaut("JGR", 5);
 
   companion object {
     private val map = values().associateBy(BattleMode::key)
@@ -401,6 +402,22 @@ suspend fun createBonusRegions(socket: UserSocket) {
               timeLeft = timeLeft?.inWholeSeconds?.toInt() ?: 0,
         users = players.users().map { player -> player.user.username },
       )
+	  
+	  is JuggernautModeHandler -> DmBattleData(
+        battleId = id,
+        battleMode = modeHandler.mode,
+        map = map.name,
+        name = title,
+        proBattle = properties[BattleProperty.ProBattle],
+        privateBattle = properties[BattleProperty.privateBattle],
+        maxPeople = properties[BattleProperty.MaxPeople],
+        minRank = properties[BattleProperty.MinRank],
+        maxRank = properties[BattleProperty.MaxRank],
+        preview = map.preview,
+        parkourMode = properties[BattleProperty.ParkourMode],
+              timeLeft = timeLeft?.inWholeSeconds?.toInt() ?: 0,
+        users = players.users().map { player -> player.user.username },
+      )
 
       is TeamModeHandler       -> TeamBattleData(
         battleId = id,
@@ -436,6 +453,28 @@ suspend fun createBonusRegions(socket: UserSocket) {
   suspend fun showInfoFor(socket: UserSocket) {
     val info = when(modeHandler) {
       is DeathmatchModeHandler -> ShowDmBattleInfoData(
+        itemId = id,
+        battleMode = modeHandler.mode,
+        scoreLimit = properties[BattleProperty.ScoreLimit],
+        timeLimitInSec = properties[BattleProperty.TimeLimit],
+        timeLeftInSec = timeLeft?.inWholeSeconds?.toInt() ?: 0,
+        preview = map.preview,
+        maxPeopleCount = properties[BattleProperty.MaxPeople],
+        name = title,
+        proBattle = properties[BattleProperty.ProBattle],
+
+        minRank = properties[BattleProperty.MinRank],
+        maxRank = properties[BattleProperty.MaxRank],
+        spectator = socket.user?.permissions?.any(Permissions.Moderator.toBitfield().plus(Permissions.Superuser.toBitfield())) ?: false,
+        withoutBonuses = properties[BattleProperty.WithoutBonuses],
+        withoutCrystals = properties[BattleProperty.WithoutCrystals],
+        withoutSupplies = properties[BattleProperty.WithoutSupplies],
+        reArmorEnabled = properties[BattleProperty.RearmingEnabled],
+        parkourMode = properties[BattleProperty.ParkourMode],
+        users = players.users().map { player -> BattleUser(user = player.user.username, kills = player.kills, score = player.score) },
+      ).toJson()
+	  
+	  is JuggernautModeHandler -> ShowDmBattleInfoData(
         itemId = id,
         battleMode = modeHandler.mode,
         scoreLimit = properties[BattleProperty.ScoreLimit],

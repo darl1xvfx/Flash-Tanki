@@ -94,6 +94,7 @@ class BattleChatHandler : ICommandHandler, KoinComponent {
       message = content,
       team = when (battle.modeHandler.mode) {
         BattleMode.Deathmatch -> false
+        BattleMode.Juggernaut -> false
         else -> isTeam
       },
       chat_level = user.chatModerator,

@@ -7,7 +7,11 @@ import flashtanki.server.battles.BattleTeam
 import flashtanki.server.battles.IBattleProcessor
 import flashtanki.server.battles.map.IMapRegistry
 import flashtanki.server.battles.map.get
+<<<<<<< HEAD
 import flashtanki.server.battles.mode.DeathmatchModeHandler
+=======
+import flashtanki.server.battles.mode.*
+>>>>>>> cbd97c53a39606966b87ad2418df0d53edca9df9
 import flashtanki.server.bot.discord.CommandHandler
 import flashtanki.server.bot.discord.DiscordBot
 import flashtanki.server.bot.discord.autoResponsesHandlers
@@ -91,14 +95,14 @@ class Server : KoinComponent {
     val battle = Battle(
             coroutineContext,
             id = Battle.generateId(),
-            title = "For Newbies DM Mode",
+            title = "For Newbies JGR Mode",
             map = mapRegistry.get("map_sandbox", ServerMapTheme.SummerDay),
-            modeHandlerBuilder = DeathmatchModeHandler.builder()
+            modeHandlerBuilder = JuggernautModeHandler.builder()
     )
 
     battle.properties[BattleProperty.TimeLimit] = 900
     battle.properties[BattleProperty.MaxPeople] = 8
-    battle.properties[BattleProperty.MaxRank] = UserRank.StaffSergeant.value
+    battle.properties[BattleProperty.MaxRank] = UserRank.Generalissimo.value
 
     battleProcessor.battles.add(battle)
     promoCodeService.initPromoCodes()

@@ -15,9 +15,10 @@ import kotlin.time.ExperimentalTime
 class RepairKitEffect(
     tank: BattleTank,
     private var isActive: Boolean = false,
+    private val forceDuration: Duration? = null,
 ) : TankEffect(
     tank,
-    duration = calculateHealingDuration(tank),
+    duration = forceDuration ?: calculateHealingDuration(tank),
     cooldown = 20.seconds
 ) {
     private var totalHealing = 0.0
@@ -35,27 +36,36 @@ class RepairKitEffect(
         val battle = tank.battle
         val damageProcessor = battle.damageProcessor
 
-        // Continuous healing of 300 HP per second
+
         if (duration == null) return
 
         tank.coroutineScope.launch {
             val startTime = Clock.System.now()
             val endTime = startTime + duration
-            while (Clock.System.now() < endTime && isActive) {
-                delay(1000)  // Heal every second
+            var extraHealTime = 2.0.seconds
+            while (Clock.System.now() < endTime + extraHealTime && isActive) {
+                delay(1000)
                 if (tank.health < maxHealth) {
                     val remainingHealAmount = minOf(300.0, maxHealth - tank.health)
                     if (remainingHealAmount > 0) {
-                        damageProcessor.heal(tank, 300.0)  // Always heal 300 HP per second
+                        damageProcessor.heal(tank, 300.0)
                         Command(CommandName.DamageTank, tank.id, "300", DamageType.Heal.key).send(tank)
                         totalHealing += 300.0
                     } else {
+
+                        extraHealTime -= 1.seconds
+                        if (extraHealTime <= 0.seconds) {
+                            deactivated()
+                            break
+                        }
+                    }
+                } else {
+
+                    extraHealTime -= 1.seconds
+                    if (extraHealTime <= 0.seconds) {
                         deactivated()
                         break
                     }
-                } else {
-                    deactivated()
-                    break
                 }
             }
         }
@@ -69,7 +79,7 @@ class RepairKitEffect(
         private fun calculateHealingDuration(tank: BattleTank): Duration {
             val maxHealth = tank.hull.modification.maxHealth
             val currentHealth = tank.health
-            val totalHealingNeeded = maxHealth - currentHealth  // No initial healing, so no subtraction
+            val totalHealingNeeded = maxHealth - currentHealth
             val healingRatePerSecond = 300.0
 
             val durationInSeconds = if (totalHealingNeeded > 0) {
@@ -77,7 +87,8 @@ class RepairKitEffect(
             } else {
                 0.seconds
             }
-            return durationInSeconds
+
+            return durationInSeconds + 2.0.seconds
         }
     }
 }

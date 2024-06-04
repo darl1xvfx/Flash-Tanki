@@ -7,11 +7,9 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import flashtanki.server.ISocketServer
 import flashtanki.server.battles.effect.TankEffect
-import flashtanki.server.battles.mode.CaptureTheFlagModeHandler
-import flashtanki.server.battles.mode.FlagCarryingState
-import flashtanki.server.battles.mode.TeamDeathmatchModeHandler
-import flashtanki.server.battles.mode.TeamModeHandler
+import flashtanki.server.battles.mode.*
 import flashtanki.server.battles.weapons.WeaponHandler
+import kotlin.time.Duration.Companion.seconds
 import flashtanki.server.client.*
 import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandName
@@ -22,6 +20,7 @@ import flashtanki.server.math.Quaternion
 import flashtanki.server.math.Vector3
 import flashtanki.server.math.distanceTo
 import flashtanki.server.quests.KillEnemyQuest
+import flashtanki.server.extensions.launchDelayed
 import flashtanki.server.quests.questOf
 import flashtanki.server.toVector
 
@@ -105,7 +104,6 @@ class BattleTank(
         handler.dropFlag(flag.team, this, position)
       }
     }
-    Command(CommandName.BossKilled).send(battle.players.ready())
     Command(CommandName.KillLocalTank).send(socket)
   }
 
@@ -120,11 +118,31 @@ class BattleTank(
       killer.weapon.item.mountName.substringBeforeLast("_")
     ).sendTo(battle)
 
+    if (battle.modeHandler is JuggernautModeHandler && battle.modeHandler.mode == BattleMode.Juggernaut)
+    {
+      val mh = (battle.modeHandler as JuggernautModeHandler)
+      mh.addBossKillsAndCheckKillStreak(killer.player.user.username)
+      if (mh.bossId == player.user.username)
+      {
+        mh.bossId = killer.player.user.username
+        mh.bossKills = 0
+        Command(CommandName.BossKilled).send(battle.players.ready())
+        Command(CommandName.BattleMessage, 0xFF00.toString(), "Ты следующий Джаггернаут, приготовься!").send(killer)
+        killer.selfDestructing = true
+        killer.coroutineScope.launchDelayed(3.seconds) {
+          killer.selfDestructing = false
+          killer.selfDestruct(silent = true)
+        }
+      }
+    }
+
     killer.player.kills = when {
       id == killer.id && killer.player.kills > 0 -> killer.player.kills - 1
       id != killer.id                            -> killer.player.kills + 1
       else                                       -> killer.player.kills
     }
+
+
 
     if(killer.id != id && battle.players.count { it.team == player.team.opposite } != 0 && !battle.properties[BattleProperty.ParkourMode]) {
       val fund = when(player.user.rank.value) {
@@ -206,7 +224,6 @@ class BattleTank(
   suspend fun selfDestruct(silent: Boolean = false) {
     if(state == TankState.Dead) return
     killSelf()
-
     if(silent) {
       Command(CommandName.KillTankSilent, id).sendTo(battle)
     } else {
@@ -224,13 +241,23 @@ class BattleTank(
         if(handler !is TeamDeathmatchModeHandler) return
         handler.decreaseScore(player)
       }
+      if (battle.modeHandler is JuggernautModeHandler && battle.modeHandler.mode == BattleMode.Juggernaut)
+      {
+        val mh = (battle.modeHandler as JuggernautModeHandler)
+        if (mh.bossId == player.user.username)
+        {
+          mh.bossId = ""
+          mh.bossKills = 0
+          Command(CommandName.BossKilled).send(battle.players.ready())
+        }
+      }
     }
   }
 
   fun updateSpawnPosition() {
     // TODO(Assasans): Special handling for CP: https://web.archive.org/web/20160310101712/http://ru.tankiwiki.com/%D0%9A%D0%BE%D0%BD%D1%82%D1%80%D0%BE%D0%BB%D1%8C_%D1%82%D0%BE%D1%87%D0%B5%D0%BA
     val point = battle.map.spawnPoints
-      .filter { point -> point.mode == null || point.mode == battle.modeHandler.mode }
+      .filter { point -> point.mode == null || point.mode == if (battle.modeHandler.mode != BattleMode.Juggernaut) battle.modeHandler.mode else BattleMode.Deathmatch }
       .filter { point -> point.team == null || point.team == player.team }
       .random()
     position = point.position.toVector()
@@ -249,14 +276,14 @@ class BattleTank(
   }
   
   suspend fun updateUltimateCharge() {
-    while (player.ultimateCharge < 100) {
+    /*while (player.ultimateCharge < 100) {
 	   delay(1000)
 	   Command(CommandName.AddUltimateCharge, 1.toString()).send(this)
 	   player.ultimateCharge++
 	   if (player.ultimateCharge >= 100) {
 	      Command(CommandName.ShowUltimateCharged, id).send(this)
 	   }
-	}
+	}*/
   }
 
   suspend fun initSelf() {
@@ -276,13 +303,24 @@ class BattleTank(
     }
 
     updateHealth()
-	
-	Command(CommandName.BossChanged, id).send(battle.players.ready())
 
     Command(
       CommandName.SpawnTank,
       getSpawnTank().toJson()
     ).send(battle.players.ready())
+	
+	if (battle.modeHandler is JuggernautModeHandler && battle.modeHandler.mode == BattleMode.Juggernaut)
+	{
+	    val mh = (battle.modeHandler as JuggernautModeHandler)
+	    if (mh.bossId == player.user.username) {
+          Command(CommandName.BossChanged, mh.bossId).send(battle.players.ready())
+        } else {
+          if (mh.bossId == "") {
+            mh.bossId = player.user.username
+            Command(CommandName.BossChanged, mh.bossId).send(battle.players.ready())
+          }
+        }
+	}
   }
 
   suspend fun updateHealth() {
