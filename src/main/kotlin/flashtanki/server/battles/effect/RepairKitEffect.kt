@@ -16,11 +16,10 @@ class RepairKitEffect(
     private var isActive: Boolean = false
 ) : TankEffect(
     tank,
-    duration = (4000.0 / 200.0 * 0.5).seconds,
+    duration = 2.seconds,
     cooldown = 20.seconds
 ) {
     private var totalHealing = 0.0
-    private var showVisualEffect = true
 
     override val info: EffectInfo
         get() = EffectInfo(
@@ -30,8 +29,7 @@ class RepairKitEffect(
 
     override suspend fun activate() {
         val maxHealth = tank.hull.modification.maxHealth
-        val totalHealAmount = 4000.0
-        val healInterval = 500.0
+        val healInterval = 100.0
         val healPerInterval = 200.0
 
         isActive = true
@@ -44,24 +42,18 @@ class RepairKitEffect(
             val startTime = Clock.System.now()
             val endTime = startTime + duration
 
-            while (Clock.System.now() < endTime && isActive && totalHealing < totalHealAmount) {
+            while (Clock.System.now() < endTime && isActive) {
                 delay(healInterval.toLong())
-                val remainingHealAmount = minOf(healPerInterval, totalHealAmount - totalHealing)
-
                 if (tank.health < maxHealth) {
-                    damageProcessor.heal(tank, remainingHealAmount)
-                    if (!showVisualEffect) {
-                        showVisualEffect = true
+                    val remainingHealAmount = minOf(healPerInterval, maxHealth - tank.health)
+                    damageProcessor.heal(tank, healPerInterval)
+                    if (tank.health < maxHealth) {
+                        Command(CommandName.DamageTank, tank.id, remainingHealAmount.toString(), DamageType.Heal.key).send(tank)
                     }
-                    Command(CommandName.DamageTank, tank.id, remainingHealAmount.toString(), DamageType.Heal.key).send(tank)
-                    totalHealing += remainingHealAmount
+                    totalHealing += healPerInterval
                 } else {
-                    if (showVisualEffect) {
-                        showVisualEffect = false
-                    }
-                    damageProcessor.heal(tank, remainingHealAmount)
-
-                    totalHealing += remainingHealAmount
+                    damageProcessor.heal(tank, healPerInterval)
+                    totalHealing += healPerInterval
                 }
             }
             deactivated()
@@ -70,6 +62,5 @@ class RepairKitEffect(
 
     private fun deactivated() {
         isActive = false
-        showVisualEffect = true
     }
 }
