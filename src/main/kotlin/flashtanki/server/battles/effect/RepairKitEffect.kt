@@ -13,11 +13,11 @@ import kotlin.time.Duration.Companion.seconds
 
 class RepairKitEffect(
     tank: BattleTank,
-    private var isActive: Boolean = false
+    private var isActive: Boolean = false,
 ) : TankEffect(
     tank,
-    duration = 2.seconds,
-    cooldown = 20.seconds
+    duration = calculateHealingDuration(tank),
+    cooldown = 20.seconds // 20 sec
 ) {
     private var totalHealing = 0.0
 
@@ -31,6 +31,7 @@ class RepairKitEffect(
         val maxHealth = tank.hull.modification.maxHealth
         val healInterval = 100.0
         val healPerInterval = 200.0
+        val extraHealingDuration = 5.seconds
 
         isActive = true
         val battle = tank.battle
@@ -42,25 +43,49 @@ class RepairKitEffect(
             val startTime = Clock.System.now()
             val endTime = startTime + duration
 
-            while (Clock.System.now() < endTime && isActive) {
+            while (isActive) {
                 delay(healInterval.toLong())
+                println("Tank health: ${tank.health}, Max health: $maxHealth")
                 if (tank.health < maxHealth) {
-                    val remainingHealAmount = minOf(healPerInterval, maxHealth - tank.health)
                     damageProcessor.heal(tank, healPerInterval)
-                    if (tank.health < maxHealth) {
-                        Command(CommandName.DamageTank, tank.id, remainingHealAmount.toString(), DamageType.Heal.key).send(tank)
-                    }
+                    Command(CommandName.DamageTank, tank.id, healPerInterval.toString(), DamageType.Heal.key).send(tank)
                     totalHealing += healPerInterval
+                } else if (!isActive) {
+                    break
                 } else {
-                    damageProcessor.heal(tank, healPerInterval)
-                    totalHealing += healPerInterval
+                    val extraEndTime = Clock.System.now() + extraHealingDuration
+                    while (Clock.System.now() < extraEndTime && isActive) {
+                        delay(healInterval.toLong())
+                        if (tank.health < maxHealth) {
+                            damageProcessor.heal(tank, healPerInterval)
+                            Command(CommandName.DamageTank, tank.id, healPerInterval.toString(), DamageType.Heal.key).send(tank)
+                            totalHealing += healPerInterval
+                        }
+                    }
+                    if (isActive) deactivated()
+                    break
                 }
             }
-            deactivated()
         }
     }
 
     private fun deactivated() {
         isActive = false
+    }
+
+    companion object {
+        private fun calculateHealingDuration(tank: BattleTank): Duration {
+            val maxHealth = tank.hull.modification.maxHealth
+            val currentHealth = tank.health
+            val totalHealingNeeded = maxHealth - currentHealth
+            val healingRatePerSecond = 200.0
+
+            val durationInSeconds = if (totalHealingNeeded > 0) {
+                (totalHealingNeeded / healingRatePerSecond).seconds
+            } else {
+                0.seconds
+            }
+            return durationInSeconds
+        }
     }
 }
