@@ -274,16 +274,21 @@ class BattleTank(
       "${position.x}@${position.y}@${position.z}@${orientation.toEulerAngles().z}"
     ).send(this)
   }
-  
+
   suspend fun updateUltimateCharge() {
-    /*while (player.ultimateCharge < 100) {
-	   delay(1000)
-	   Command(CommandName.AddUltimateCharge, 1.toString()).send(this)
-	   player.ultimateCharge++
-	   if (player.ultimateCharge >= 100) {
-	      Command(CommandName.ShowUltimateCharged, id).send(this)
-	   }
-	}*/
+    while (player.ultimateCharge < 100) {
+      val remainingChargeToAdd = 100 - player.ultimateCharge
+      val chargeToAdd = minOf(remainingChargeToAdd, 1)
+
+      delay(1000)
+      Command(CommandName.AddUltimateCharge, chargeToAdd.toString()).send(this)
+
+      player.ultimateCharge += chargeToAdd
+    }
+
+    if (player.ultimateCharge >= 100) {
+      Command(CommandName.ShowUltimateCharged, id).send(this)
+    }
   }
 
   suspend fun initSelf() {
