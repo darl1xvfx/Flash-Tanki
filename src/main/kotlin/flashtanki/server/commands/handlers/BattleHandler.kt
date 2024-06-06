@@ -63,26 +63,6 @@ class BattleHandler : ICommandHandler, KoinComponent {
 
     if(tank.state != TankState.SemiActive && tank.state !== TankState.Active) {
       logger.warn { "Invalid tank state for movement: ${tank.state}" }
-
-      // Rollback move
-      /*
-      Command(
-        CommandName.ClientFullMove,
-        json.adapter(ClientFullMoveData::class.java).toJson(
-          ClientFullMoveData(
-            tankId = tank.id,
-            physTime = data.physTime + 299,
-            control = 0,
-            specificationID = 0,
-            position = tank.position.toVectorData(),
-            linearVelocity = Vector3Data(),
-            orientation = tank.orientation.toEulerAngles().toVectorData(),
-            angularVelocity = Vector3Data(),
-            turretDirection = 0.0
-          )
-        )
-      ).send(socket)
-      */
     }
 
     tank.position.copyFrom(data.position.toVector())
@@ -184,7 +164,7 @@ class BattleHandler : ICommandHandler, KoinComponent {
     newTank.position = tank.position
     newTank.orientation = tank.orientation
     newTank.health = newTank.hull.modification.maxHealth
-
+    delay(1000)
     newTank.spawn()
 
     delay(3000)
