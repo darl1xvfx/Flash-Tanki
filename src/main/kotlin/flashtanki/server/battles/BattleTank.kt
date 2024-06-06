@@ -121,7 +121,9 @@ class BattleTank(
     if (battle.modeHandler is JuggernautModeHandler && battle.modeHandler.mode == BattleMode.Juggernaut)
     {
       val mh = (battle.modeHandler as JuggernautModeHandler)
-      mh.addBossKillsAndCheckKillStreak(killer.player.user.username)
+      if (killer.player.user.username != player.user.username) {
+        mh.addBossKillsAndCheckKillStreak(killer.player.user.username)
+      }
       if (mh.bossId == player.user.username)
       {
         mh.bossId = killer.player.user.username
