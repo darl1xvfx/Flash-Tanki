@@ -278,16 +278,20 @@ class BattleTank(
   }
 
   suspend fun updateUltimateCharge() {
+    val chargeToAdd = 1
+    val delayTime = 1000L
+    var chargeAccumulator = 0
+
     while (player.ultimateCharge < 100) {
       val initialCharge = player.ultimateCharge
-      val chargeToAdd = 1
-      val delayTime = 1000L
 
       delay(delayTime)
-      player.ultimateCharge += chargeToAdd
+      chargeAccumulator += chargeToAdd
+      player.ultimateCharge = (initialCharge + chargeAccumulator).coerceAtMost(100)
 
       if (player.ultimateCharge != initialCharge) {
-        Command(CommandName.AddUltimateCharge, chargeToAdd.toString()).send(this)
+        Command(CommandName.AddUltimateCharge, chargeAccumulator.toString()).send(this)
+        chargeAccumulator = 0
       }
     }
 
