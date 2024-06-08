@@ -282,7 +282,7 @@ class BattleTank(
     val delayTime = 1000L
     var chargeAccumulator = 0
 
-    while (player.ultimateCharge < 100) {
+    while (player.ultimateCharge < 100 && player.isActive) {
       val initialCharge = player.ultimateCharge
 
       delay(delayTime)

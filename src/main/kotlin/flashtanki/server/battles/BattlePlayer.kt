@@ -65,6 +65,8 @@ class BattlePlayer(
 
   var equipmentChanged: Boolean = false
 
+  var isActive: Boolean = false
+
   suspend fun deactivate(terminate: Boolean = false) {
     tank?.deactivate(terminate)
     coroutineScope.cancel()
@@ -114,6 +116,9 @@ class BattlePlayer(
           .filter { player -> player.active }
           .forEach { player -> command.send(player) }
       }
+      isActive = false
+      Command(CommandName.AddUltimateCharge, ("-" + ultimateCharge).toString()).send(socket)
+      ultimateCharge = 0
     }
   }
 
@@ -290,7 +295,7 @@ class BattlePlayer(
         mines = battle.mineProcessor.mines.values.map(BattleMine::toAddMine)
       ).toJson()
     ).send(socket)
-
+    isActive = true
     // Init self tank to another players
     if(!isSpectator) {
       val tank = tank ?: throw Exception("No Tank")
