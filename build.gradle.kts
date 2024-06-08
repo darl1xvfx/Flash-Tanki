@@ -34,6 +34,7 @@ dependencies {
   implementation("io.ktor:ktor-client-core:2.0.0-beta-1")
   implementation("io.ktor:ktor-client-cio:2.0.0-beta-1")
   implementation("io.ktor:ktor-client-websockets:2.0.0-beta-1")
+  implementation("io.ktor:ktor-server-auth:2.0.0-beta-1")
 
   val koinVersion = "3.1.5"
 

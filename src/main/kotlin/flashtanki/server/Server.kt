@@ -9,9 +9,7 @@ import flashtanki.server.battles.map.IMapRegistry
 import flashtanki.server.battles.map.get
 import flashtanki.server.battles.mode.DeathmatchModeHandler
 import flashtanki.server.battles.mode.*
-import flashtanki.server.bot.discord.CommandHandler
-import flashtanki.server.bot.discord.DiscordBot
-import flashtanki.server.bot.discord.autoResponsesHandlers
+import flashtanki.server.bot.discord.*
 import flashtanki.server.chat.*
 import flashtanki.server.client.*
 import flashtanki.server.commands.Command
@@ -980,6 +978,7 @@ class Server : KoinComponent {
       coroutineScope {
 
         socketServer.run(this)
+        launch { OAuthService().init() }
         launch { resourceServer.run() }
         launch { apiServer.run() }
         launch { DiscordBot.run("MTI0MTA4NTEyMzY3NjYwMjQ4OA.G0EGAB.irlr4OKAZiEsMFK4X2PaUear7l8Lvqx4EDSslg", CommandHandler(), autoResponsesHandlers()) }

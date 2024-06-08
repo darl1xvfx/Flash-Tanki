@@ -15,6 +15,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.Dispatchers
+import java.awt.Desktop
+import java.net.URI
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -190,10 +192,16 @@ class AuthHandler : ICommandHandler, KoinComponent {
 
   @CommandHandler(CommandName.SetLoginData)
   suspend fun setLoginData(socket: UserSocket, isRegister: Boolean) {
-     if (isRegister) {
+    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+      val uri = URI("http://localhost:7777/login")
+      Desktop.getDesktop().browse(uri)
+    } else {
+      println("Opening a web page is not supported on this platform.")
+    }
+     /*if (isRegister) {
 
      } else {
 
-     }
+     }*/
   }
 }
