@@ -133,6 +133,7 @@ class UserSocket(
   var weaponDelayMount = 0
   var hullDelayMount = 0
   var colormapDelayMount = 0
+  var snId: String = "none"
 
   var sentAuthResources: Boolean = false
 

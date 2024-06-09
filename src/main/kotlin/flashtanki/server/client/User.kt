@@ -72,7 +72,7 @@ interface IUserRepository {
   suspend fun getUser(username: String): User?
   suspend fun getUserByHash(hash: String): User?
   suspend fun getUserCount(): Long
-  suspend fun createUser(username: String, password: String): User?
+  suspend fun createUser(username: String, password: String, snId: String): User?
   suspend fun updateUser(user: User)
 }
 
@@ -125,7 +125,7 @@ class UserRepository : IUserRepository {
       .singleResult
   }
 
-  override suspend fun createUser(username: String, password: String): User? = withContext(Dispatchers.IO) {
+  override suspend fun createUser(username: String, password: String, snId: String): User? = withContext(Dispatchers.IO) {
     val entityManager = entityManager
     getUser(username)?.let { return@withContext null }
 
@@ -144,6 +144,7 @@ class UserRepository : IUserRepository {
       items = mutableListOf(),
       dailyQuests = mutableListOf(),
       hash = md5(username + ":" + password),
+      snId = snId,
       currentQuestLevel = 0,
       currentQuestStreak = 0,
       canSkipQuestForFree = false
@@ -217,7 +218,8 @@ class UserRepository : IUserRepository {
   name = "users",
   indexes = [
     Index(name = "idx_users_username", columnList = "username"),
-    Index(name = "idx_users_hash", columnList = "hash")
+    Index(name = "idx_users_hash", columnList = "hash"),
+    Index(name = "idx_users_snId", columnList = "snId")
   ]
 )
 class User(
@@ -241,6 +243,8 @@ class User(
   val dailyQuests: MutableList<ServerDailyQuest>,
 
   @Column(nullable = false, unique = true, length = 64) var hash: String,
+
+  @Column(nullable = false, unique = true, length = 64) var snId: String,
 
   @Column(nullable = false) var   currentQuestLevel: Int,
 

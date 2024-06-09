@@ -171,7 +171,7 @@ class AuthHandler : ICommandHandler, KoinComponent {
 
     logger.debug { "Register user: [ Invite = '${socket.invite?.code}', Username = '$username', Password = '$password', Captcha = ${if(captcha.isEmpty()) "*none*" else "'${captcha}'"} ]" }
 
-    val user = userRepository.createUser(username, password)
+    val user = userRepository.createUser(username, password, "none")
                ?: TODO("User exists")
 
     if(inviteService.enabled && invite != null) {
@@ -193,15 +193,24 @@ class AuthHandler : ICommandHandler, KoinComponent {
   @CommandHandler(CommandName.SetLoginData)
   suspend fun setLoginData(socket: UserSocket, isRegister: Boolean) {
     if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-      val uri = URI("http://localhost:7777/login")
+      val uri = URI("http://localhost:7777/oauth/discord/redirect")
       Desktop.getDesktop().browse(uri)
-    } else {
-      println("Opening a web page is not supported on this platform.")
     }
-     /*if (isRegister) {
+    if (isRegister) {
+      Command(CommandName.ExternalModelValidationSuccess).send(socket)
+    } else {
 
-     } else {
+    }
+  }
 
-     }*/
+  @CommandHandler(CommandName.RegisterViaDiscord)
+  suspend fun registerViaDiscord(socket: UserSocket, name: String) {
+    val user = userRepository.createUser(name, userRepository.md5(name + name + name + name + name), socket.snId)
+      ?: TODO("User exists")
+
+    userSubscriptionManager.add(user)
+    socket.user = user
+    Command(CommandName.AuthAccept).send(socket)
+    socket.loadLobby()
   }
 }
