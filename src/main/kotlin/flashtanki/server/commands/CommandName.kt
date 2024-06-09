@@ -54,7 +54,8 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   UpdateCaptcha(CommandCategory.Auth, "update_captcha", CommandSide.Client),
   WrongCaptcha(CommandCategory.Auth, "wrong_captcha", CommandSide.Client),
   SetLoginData(CommandCategory.Auth, "set_login_data", CommandSide.Server),
-
+  ExternalModelValidationSuccess(CommandCategory.Auth, "external_model_validation_success", CommandSide.Client),
+  RegisterViaDiscord(CommandCategory.Registration, "register_via_discord", CommandSide.Server),
   Error(CommandCategory.Lobby, "error", CommandSide.Server),
 
   ShowServerStop(CommandCategory.Lobby, "server_halt", CommandSide.Client),
