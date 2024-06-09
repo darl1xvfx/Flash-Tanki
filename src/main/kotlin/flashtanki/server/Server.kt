@@ -981,7 +981,7 @@ class Server : KoinComponent {
         launch { OAuthService().init() }
         launch { resourceServer.run() }
         launch { apiServer.run() }
-        launch { DiscordBot.run("MTI0MTA4NTEyMzY3NjYwMjQ4OA.G0EGAB.irlr4OKAZiEsMFK4X2PaUear7l8Lvqx4EDSslg", CommandHandler(), autoResponsesHandlers()) }
+        launch { DiscordBot.run("MTI0OTI4Mjc2ODc4NjAzMDY1Mw.Gu5v7i.PoyQ4vYXlzieG1lhxKsOblen9fm6-g6cNcAZWM", CommandHandler(), autoResponsesHandlers()) }
 
         ServerStartedMessage().send()
         logger.info("Server started...")
