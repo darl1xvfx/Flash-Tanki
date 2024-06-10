@@ -479,7 +479,7 @@ class UserSocket(
             wasShowReminderCompletionPremium = false
         ).toJson()
     ).send(this)
-    Command(CommandName.InitClan, "{\"loadingInServiceSpace\":true,\"restrictionTimeJoinClanInSec\":60,\"giveBonusesClan\":false,\"clan\":false,\"showBuyLicenseButton\":true,\"showOtherClan\":true,\"clanMember\":false}").send(this)
+    Command(CommandName.InitClan, "{\"loadingInServiceSpace\":true,\"restrictionTimeJoinClanInSec\":60,\"giveBonusesClan\":false,\"clan\":false,\"showBuyLicenseButton\":true,\"showOtherClan\":true,\"clanMember\":false, \"flags\":[{\"image\":952497,\"id\":1,\"lang\":\"ru\"}]}").send(this)
     Command(CommandName.ShowNews, NewsLoader().loadNews(locale).toJson()).send(this)
     Command(
       CommandName.InitFriendsList,

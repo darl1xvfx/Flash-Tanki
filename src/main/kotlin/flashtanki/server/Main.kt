@@ -51,6 +51,7 @@ import flashtanki.server.ipc.ProcessMessage
 import flashtanki.server.ipc.WebSocketNetworking
 import flashtanki.server.lobby.chat.ILobbyChatManager
 import flashtanki.server.lobby.chat.LobbyChatManager
+import flashtanki.server.lobby.clan.*
 import flashtanki.server.quests.*
 import flashtanki.server.resources.IResourceServer
 import flashtanki.server.resources.ResourceServer
@@ -208,6 +209,7 @@ fun main(args: Array<String>) = object : CliktCommand() {
       single<IQuestConverter> { QuestConverter() }
       single<IRandomQuestService> { RandomQuestService() }
       single<IUserRepository> { UserRepository() }
+      single<IClanRepository> { ClanRepository() }
       single<IUserSubscriptionManager> { UserSubscriptionManager() }
       single<IInviteService> { InviteService(enabled = false) }
       single<IInviteRepository> { InviteRepository() }
