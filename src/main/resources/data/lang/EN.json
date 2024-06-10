@@ -178,68 +178,77 @@
     },
     {
       "key": "CLAN_CREATE",
-      "value": "Создать клан"
+      "value": "Create Clan"
     },
     {
       "key": "CLAN_SEARCH",
-      "value": "Найти клан"
+      "value": "Search Clan"
     },
     {
       "key": "CLAN_PURCHASE_INFORMATION",
-      "value": "Для создания собственного клана необходимо приобрести клановую лицензию.\nЛицензия даёт право на создание одного клана."
+      "value": "To create your own clan, you need to purchase a clan license.\nThe license gives the right to create one clan."
     },
     {
       "key": "CLAN_BUY_LICENCE",
-      "value": "Купить лицензию"
+      "value": "Buy License"
     },
     {
       "key": "CLAN_DESCRIPTION",
-      "value": "Здесь вы сможете создать собственный клан, объедениться с друзьями и получить доступ к специальным клановым бонусам.\n\nЧем сильнее клан, тем больше бонусов получает каждый участник клана."
+      "value": "Here you can create your own clan, join with friends, and gain access to special clan bonuses.\n\nThe stronger the clan, the more bonuses each clan member receives."
     },
     {
       "key": "CLAN_USER_CLAN_NAME",
-      "value": "Название клана"
+      "value": "Clan Name"
     },
     {
       "key": "CLAN_USER_CLAN_TAG",
-      "value": "Тэг"
+      "value": "Tag"
     },
     {
       "key": "CLAN_FOUNDER",
-      "value": "Основатель"
+      "value": "Founder"
     },
     {
       "key": "CLAN_USER_CLAN_NUMBER_MEMBERS",
-      "value": "Число игроков"
+      "value": "Number of Players"
     },
     {
       "key": "CLAN_USER_CREATION_DATE",
-      "value": "Время создания"
+      "value": "Creation Date"
     },
     {
       "key": "CLAN_INCOMING",
-      "value": "Входящие"
+      "value": "Incoming"
     },
     {
       "key": "CLAN_OUTGOUNG",
-      "value": "Исходящие"
+      "value": "Outgoing"
     },
     {
       "key": "CLAN_SEARCH_CLAN_IN_LIST",
-      "value": "Найти..."
+      "value": "Search..."
     },
     {
       "key": "CLAN_SEND_REQUEST_TO_CLAN",
-      "value": "Отправить"
+      "value": "Send"
+    },
+    {
+      "key": "CLAN_TAG",
+      "value": "Clan Tag"
+    },
+    {
+      "key": "CLAN_CREATION_RULES",
+      "value": "Clan Creation Rules"
     },
     {
       "key": "CLAN_SEND_REQUEST",
-      "value": "Отправить заявку"
+      "value": "Send Request"
     },
     {
       "key": "CLAN_SEARCH_BLOCKED_HINT",
-      "value": "Клан заблокирован"
+      "value": "Clan Blocked"
     },
+
     {
       "key": "ACCOUNT_RECOVERY_FORM_ERROR",
       "value": "There was an error."

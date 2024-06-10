@@ -233,6 +233,14 @@
       "value": "Отправить"
     },
     {
+      "key": "CLAN_TAG",
+      "value": "Тэг клана"
+    },
+    {
+      "key": "CLAN_CREATION_RULES",
+      "value": "Правила создания клана"
+    },
+    {
       "key": "CLAN_SEND_REQUEST",
       "value": "Отправить заявку"
     },
