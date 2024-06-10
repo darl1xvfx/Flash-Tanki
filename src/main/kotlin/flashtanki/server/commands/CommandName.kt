@@ -419,7 +419,9 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   QuestTakePrize(CommandCategory.Lobby, "takePrize", CommandSide.Server),
   ClientQuestTakePrize(CommandCategory.Lobby, "takeDailyQuestPrize", CommandSide.Client),
   StartMatchmaking(CommandCategory.Lobby, "start_matchmaking", CommandSide.Server),
-
+  InitClan(CommandCategory.Clan, "init", CommandSide.Client),
+  ShowClanServer(CommandCategory.Clan, "showClan", CommandSide.Server),
+  ShowClanClient(CommandCategory.Clan, "showClan", CommandSide.Client)
   ;
 
   companion object {
