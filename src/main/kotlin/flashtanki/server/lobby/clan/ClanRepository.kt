@@ -12,6 +12,7 @@ interface IClanRepository {
    suspend fun getClanByTag(tag: String): Clan?
    suspend fun getClanByName(name: String): Clan?
    suspend fun getClanByCreatorId(creatorId: String): Clan?
+   suspend fun updateClan(clan: Clan): Unit
 }
 
 class ClanRepository : IClanRepository {
@@ -71,6 +72,15 @@ class ClanRepository : IClanRepository {
 
         clan
     }
+
+    override suspend fun updateClan(clan: Clan): Unit = withContext(Dispatchers.IO) {
+        val entityManager = entityManager
+        logger.debug { "Updating clan \"${clan.tag}\" (${clan.name})..." }
+
+        entityManager.transaction.begin()
+        entityManager.merge(clan)
+        entityManager.transaction.commit()
+    }
 }
 
 @Entity
@@ -86,7 +96,7 @@ class Clan(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
     @Column(nullable = false, unique = true, length = 5) var tag: String,
-    @Column(nullable = false, unique = true, length = 15) var name: String,
+    @Column(nullable = false, unique = true, length = 64) var name: String,
     @Column(nullable = false, unique = true, length = 64) var description: String,
     @Column(nullable = false, unique = true, length = 64) var creatorId: String
 ) {

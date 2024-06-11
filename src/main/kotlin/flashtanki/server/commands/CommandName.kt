@@ -431,6 +431,8 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   СlanNameNotExist(CommandCategory.Clan, "clanNameNotExist", CommandSide.Client),
   СlanNameExist(CommandCategory.Clan, "clanNameExist", CommandSide.Client),
   ClanCreateServer(CommandCategory.Clan, "createClan", CommandSide.Server),
+  AddClanLicense(CommandCategory.Clan, "addClanLicense", CommandSide.Client),
+  RemoveClanLicense(CommandCategory.Clan, "removeClanLicense", CommandSide.Client),
 
   ;
 

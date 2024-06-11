@@ -462,6 +462,28 @@ class Server : KoinComponent {
            }
 		}
 	  }
+      command("addCL") {
+        permissions(Permissions.Superuser.toBitfield())
+        description("Add CL")
+
+        argument("user", String::class) {
+          permissions(Permissions.Superuser.toBitfield())
+          description("The user to add CL")
+          optional()
+        }
+
+        handler {
+          // TODO(TitanoMachina aka KAPJIC0N)
+          val username: String? = arguments.getOrNull("user")
+
+          val player = if(username != null) socketServer.players.find { it.user?.username == username } else socket
+          if(player == null) {
+            reply("Player not found: $username")
+            return@handler
+          }
+          Command(CommandName.AddClanLicense).send(player)
+        }
+      }
       command("addpremium") {
         permissions(Permissions.Superuser.toBitfield())
         description("Add premium account to a user")

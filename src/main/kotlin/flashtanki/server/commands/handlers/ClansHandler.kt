@@ -34,7 +34,7 @@ class ClansHandler : ICommandHandler, KoinComponent {
     }
 
     @CommandHandler(CommandName.ClanCreateServer)
-    suspend fun clanCreate(socket: UserSocket, tag: String, name: String)
+    suspend fun clanCreate(socket: UserSocket, name: String, tag: String)
     {
         val clan = clanRepository.createClan(tag, name, socket.user!!.username)
     }
