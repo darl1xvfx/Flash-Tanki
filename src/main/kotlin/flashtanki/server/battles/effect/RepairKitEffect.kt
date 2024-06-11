@@ -5,6 +5,9 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import flashtanki.server.battles.BattleTank
 import flashtanki.server.battles.DamageType
+import flashtanki.server.battles.weapons.FlamethrowerWeaponHandler
+import flashtanki.server.battles.weapons.FreezeWeaponHandler
+import flashtanki.server.battles.weapons.IsidaWeaponHandler
 import flashtanki.server.client.send
 import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandName
@@ -42,6 +45,11 @@ class RepairKitEffect(
         tank.coroutineScope.launch {
             val startTime = Clock.System.now()
             val endTime = startTime + duration
+
+            when(tank.weapon) {
+                is FlamethrowerWeaponHandler -> tank.weapon.stopAllOperations()
+                is FreezeWeaponHandler       -> tank.weapon.Repair()
+            }
 
             while (Clock.System.now() < endTime && isActive && totalHealing < totalHealAmount) {
                 delay(healInterval.toLong())

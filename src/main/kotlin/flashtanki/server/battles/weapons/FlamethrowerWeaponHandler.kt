@@ -49,7 +49,7 @@ class FlamethrowerWeaponHandler(
         Command(CommandName.Temperature, targetTank.id, param1).sendTo(battle)
 
         battle.damageProcessor.dealDamage(sourceTank, targetTank, damage.damage, damage.isCritical)
-        delay(2000)
+        delay(1000)
       }
     }
   }
@@ -65,7 +65,7 @@ class FlamethrowerWeaponHandler(
     targetTanks.forEach { targetTank ->
       if (tank != targetTank && (battle.properties[BattleProperty.FriendlyFireEnabled] ||
                 battle.modeHandler is DeathmatchModeHandler || player.team != targetTank.player.team)) {
-        while ((accumulatedDamage[targetTank.id] ?: 0.0) > 0) {
+        while ((accumulatedDamage[targetTank.id] ?: 0.0) > 0 && stopAllOperations()) {
           val damage = damageCalculator.calculate(tank, targetTank)
           val damageToDeal = damage.damage / random.nextInt(2, 4)
           battle.damageProcessor.dealDamage(player.tank!!, targetTank, damageToDeal, isCritical = false)
@@ -81,5 +81,8 @@ class FlamethrowerWeaponHandler(
         Command(CommandName.Temperature, targetTank.id, fire).sendTo(battle)
       }
     }
+  }
+  fun stopAllOperations(): Boolean {
+    return false
   }
 }

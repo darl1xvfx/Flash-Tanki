@@ -1,15 +1,26 @@
 package flashtanki.server.battles.mode
 
+import flashtanki.server.HibernateUtils
 import flashtanki.server.battles.*
 import flashtanki.server.client.*
 import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandName
 import flashtanki.server.battles.killstreak.*
+import flashtanki.server.garage.ServerGarageUserItemHull
+import flashtanki.server.garage.ServerGarageUserItemPaint
+import flashtanki.server.garage.ServerGarageUserItemResistance
+import flashtanki.server.garage.ServerGarageUserItemWeapon
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class JuggernautModeHandler(battle: Battle) : BattleModeHandler(battle) {
+class JuggernautModeHandler(battle: Battle) : BattleModeHandler(battle), KoinComponent {
   companion object {
     fun builder(): BattleModeHandlerBuilder = { battle -> JuggernautModeHandler(battle) }
   }
+
+  private val userRepository by inject<IUserRepository>()
 
   override val mode: BattleMode get() = BattleMode.Juggernaut
   var bossId: String = ""
@@ -35,6 +46,30 @@ class JuggernautModeHandler(battle: Battle) : BattleModeHandler(battle) {
     if (bossId == "") {
       bossId = battle.players.get(0).user.username
     }
+      // TODO Darl1xVFX juggernaut logic
+     /* val JuggernautUserName = (battle.modeHandler as JuggernautModeHandler)
+      val user = player.user
+      if (player.user.username == JuggernautUserName.bossId) {
+
+    HibernateUtils.createEntityManager().let { entityManager ->
+
+      entityManager.transaction.begin()
+
+      user.items += listOf(
+        ServerGarageUserItemWeapon(user, "terminator", modificationIndex = 0),
+        ServerGarageUserItemHull(user, "juggernaut", modificationIndex = 0)
+      )
+      user.equipment.weaponId = "terminator"
+      user.equipment.hullId = "juggernaut"
+
+      user.items.forEach { item -> entityManager.persist(item) }
+
+      entityManager.transaction.commit()
+
+      player.changeEquipment(true)
+
+        }
+      }*/
   }
 
   suspend fun addBossKillsAndCheckKillStreak(tankId: String)
