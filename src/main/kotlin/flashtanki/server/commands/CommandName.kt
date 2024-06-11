@@ -421,7 +421,7 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   StartMatchmaking(CommandCategory.Lobby, "start_matchmaking", CommandSide.Server),
   InitClan(CommandCategory.Clan, "init", CommandSide.Client),
   ShowClanServer(CommandCategory.Clan, "showClan", CommandSide.Server),
-  ShowClanClient(CommandCategory.Clan, "showClan", CommandSide.Client),
+  ShowNotInClan(CommandCategory.Clan, "showNotInClan", CommandSide.Client),
   ClanValidateName(CommandCategory.Clan, "validateName", CommandSide.Server),
   ClanValidateTag(CommandCategory.Clan, "validateTag", CommandSide.Server),
   ClanExist(CommandCategory.Clan, "clanExist", CommandSide.Client),
@@ -433,6 +433,8 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   ClanCreateServer(CommandCategory.Clan, "createClan", CommandSide.Server),
   AddClanLicense(CommandCategory.Clan, "addClanLicense", CommandSide.Client),
   RemoveClanLicense(CommandCategory.Clan, "removeClanLicense", CommandSide.Client),
+  ShowForeignClan(CommandCategory.Clan, "showForeignClan", CommandSide.Client),
+  ShowClanClient(CommandCategory.Clan, "showClan", CommandSide.Client),
 
   ;
 

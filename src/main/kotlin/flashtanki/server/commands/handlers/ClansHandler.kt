@@ -12,7 +12,7 @@ class ClansHandler : ICommandHandler, KoinComponent {
 
     @CommandHandler(CommandName.ShowClanServer)
     suspend fun showClanServer(socket: UserSocket) {
-        Command(CommandName.ShowClanClient).send(socket)
+        Command(CommandName.ShowNotInClan).send(socket)
     }
 
     @CommandHandler(CommandName.ClanValidateTag)
@@ -36,6 +36,8 @@ class ClansHandler : ICommandHandler, KoinComponent {
     @CommandHandler(CommandName.ClanCreateServer)
     suspend fun clanCreate(socket: UserSocket, name: String, tag: String)
     {
-        val clan = clanRepository.createClan(tag, name, socket.user!!.username)
+        val selfUser = socket.user ?: throw Exception("No User")
+        val clan = clanRepository.createClan(tag, name, selfUser.username) ?: throw Exception("No Clan")
+        Command(CommandName.ShowForeignClan, clan.creatorId, clan.description, clan.name, clan.tag).send(socket)
     }
 }
