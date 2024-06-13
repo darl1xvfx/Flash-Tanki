@@ -17,8 +17,8 @@ class StoreItemConverter : IStoreItemConverter {
   }
 
   override fun toClientItem(item: ServerStoreItem): StoreItem {
-    if(item.crystals == null && item.premium == null && item.promocode == null) throw IllegalStateException("Item ${item.id} is neither a crystal nor a premium package")
-    if(item.crystals != null && item.premium != null && item.promocode != null) throw IllegalStateException("Item ${item.id} cannot be both a crystal and a premium package")
+    if(item.crystals == null && item.premium == null && item.promocode == null && item.clan_license == null) throw IllegalStateException("Item ${item.id} is neither a crystal nor a premium package")
+    if(item.crystals != null && item.premium != null && item.promocode != null && item.clan_license != null) throw IllegalStateException("Item ${item.id} cannot be both a crystal and a premium package")
 
     return StoreItem(
       category_id = item.category.id,

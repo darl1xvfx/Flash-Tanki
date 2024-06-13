@@ -33,11 +33,24 @@ class ClansHandler : ICommandHandler, KoinComponent {
         Command(CommandName.СlanNameNotExist).send(socket)
     }
 
+    @CommandHandler(CommandName.CheckClanName)
+    suspend fun CheckClanName(socket: UserSocket, name: String) {
+        socket.sendChat("[CheckClanName] Not implemented yet")
+    }
+
+    @CommandHandler(CommandName.RejectAll)
+    suspend fun RejectAll(socket: UserSocket, username: String) {
+        socket.sendChat("[RejectAll] Not implemented yet")
+    }
+
     @CommandHandler(CommandName.ClanCreateServer)
-    suspend fun clanCreate(socket: UserSocket, name: String, tag: String)
-    {
+    suspend fun clanCreate(socket: UserSocket, name: String, tag: String) {
         val selfUser = socket.user ?: throw Exception("No User")
-        val clan = clanRepository.createClan(tag, name, selfUser.username) ?: throw Exception("No Clan")
+        val clan = clanRepository.createClan(tag, name, selfUser.username)
+        if (clan == null) {
+            socket.sendChat("Failed to create clan: a clan with the same name, tag, or creator already exists.")
+            return
+        }
         Command(CommandName.ShowForeignClan, clan.creatorId, clan.description, clan.name, clan.tag).send(socket)
     }
 }

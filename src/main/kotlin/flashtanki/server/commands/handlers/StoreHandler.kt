@@ -1,18 +1,17 @@
 package flashtanki.server.commands.handlers
 
+import com.squareup.moshi.Moshi
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import flashtanki.server.client.SocketLocale
-import flashtanki.server.client.UserSocket
-import flashtanki.server.client.send
-import flashtanki.server.client.toJson
 import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandHandler
 import flashtanki.server.commands.CommandName
 import flashtanki.server.commands.ICommandHandler
 import flashtanki.server.store.*
 import flashtanki.server.*
+import flashtanki.server.client.*
+import java.io.File
 
 class StoreHandler : ICommandHandler, KoinComponent {
   private val logger = KotlinLogging.logger { }
@@ -20,6 +19,7 @@ class StoreHandler : ICommandHandler, KoinComponent {
   private val storeRegistry: IStoreRegistry by inject()
   private val storeItemConverter: IStoreItemConverter by inject()
   private val promoCodeService: IPromoCodeService by inject()
+  private val userRepository by inject<IUserRepository>()
 
   @CommandHandler(CommandName.OpenStore)
   suspend fun openStore(socket: UserSocket) {
@@ -84,10 +84,10 @@ class StoreHandler : ICommandHandler, KoinComponent {
 
     Command(
       CommandName.StorePaymentSuccess,
-      (if(item.crystals != null) item.crystals.base else 0).toString(),
-      (if(item.crystals != null) item.crystals.bonus else 0).toString(),
+      (if (item.crystals != null) item.crystals.base else 0).toString(),
+      (if (item.crystals != null) item.crystals.bonus else 0).toString(),
       0.toString(),
-      when(socket.locale) {
+      when (socket.locale) {
         SocketLocale.Russian -> 124221
         SocketLocale.English -> 123444
         SocketLocale.Portuguese -> 143111
@@ -95,11 +95,21 @@ class StoreHandler : ICommandHandler, KoinComponent {
       }.toString()
     ).send(socket)
 
-    if(item.crystals != null) {
+    if (item.crystals != null) {
       user.crystals += item.crystals.base + item.crystals.bonus
       socket.updateCrystals()
     }
 
+    if (item.premium != null) {
+      socket.addPremiumAccount(item.premium.base)
+      userRepository.updateUser(user)
+    }
+
+    if (itemId == "clan_license") {
+      Command(CommandName.AddClanLicense).send(socket)
+    }
+
     logger.debug { "Player ${user.username} bought ${item.id} (payment method: $paymentMethod)" }
   }
+
 }

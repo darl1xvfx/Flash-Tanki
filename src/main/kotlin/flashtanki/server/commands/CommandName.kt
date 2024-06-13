@@ -435,6 +435,11 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   RemoveClanLicense(CommandCategory.Clan, "removeClanLicense", CommandSide.Client),
   ShowForeignClan(CommandCategory.Clan, "showForeignClan", CommandSide.Client),
   ShowClanClient(CommandCategory.Clan, "showClan", CommandSide.Client),
+  CheckClanName(CommandCategory.Clan, "checkClanName", CommandSide.Server),
+  RejectAll(CommandCategory.Clan, "rejectAll", CommandSide.Server),
+
+
+  OpenedItems(CommandCategory.Lobby, "opened_items", CommandSide.Client),
 
   ;
 
