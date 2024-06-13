@@ -45,11 +45,6 @@ class StoreHandler : ICommandHandler, KoinComponent {
             Command(CommandName.ActivatePromocodeSuccessfully).send(socket)
             user.crystals += promoPrize
 
-          //rofl premium
-          //val premium = 2
-          //socket.addPremiumAccount(premium)
-
-
             socket.updateCrystals()
 			Command(
               CommandName.StorePaymentSuccess,
