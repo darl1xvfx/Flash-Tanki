@@ -98,15 +98,19 @@ class StoreHandler : ICommandHandler, KoinComponent {
     if (item.crystals != null) {
       user.crystals += item.crystals.base + item.crystals.bonus
       socket.updateCrystals()
+      logger.debug { "Player ${user.username} has crystals added (${item.crystals.base} + (${item.crystals.bonus})" }
+
     }
 
     if (item.premium != null) {
       socket.addPremiumAccount(item.premium.base)
       userRepository.updateUser(user)
+      logger.debug { "Player ${user.username} has premium days added (${item.premium.base})" }
     }
 
     if (itemId == "clan_license") {
       Command(CommandName.AddClanLicense).send(socket)
+      logger.debug { "Player ${user.username} has been added clan_license" }
     }
 
     logger.debug { "Player ${user.username} bought ${item.id} (payment method: $paymentMethod)" }
