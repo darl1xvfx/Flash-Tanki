@@ -200,16 +200,16 @@ suspend fun createBonusRegions(socket: UserSocket) {
     val battle = this
     val healthBonusPoints = battle.map.bonuses
         .filter { bonus -> bonus.types.contains(BonusType.Health) }
-        .filter { bonus -> bonus.modes.contains(battle.modeHandler.mode) }
+        .filter { bonus -> bonus.modes.contains(if (battle.modeHandler.mode != BattleMode.Juggernaut) battle.modeHandler.mode else BattleMode.Deathmatch) }
 	val armorBonusPoints = battle.map.bonuses
         .filter { bonus -> bonus.types.contains(BonusType.DoubleArmor) }
-        .filter { bonus -> bonus.modes.contains(battle.modeHandler.mode) }
+        .filter { bonus -> bonus.modes.contains(if (battle.modeHandler.mode != BattleMode.Juggernaut) battle.modeHandler.mode else BattleMode.Deathmatch) }
 	val damageBonusPoints = battle.map.bonuses
         .filter { bonus -> bonus.types.contains(BonusType.DoubleDamage) }
-        .filter { bonus -> bonus.modes.contains(battle.modeHandler.mode) }
+        .filter { bonus -> bonus.modes.contains(if (battle.modeHandler.mode != BattleMode.Juggernaut) battle.modeHandler.mode else BattleMode.Deathmatch) }
     val nitroBonusPoints = battle.map.bonuses
         .filter { bonus -> bonus.types.contains(BonusType.Nitro) }
-        .filter { bonus -> bonus.modes.contains(battle.modeHandler.mode) }
+        .filter { bonus -> bonus.modes.contains(if (battle.modeHandler.mode != BattleMode.Juggernaut) battle.modeHandler.mode else BattleMode.Deathmatch) }
 	for (healthBonusPoint in healthBonusPoints) {
         val x = (healthBonusPoint.position.min.x + healthBonusPoint.position.max.x) / 2
         val y = (healthBonusPoint.position.min.y + healthBonusPoint.position.max.y) / 2
@@ -282,7 +282,7 @@ suspend fun createBonusRegions(socket: UserSocket) {
       val battle = this
       val availableBonuses = battle.map.bonuses
         .filter { bonus -> bonus.types.contains(bonusType) }
-        .filter { bonus -> bonus.modes.contains(battle.modeHandler.mode) }
+        .filter { bonus -> bonus.modes.contains(if (battle.modeHandler.mode != BattleMode.Juggernaut) battle.modeHandler.mode else BattleMode.Deathmatch) }
 
       if(availableBonuses.isEmpty()) return
 	  if(bonusType == BonusType.Health && healthIndex > availableBonuses.size) return
@@ -348,7 +348,7 @@ suspend fun createBonusRegions(socket: UserSocket) {
 	  val bonusType = BonusType.Gold
       val availableBonuses = battle.map.bonuses
         .filter { bonus -> bonus.types.contains(bonusType) }
-        .filter { bonus -> bonus.modes.contains(battle.modeHandler.mode) }
+        .filter { bonus -> bonus.modes.contains(if (battle.modeHandler.mode != BattleMode.Juggernaut) battle.modeHandler.mode else BattleMode.Deathmatch) }
 
       if(availableBonuses.isEmpty()) return
       var bonusPoint = availableBonuses.random()

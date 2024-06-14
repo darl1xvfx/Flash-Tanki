@@ -40,4 +40,22 @@ class ClansHandler : ICommandHandler, KoinComponent {
         val clan = clanRepository.createClan(tag, name, selfUser.username) ?: throw Exception("No Clan")
         Command(CommandName.ShowForeignClan, clan.creatorId, clan.description, clan.name, clan.tag).send(socket)
     }
+	
+	@CommandHandler(CommandName.CheckClanName)
+	suspend fun checkClanName(socket: UserSocket, name: String) {
+	    if(clanRepository.getClanByTag(name) != null) {
+            Command(CommandName.ClanExist).send(socket)
+            return
+        }
+        Command(CommandName.ClanNotExist).send(socket)
+	}
+	
+	@CommandHandler(CommandName.AddInClanByName)
+	suspend fun addInClanByName(socket: UserSocket, name: String) {
+	   val selfUser = socket.user ?: throw Exception("No User")
+	   val clan = clanRepository.getClanByTag(name) ?: throw Exception("No Clan")
+	   if (clan != null) {
+	       Command(CommandName.AddInClan, name).send(socket)
+	   }
+	}
 }

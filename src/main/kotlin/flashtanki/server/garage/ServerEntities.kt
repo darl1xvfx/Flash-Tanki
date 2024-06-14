@@ -120,6 +120,26 @@ class ServerGarageItemSupply(
   baseItemId
 )
 
+class ServerGarageItemLootbox(
+  id: String,
+  index: Int,
+
+  name: LocalizedString,
+  description: LocalizedString,
+
+  baseItemId: Int,
+  @Json val previewResourceId: Int,
+
+  @Json val rank: Int,
+  @Json val price: Int,
+
+  @Json val properties: List<ServerGarageItemProperty>
+) : ServerGarageItem(
+  id, index, GarageItemType.Lootboxes,
+  name, description,
+  baseItemId
+)
+
 class ServerGarageItemKit(
   id: String,
   index: Int,
@@ -490,6 +510,18 @@ class ServerGarageUserItemPresent(
 ) : ServerGarageUserItem(user, id) {
   @get:Transient
   override val marketItem: ServerGarageItemPresent
+    get() = marketRegistry.get(id.itemName).cast()
+}
+
+@Entity
+@DiscriminatorValue("lootbox")
+class ServerGarageUserItemLootbox(
+  user: User,
+  id: String,
+  var count: Int
+) : ServerGarageUserItem(user, id) {
+  @get:Transient
+  override val marketItem: ServerGarageItemLootbox
     get() = marketRegistry.get(id.itemName).cast()
 }
 

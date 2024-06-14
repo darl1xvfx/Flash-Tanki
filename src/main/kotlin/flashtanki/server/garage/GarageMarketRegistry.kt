@@ -39,7 +39,8 @@ class GarageMarketRegistry : IGarageMarketRegistry, KoinComponent {
     GarageItemGroup(GarageItemType.Supply, ServerGarageItemSupply::class, "supplies"),
     GarageItemGroup(GarageItemType.Subscription, ServerGarageItemSubscription::class, "subscriptions"),
     GarageItemGroup(GarageItemType.Kit, ServerGarageItemKit::class, "kits"),
-    GarageItemGroup(GarageItemType.Present, ServerGarageItemPresent::class, "presents")
+    GarageItemGroup(GarageItemType.Present, ServerGarageItemPresent::class, "presents"),
+    GarageItemGroup(GarageItemType.Lootboxes, ServerGarageItemLootbox::class, "lootboxes")
   )
 
   override val items: MutableMap<String, ServerGarageItem> = mutableMapOf()

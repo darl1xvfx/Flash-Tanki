@@ -6,7 +6,7 @@
       "versionhigh": "0",
       "versionlow": 3,
       "lazy": true,
-      "alpha": true,
+      "alpha": false,
       "type": 10
     },
     {

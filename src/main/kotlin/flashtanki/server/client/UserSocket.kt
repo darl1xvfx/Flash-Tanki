@@ -617,6 +617,7 @@ suspend fun initBattleList() {
         is ServerGarageItemSubscription -> listOf(garageItemConverter.toClientSubscription(marketItem, userItem as ServerGarageUserItemSubscription?, locale))
         is ServerGarageItemKit -> listOf(garageItemConverter.toClientKit(marketItem, locale))
         is ServerGarageItemPresent -> listOf(garageItemConverter.toClientPresent(marketItem, locale))
+        is ServerGarageItemLootbox -> listOf(garageItemConverter.toClientLootbox(marketItem, userItem as ServerGarageUserItemLootbox?, locale))
 
         else -> throw NotImplementedError("Not implemented: ${marketItem::class.simpleName}")
       }

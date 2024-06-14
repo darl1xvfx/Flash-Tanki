@@ -18,11 +18,7 @@ import org.koin.core.component.get
 import flashtanki.server.BonusType
 import flashtanki.server.battles.*
 import flashtanki.server.HibernateUtils
-import flashtanki.server.garage.ServerGarageUserItem
-import flashtanki.server.garage.ServerGarageUserItemHull
-import flashtanki.server.garage.ServerGarageUserItemPaint
-import flashtanki.server.garage.ServerGarageUserItemWeapon
-import flashtanki.server.garage.ServerGarageUserItemResistance
+import flashtanki.server.garage.*
 import flashtanki.server.quests.*
 import flashtanki.server.serialization.database.BitfieldConverter
 
@@ -154,7 +150,8 @@ class UserRepository : IUserRepository {
       ServerGarageUserItemHull(user, "hunter", modificationIndex = 0),
       ServerGarageUserItemResistance(user, "zero"),
       ServerGarageUserItemPaint(user, "green"),
-      ServerGarageUserItemPaint(user, "holiday")
+      ServerGarageUserItemPaint(user, "holiday"),
+      ServerGarageUserItemLootbox(user, "lootbox", count = 9999)
     )
     user.equipment = UserEquipment(
       hullId = "hunter",

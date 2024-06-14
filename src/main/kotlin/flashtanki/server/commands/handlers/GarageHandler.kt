@@ -165,14 +165,11 @@ class GarageHandler : ICommandHandler, KoinComponent {
      }
     user.items += listOf(ServerGarageUserItemPresent(user, idPres))
     user.items.forEach { item -> entityManager.persist(item) }
-    /*Command(
-            CommandName.BuyItem,
-            BuyItemResponseData(
-                    itemId = idPres,
-                    count = 1
-            ).toJson()
-    ).send(player ?: socket)
-    userRepository.updateUser(user)*/
+  }
+
+  @CommandHandler(CommandName.OpenLootboxServer)
+  suspend fun openLootboxServer(socket: UserSocket, count: Int) {
+    Command(CommandName.OpenLootboxClient, "[{\"category\":\"LEGENDARY\",\"count\":1,\"preview\":1000001,\"name\":\"Краска Галактика\"}]").send(socket)
   }
 
   // TODO(Assasans): Code repeating
