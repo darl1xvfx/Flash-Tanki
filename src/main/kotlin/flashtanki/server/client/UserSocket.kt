@@ -589,6 +589,10 @@ suspend fun initBattleList() {
     return friend
   }
 
+  suspend fun OpenedItems() {
+    Command(CommandName.OpenedItems, "null".toJson()).send(this)
+  }
+
   suspend fun initGarage() {
 
     val entityManager = HibernateUtils.createEntityManager()
@@ -735,6 +739,7 @@ suspend fun initBattleList() {
 
     updateCrystals()
     updateRating()
+    OpenedItems()
 
     if(screen == Screen.Garage) {
       // Refresh garage to prevent items from being duplicated (client-side bug)
