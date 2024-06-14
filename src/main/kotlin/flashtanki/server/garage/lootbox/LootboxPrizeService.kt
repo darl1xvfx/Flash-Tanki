@@ -7,14 +7,10 @@ class LootboxPrizeService {
     private val objectMapper = ObjectMapper()
 
     private fun getLootBoxCategory(category: String): LootBoxCategory {
-        return when (category) {
-            "COMMON" -> LootBoxCategory.COMMON
-            "UNCOMMON" -> LootBoxCategory.UNCOMMON
-            "RARE" -> LootBoxCategory.RARE
-            "EPIC" -> LootBoxCategory.EPIC
-            "LEGENDARY" -> LootBoxCategory.LEGENDARY
-            "EXOTIC" -> LootBoxCategory.EXOTIC
-            else -> LootBoxCategory.COMMON
+        return try {
+            LootBoxCategory.valueOf(category)
+        } catch (e: IllegalArgumentException) {
+            LootBoxCategory.COMMON
         }
     }
 
@@ -27,7 +23,8 @@ class LootboxPrizeService {
                     prizes.add(prize.toString())
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                // Improved error handling, consider using a logging framework
+                println("Failed to parse JSON: ${e.message}")
             }
         }
         return prizes
