@@ -436,17 +436,12 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   ShowForeignClan(CommandCategory.Clan, "showForeignClan", CommandSide.Client),
   ShowClanClient(CommandCategory.Clan, "showClan", CommandSide.Client),
   CheckClanName(CommandCategory.Clan, "checkClanName", CommandSide.Server),
-<<<<<<< HEAD
   AddInClanByName(CommandCategory.Clan, "addInClanByName", CommandSide.Server),
   AddInClan(CommandCategory.Clan, "addInClan", CommandSide.Client),
   OpenLootboxServer(CommandCategory.Garage, "openLootbox", CommandSide.Server),
   OpenLootboxClient(CommandCategory.Garage, "openLootbox", CommandSide.Client),
-=======
   RejectAll(CommandCategory.Clan, "rejectAll", CommandSide.Server),
-
-
   OpenedItems(CommandCategory.Lobby, "opened_items", CommandSide.Client),
->>>>>>> 5ae10edbe61557fe9ad42acc2377cd611269607a
 
   ;
 
