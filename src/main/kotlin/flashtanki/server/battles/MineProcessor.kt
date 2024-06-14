@@ -16,9 +16,7 @@ class MineProcessor(
   override val battle: Battle
 ) : IMineProcessor {
   override val mines: MutableMap<Int, BattleMine> = mutableMapOf()
-
-  var nextId: Int = 0
-    private set
+  private var nextId: Int = 0
 
   override fun incrementId() {
     nextId++
@@ -30,14 +28,15 @@ class MineProcessor(
   }
 
   override suspend fun deactivateAll(player: BattlePlayer, native: Boolean) {
-    if(native) {
-      if(mines.values.none { mine -> mine.owner == player }) return
+    val minesToRemove = mines.values.filter { it.owner == player }.toList()
+
+    if (minesToRemove.isEmpty()) return
+
+    if (native) {
       Command(CommandName.RemoveMines, player.user.username).sendTo(battle)
-      mines.values.removeAll { mine -> mine.owner == player }
+      minesToRemove.forEach { mines.remove(it.id) }
     } else {
-      mines.values
-        .filter { mine -> mine.owner == player }
-        .forEach { mine -> mine.deactivate() }
+      minesToRemove.forEach { it.deactivate() }
     }
   }
 }
