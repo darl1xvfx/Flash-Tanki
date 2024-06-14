@@ -6,18 +6,19 @@ import kotlin.time.Duration.Companion.seconds
 import flashtanki.server.ServerMapBonusPoint
 import kotlinx.coroutines.delay
 import flashtanki.server.extensions.launchDelayed
-import flashtanki.server.BonusType
+import flashtanki.server.*
 import flashtanki.server.battles.Battle
 import flashtanki.server.battles.BattleTank
 import flashtanki.server.battles.sendTo
 import flashtanki.server.commands.Command
+import flashtanki.server.garage.*
 import flashtanki.server.commands.CommandName
 import flashtanki.server.math.Quaternion
 import flashtanki.server.math.Vector3
 
-class BattleGoldBonus(battle: Battle, id: Int, position: Vector3, rotation: Quaternion, bonusPoint: ServerMapBonusPoint, siren:String="Скоро будет сброшен золотой ящик") :
+class BattleContainerBonus(battle: Battle, id: Int, position: Vector3, rotation: Quaternion, bonusPoint: ServerMapBonusPoint, siren:String="Скоро будет сброшен золотой ящик") :
   BattleBonus(battle, id, position, rotation) {
-  override val type: BonusType = BonusType.Gold
+  override val type: BonusType = BonusType.Container
   val goldBoxSiren: String = siren
   val bonusPoint = bonusPoint
 
@@ -32,10 +33,29 @@ class BattleGoldBonus(battle: Battle, id: Int, position: Vector3, rotation: Quat
   }
 
   override suspend fun activate(tank: BattleTank) {
-    tank.player.user.crystals += 1000
-    tank.socket.updateCrystals()
+    val garageItem = tank.player.user.items.singleOrNull { userItem ->
+      userItem is ServerGarageUserItemLootbox && userItem.marketItem.id == "lootbox"
+    } as? ServerGarageUserItemLootbox
+
+    garageItem?.let {
+      if(it.count > 0) {
+        it.count += 1
+
+        val entityManager = HibernateUtils.createEntityManager()
+        try {
+          entityManager.transaction.begin()
+          entityManager.merge(it)
+          entityManager.transaction.commit()
+        } catch(error: Exception) {
+          entityManager.transaction.rollback()
+          throw Exception("Error while updating garage item count", error)
+        } finally {
+          entityManager.close()
+        }
+      }
+    }
     Command(CommandName.RemoveOneGoldRegion, id.toString()).sendTo(battle)
-    Command(CommandName.TakeGold, tank.id, true.toString()).sendTo(battle)
+    Command(CommandName.TakeGold, tank.id, false.toString()).sendTo(battle)
     battle.droppedGoldIds.remove(id.toString())
 	battle.droppedGoldBoxes.remove(bonusPoint)
     if (battle.unusedGoldBoxes.isNotEmpty()) {

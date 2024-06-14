@@ -148,14 +148,14 @@ class BattlePlayer(
             resourceId = 170009
           ),
           BonusData(
-            lighting = BonusLightingData(color = 8756459),
-            id = "crystall",
-            resourceId = 170007
-          ),
-          BonusData(
             lighting = BonusLightingData(color = 15044128),
             id = "gold",
             resourceId = 170008
+          ),
+		  BonusData(
+            lighting = BonusLightingData(color = 15044128),
+            id = "container",
+            resourceId = 170007
           )
         )
       ).toJson()

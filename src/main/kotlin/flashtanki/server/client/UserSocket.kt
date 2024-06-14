@@ -590,7 +590,7 @@ suspend fun initBattleList() {
   }
 
   suspend fun OpenedItems() {
-    Command(CommandName.OpenedItems, "null".toJson()).send(this)
+    Command(CommandName.OpenedItems, "{\"items\":[{\"itemViewCategory\":\"weapon\",\"preview\":770995,\"item\":\"thunder\",\"category\":\"weapon\",\"modification\":3,\"name\":\"Гром\",\"position\":1}]}").send(this)
   }
 
   suspend fun initGarage() {

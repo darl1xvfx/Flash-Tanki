@@ -377,7 +377,8 @@ suspend fun createBonusRegions(socket: UserSocket) {
       position.reset(x, y, z)
       val rotation = Quaternion()
       rotation.fromEulerAngles(bonusPoint.rotation.toVector())
-      val bonus = BattleGoldBonus(battle, battle.bonusProcessor.nextId, position, rotation, bonusPoint, message)
+	  val containerChance = Random.nextInt(1, 3)
+      val bonus = if (containerChance == 2) BattleContainerBonus(battle, battle.bonusProcessor.nextId, position, rotation, bonusPoint, message) else BattleGoldBonus(battle, battle.bonusProcessor.nextId, position, rotation, bonusPoint, message)
       battle.bonusProcessor.incrementId()
       battle.coroutineScope.launch {
         battle.bonusProcessor.spawn(bonus)

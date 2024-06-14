@@ -169,6 +169,28 @@ class GarageHandler : ICommandHandler, KoinComponent {
 
   @CommandHandler(CommandName.OpenLootboxServer)
   suspend fun openLootboxServer(socket: UserSocket, count: Int) {
+    val selfUser = socket.user ?: throw Exception("No User")
+    val lootboxItem = selfUser.items.singleOrNull { userItem ->
+      userItem is ServerGarageUserItemLootbox && userItem.marketItem.id == "lootbox"
+    } as? ServerGarageUserItemLootbox
+
+    lootboxItem?.let {
+      if(it.count > 0) {
+        it.count -= count
+
+        val entityManager = HibernateUtils.createEntityManager()
+        try {
+          entityManager.transaction.begin()
+          entityManager.merge(it)
+          entityManager.transaction.commit()
+        } catch(error: Exception) {
+          entityManager.transaction.rollback()
+          throw Exception("Error while updating garage item count", error)
+        } finally {
+          entityManager.close()
+        }
+      }
+    }
     Command(CommandName.OpenLootboxClient, "[{\"category\":\"LEGENDARY\",\"count\":1,\"preview\":1000001,\"name\":\"Краска Галактика\"}]").send(socket)
   }
 

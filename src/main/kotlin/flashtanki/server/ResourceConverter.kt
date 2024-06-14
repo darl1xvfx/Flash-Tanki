@@ -54,7 +54,8 @@ enum class BonusType(val mapKey: String, val bonusKey: String, val id: Int) {
   DoubleDamage("double_damage", "damage", 3),
   Nitro("nitro", "nitro", 4),
   Crystal("crystal", "crystall", 5),
-  Gold("gold", "gold", 6);
+  Gold("gold", "gold", 6),
+  Container("container", "container", 7);
 
   companion object {
     private val map = values().associateBy(BonusType::mapKey)

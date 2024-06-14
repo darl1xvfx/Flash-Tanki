@@ -171,7 +171,7 @@ class AuthHandler : ICommandHandler, KoinComponent {
 
     logger.debug { "Register user: [ Invite = '${socket.invite?.code}', Username = '$username', Password = '$password', Captcha = ${if(captcha.isEmpty()) "*none*" else "'${captcha}'"} ]" }
 
-    val user = userRepository.createUser(username, password, "none")
+    val user = userRepository.createUser(username, password, userRepository.md5(username))
                ?: TODO("User exists")
 
     if(inviteService.enabled && invite != null) {
