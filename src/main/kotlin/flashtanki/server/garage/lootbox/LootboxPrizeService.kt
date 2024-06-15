@@ -73,7 +73,7 @@ class LootboxPrizeService {
                 return rarity
             }
         }
-        return probabilities.keys.last()  // fallback, though it should never reach here
+        return probabilities.keys.last()
     }
 }
 
