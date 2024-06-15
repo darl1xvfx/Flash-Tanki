@@ -22,29 +22,41 @@ class StoreRegistry : IStoreRegistry, KoinComponent {
   override val categories: MutableMap<String, ServerStoreCategory> = mutableMapOf()
 
   override suspend fun load() {
-    resourceManager.get("store/items").absolute().forEachDirectoryEntry category@{ categoryEntry ->
+    resourceManager.get("store/items").absolute().forEachDirectoryEntry { categoryEntry ->
+      if (!categoryEntry.isDirectory()) return@forEachDirectoryEntry
+
       logger.debug { "Loading store category ${categoryEntry.name}..." }
 
-      val category = json
-        .adapter(ServerStoreCategory::class.java)
+      val categoryJsonPath = categoryEntry.resolve("category.json")
+      if (!categoryJsonPath.exists()) {
+        logger.warn { "Category JSON not found for ${categoryEntry.name}" }
+        return@forEachDirectoryEntry
+      }
+
+      val category = json.adapter(ServerStoreCategory::class.java)
         .failOnUnknown()
-        .fromJson(categoryEntry.resolve("category.json").readText())!!
-      category.id = categoryEntry.nameWithoutExtension
+        .fromJson(categoryJsonPath.readText()) ?: run {
+        logger.error { "Failed to parse category JSON for ${categoryEntry.name}" }
+        return@forEachDirectoryEntry
+      }
+
+      category.id = categoryEntry.name
       category.items = mutableListOf()
 
-      categoryEntry.forEachDirectoryEntry item@{ entry ->
-        if(entry.name == "category.json") return@item
-        if(entry.extension != "json") return@item
+      categoryEntry.forEachDirectoryEntry { entry ->
+        if (entry.name == "category.json" || entry.extension != "json") return@forEachDirectoryEntry
 
-        val item = json
-          .adapter(ServerStoreItem::class.java)
+        val item = json.adapter(ServerStoreItem::class.java)
           .failOnUnknown()
-          .fromJson(entry.readText())!!
+          .fromJson(entry.readText()) ?: run {
+          logger.error { "Failed to parse item JSON for ${entry.name}" }
+          return@forEachDirectoryEntry
+        }
+
         item.id = entry.nameWithoutExtension
         item.category = category
 
         category.items.add(item)
-
         logger.debug { "  > Loaded store item ${item.id}" }
       }
 
