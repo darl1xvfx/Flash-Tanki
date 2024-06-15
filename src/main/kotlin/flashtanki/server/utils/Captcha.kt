@@ -1,28 +1,33 @@
 package flashtanki.server.utils
 
-import java.awt.Color
-import java.awt.Font
-import java.awt.image.BufferedImage
-import java.awt.image.BufferedImageOp
-import java.awt.image.ConvolveOp
-import java.awt.image.Kernel
-import java.io.ByteArrayOutputStream
-import javax.imageio.ImageIO
-import kotlin.math.roundToInt
-import kotlin.random.Random
-import kotlin.random.Random.Default.nextBoolean
-import kotlin.random.Random.Default.nextDouble
-import kotlin.random.Random.Default.nextInt
-import mu.KotlinLogging
-import org.koin.core.component.KoinComponent
 import flashtanki.server.client.CaptchaLocation
 import flashtanki.server.client.UserSocket
 import flashtanki.server.client.send
 import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandName
+import mu.KotlinLogging
+import org.koin.core.component.KoinComponent
+import kotlin.random.Random.Default.nextBoolean
+import kotlin.random.Random.Default.nextInt
+import java.awt.image.BufferedImage
+import kotlin.math.roundToInt
+import java.awt.Color
+import java.awt.Font
+import java.awt.image.BufferedImageOp
+import java.awt.image.ConvolveOp
+import java.awt.image.Kernel
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
+import kotlin.random.Random
+import kotlin.random.Random.Default.nextDouble
 
 class Captcha : KoinComponent {
     private val logger = KotlinLogging.logger { }
+
+    private fun randColor(): Color {
+        return Color(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
+    }
+
 
     var answer = ""
         private set
@@ -41,8 +46,8 @@ class Captcha : KoinComponent {
         var color: Color? = null
     }
     private val font = object {
-        var size = 24
-        var name = "MyriadPro-Light"
+        var size = 28
+        var name = "Arial"
         var style = Font.BOLD
     }
     private val text = object {
@@ -66,13 +71,12 @@ class Captcha : KoinComponent {
 
     fun build(): Captcha {
         fun randCaptcha() = (0 until text.length).map { text.chars.random() }.joinToString("")
-        fun randColor() = Color(nextInt(16581375))
 
         answer = randCaptcha()
 
-        if(text.length <= 0) throw Exception("The text size must not be less than a character")
-        if(captcha.width < font.size * text.length / 4.0) throw Exception("The captcha width should not be smaller than the text size")
-        if(captcha.height < font.size) throw Exception("The captcha height should not be smaller than the text size")
+        if (text.length <= 0) throw Exception("The text size must not be less than a character")
+        if (captcha.width < font.size * text.length / 4.0) throw Exception("The captcha width should not be smaller than the text size")
+        if (captcha.height < font.size) throw Exception("The captcha height should not be smaller than the text size")
 
         val positionX = captcha.width / 2.0 - (font.size * (text.length / 4.0))
         val positionY = captcha.height / 2.0 + (font.size / 2.0)
@@ -83,18 +87,17 @@ class Captcha : KoinComponent {
         graphic.color = captcha.background
         graphic.fillRect(0, 0, captcha.width, captcha.height)
 
-        if(noise.isAdded) {
-            for(y in 0 until captcha.height) {
-                for(x in 0 until captcha.width) {
+        if (noise.isAdded) {
+            for (y in 0 until captcha.height) {
+                for (x in 0 until captcha.width) {
                     val color = noise.color ?: randColor()
                     val noiseColor = Color(
                         color.red,
                         color.green,
                         color.blue,
-                        nextInt(256)
+                        Random.nextInt(70, 250)
                     )
-                    if(noise.fill) buffer.setRGB(x, y, noiseColor.rgb)
-                    else if(nextInt(100) in 0..10) buffer.setRGB(x, y, noiseColor.rgb)
+                    if (noise.fill) buffer.setRGB(x, y, noiseColor.rgb)
                 }
             }
         }
@@ -113,16 +116,15 @@ class Captcha : KoinComponent {
         }
 
         graphic.font = Font(font.name, font.style, font.size)
-        graphic.color = text.color ?: randColor()
         answer.forEachIndexed { i, c ->
             val x = positionX + (i * (font.size / 2))
-            val y = positionY - font.size * 0.2 + nextDouble(font.size * 0.2) * if(nextBoolean()) -1 else 1
+            val y = positionY - font.size * 0.2 + Random.nextDouble(font.size * 0.2) * if (Random.nextBoolean()) -1 else 1
+            graphic.color = Color.BLACK
             graphic.drawString(c.toString(), x.roundToInt(), y.roundToInt())
         }
 
-        if(border.isAdded) {
-            // Create a border with a slight blur effect
-            val kernelSize = 1//border.blurRadius * 2 + 1
+        if (border.isAdded) {
+            val kernelSize = border.blurRadius * 1
             val kernelData = FloatArray(kernelSize * kernelSize) { 1.0f / (kernelSize * kernelSize).toFloat() }
             val blurKernel = Kernel(kernelSize, kernelSize, kernelData)
             val blurOp: BufferedImageOp = ConvolveOp(blurKernel, ConvolveOp.EDGE_NO_OP, null)
@@ -147,16 +149,22 @@ class Captcha : KoinComponent {
         socket: UserSocket
     ) {
         val captcha = Captcha().builder(280, 54, "./", Color(0, 0, 0, 0))
-            .addLines(nextInt(2, 5), 1, nextInt(2, 4), Color.black)
+            .addLines(Random.nextInt(2, 5), 1, Random.nextInt(2, 4), Color.black)
             .addNoise(true, Color.decode("#716479"))
             .setFont("Myriad Pro", 50, Font.BOLD)
             .setText(5, Color.black)
-            .addBorder(2, Color.BLACK)
+            .addBorder(1 , Color.BLACK)
             .build()
 
         logger.info { "Generated captcha text: ${captcha.answer}" }
-        captcha.imageString?.let { BlobUtils.encode(it) }?.let {
+        if (commandName == CommandName.СaptchaUpdated) {
+          captcha.imageString?.let { BlobUtils.encode(it) }?.let {
+            Command(commandName, it).send(socket)
+          }
+        } else {
+          captcha.imageString?.let { BlobUtils.encode(it) }?.let {
             Command(commandName, captchaLocation.key, it).send(socket)
+          }
         }
 
         socket.captcha[captchaLocation] = captcha.answer
