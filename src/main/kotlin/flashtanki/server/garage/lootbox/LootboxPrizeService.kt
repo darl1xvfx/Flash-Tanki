@@ -27,7 +27,7 @@ class LootboxPrizeService {
 
     suspend fun getRandomReward(count: Int): List<LootboxPrize> {
         var prizes = mutableListOf<LootboxPrize>()
-        prizes.add(LootboxPrize("COMMON", 1, 978053, reward))
+        prizes.add(LootboxPrize("COMMON", 1, 978053, "тест"))
         return prizes
     }
 }
