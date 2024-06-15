@@ -27,21 +27,7 @@ class LootboxPrizeService {
 
     suspend fun getRandomReward(count: Int): List<LootboxPrize> {
         var prizes = mutableListOf<LootboxPrize>()
-        val randomNumber = (1..2000).random() / 100.0
-        var cumulativeProbability = 0.0
-        var i = 0
-        while (i < count) {
-            for ((probability, reward) in rewardsMap) {
-                val prob = probability.replace(",", ".").toDouble()
-                cumulativeProbability += prob
-                if (randomNumber == cumulativeProbability) {
-                    prizes.add(LootboxPrize("COMMON", 1, 978053, reward))
-                }
-            }
-            if (prizes.isNotEmpty()) {
-                i++
-            }
-        }
+        prizes.add(LootboxPrize("COMMON", 1, 978053, reward))
         return prizes
     }
 }
