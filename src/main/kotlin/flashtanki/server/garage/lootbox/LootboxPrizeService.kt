@@ -3,29 +3,33 @@ package flashtanki.server.garage.lootbox
 import com.squareup.moshi.Json
 import kotlin.random.Random
 
-data class Prize(val name: String, val rarity: String)
+data class Prize(
+    val name: String,
+    val rarity: String,
+    val preview: Int
+)
 
 class LootboxPrizeService {
     private val prizes = listOf(
-        Prize("Пакет 3500 кристаллов", "COMMON"),
-        Prize("Набор 125 двойного урона", "COMMON"),
-        Prize("Набор 125 повышенной защиты", "COMMON"),
-        Prize("Набор 125 ускорений", "COMMON"),
-        Prize("Набор 125 мин", "COMMON"),
-        Prize("Пакет 10 000 кристаллов", "UNCOMMON"),
-        Prize("Набор 125 ремкомплектов", "UNCOMMON"),
-        Prize("Комплект 100 всех припасов", "UNCOMMON"),
-        Prize("краска с фиолетового", "RARE"),
-        Prize("Набор 5 золотых ящиков", "RARE"),
-        Prize("Пакет 25 000 кристаллов", "RARE"),
-        Prize("3 дня премиум аккаунта", "EPIC"),
-        Prize("Набор 10 золотых ящиков", "EPIC"),
-        Prize("Комплект 250 всех припасов", "EPIC"),
-        Prize("краска с голд.свечения", "LEGENDARY"),
-        Prize("Пакет 100 000 кристаллов", "LEGENDARY"),
-        Prize("10 дней премиум аккаунта", "LEGENDARY"),
-        Prize("Пакет 300 000 кристаллов", "EXOTIC"),
-        Prize("ХТ", "EXOTIC")
+        Prize("Пакет 3500 кристаллов", "COMMON", 978053),
+        Prize("Набор 125 двойного урона", "COMMON", 153186),
+        Prize("Набор 125 повышенной защиты", "COMMON", 504645),
+        Prize("Набор 125 ускорений", "COMMON", 716565),
+        Prize("Набор 125 мин", "COMMON", 71622),
+        Prize("Пакет 10 000 кристаллов", "UNCOMMON", 824172),
+        Prize("Набор 125 ремкомплектов", "UNCOMMON", 209092),
+        Prize("Комплект 100 всех припасов", "UNCOMMON", 629496),
+        Prize("краска с фиолетового", "RARE", 730749),
+        Prize("Набор 5 золотых ящиков", "RARE", 882375),
+        Prize("Пакет 25 000 кристаллов", "RARE", 542698),
+        Prize("3 дня премиум аккаунта", "EPIC", 826132),
+        Prize("Набор 10 золотых ящиков", "EPIC", 468704),
+        Prize("Комплект 250 всех припасов", "EPIC", 254675),
+        Prize("краска с голд.свечения", "LEGENDARY", 350240),
+        Prize("Пакет 100 000 кристаллов", "LEGENDARY", 978053),
+        Prize("10 дней премиум аккаунта", "LEGENDARY", 153186),
+        Prize("Пакет 300 000 кристаллов", "EXOTIC", 504645),
+        Prize("ХТ", "EXOTIC", 716565)
     )
 
     private val probabilities = mapOf(
@@ -37,13 +41,8 @@ class LootboxPrizeService {
         "EXOTIC" to 0.08
     )
 
-    private val previews = listOf(
-        978053, 153186, 504645, 716565, 71622, 824172, 209092, 629496, 730749, 882375, 542698, 826132,
-        468704, 254675, 350240
-    )
-
     suspend fun getRandomReward(count: Int): List<LootboxPrize> {
-        require(count <= prizes.size && count <= previews.size) { "Requested count exceeds available elements." }
+        require(count <= prizes.size) { "Requested count exceeds available elements." }
 
         val randomPrizes = List(count) {
             val rarity = selectRarity()
@@ -52,13 +51,11 @@ class LootboxPrizeService {
             filteredPrizes[index]
         }
 
-        val shuffledPreviews = previews.shuffled()
-
-        return randomPrizes.mapIndexed { i, prize ->
+        return randomPrizes.map { prize ->
             LootboxPrize(
                 category = prize.rarity,
                 count = 1,
-                preview = shuffledPreviews[i],
+                preview = prize.preview,
                 name = prize.name
             )
         }
@@ -78,8 +75,8 @@ class LootboxPrizeService {
 }
 
 data class LootboxPrize(
-    @Json val category: String,
-    @Json val count: Int,
-    @Json val preview: Int,
-    @Json val name: String
+    @Json(name = "category") val category: String,
+    @Json(name = "count") val count: Int,
+    @Json(name = "preview") val preview: Int,
+    @Json(name = "name") val name: String
 )
