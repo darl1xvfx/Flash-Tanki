@@ -150,7 +150,8 @@ class UserRepository : IUserRepository {
       ServerGarageUserItemHull(user, "hunter", modificationIndex = 0),
       ServerGarageUserItemResistance(user, "zero"),
       ServerGarageUserItemPaint(user, "green"),
-      ServerGarageUserItemPaint(user, "holiday")
+      ServerGarageUserItemPaint(user, "holiday"),
+      ServerGarageUserItemLootbox(user, "lootbox", count = 9999)
     )
     user.equipment = UserEquipment(
       hullId = "hunter",

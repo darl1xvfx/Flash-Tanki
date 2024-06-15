@@ -3,7 +3,7 @@ package flashtanki.server.garage.lootbox
 import com.squareup.moshi.Json
 
 class LootboxPrizeService {
-    val rewardsMap = mapOf(
+    private val rewardsMap = mapOf(
         "17,9" to "Пакет 3500 кристаллов",
         "12,2" to "Набор 125 двойного урона",
         "11,6" to "Набор 125 повышенной защиты",
@@ -25,16 +25,24 @@ class LootboxPrizeService {
         "0,07" to "ХТ"
     )
 
+    private val names = rewardsMap.values.toList()
+
+    private val previews = listOf(
+        978053, 153186, 504645, 716565, 71622, 824172, 209092, 629496, 730749, 882375, 542698, 826132,
+        468704, 254675, 350240
+    )
+
     suspend fun getRandomReward(count: Int): List<LootboxPrize> {
-        var names = mutableListOf("тест", "тест2", "тест3", "тест4", "тест5", "тест6", "тест7", "тест8", "тест9", "тест10", "тест11", "тест12", "тест13", "тест14", "тест15")
-        var previews = mutableListOf(978053, 153186, 504645, 716565, 71622, 824172, 209092, 629496, 730749, 882375, 542698, 826132, 468704, 254675, 350240)
-        var prizes = mutableListOf<LootboxPrize>()
-        var i = 0
-        while (i < count) {
-            prizes.add(LootboxPrize("COMMON", 1, previews[i], names[i]))
-            i++
+        require(count <= names.size && count <= previews.size) { "Requested count exceeds available elements." }
+
+        return List(count) { i ->
+            LootboxPrize(
+                category = "COMMON",
+                count = 1,
+                preview = previews[i],
+                name = names[i]
+            )
         }
-        return prizes
     }
 }
 
@@ -44,4 +52,3 @@ data class LootboxPrize(
     @Json val preview: Int,
     @Json val name: String
 )
-
