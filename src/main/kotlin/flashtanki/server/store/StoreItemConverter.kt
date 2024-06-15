@@ -1,10 +1,11 @@
 package flashtanki.server.store
 
 import flashtanki.server.utils.toClientLocalizedString
+import flashtanki.server.client.SocketLocale
 
 interface IStoreItemConverter {
   fun toClientCategory(category: ServerStoreCategory): StoreCategory
-  fun toClientItem(item: ServerStoreItem): StoreItem
+  fun toClientItem(item: ServerStoreItem, locale: SocketLocale?): StoreItem
 }
 
 class StoreItemConverter : IStoreItemConverter {
@@ -16,7 +17,7 @@ class StoreItemConverter : IStoreItemConverter {
     )
   }
 
-  override fun toClientItem(item: ServerStoreItem): StoreItem {
+  override fun toClientItem(item: ServerStoreItem, locale: SocketLocale?): StoreItem {
     if(item.crystals == null && item.premium == null && item.promocode == null && item.clan_license == null) throw IllegalStateException("Item ${item.id} is neither a crystal nor a premium package")
     if(item.crystals != null && item.premium != null && item.promocode != null && item.clan_license != null) throw IllegalStateException("Item ${item.id} cannot be both a crystal and a premium package")
 
@@ -24,8 +25,8 @@ class StoreItemConverter : IStoreItemConverter {
       category_id = item.category.id,
       item_id = item.id,
       properties = StoreItemProperties(
-        price = item.price[StoreCurrency.RUB]!!, // TODO(Assasans)
-        currency = StoreCurrency.RUB.displayName, // TODO(Assasans)
+        price = if (locale == SocketLocale.Russian) item.price[StoreCurrency.RUB]!! else item.price[StoreCurrency.USD]!!, // TODO(Assasans)
+        currency = if (locale == SocketLocale.Russian) StoreCurrency.RUB.displayName else StoreCurrency.USD.displayName, // TODO(Assasans)
 
         crystals = item.crystals?.base,
         bonusCrystals = item.crystals?.bonus,

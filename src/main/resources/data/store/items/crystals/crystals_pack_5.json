@@ -1,6 +1,7 @@
 {
   "price": {
-    "rub": 1499
+    "rub": 1499,
+	"usd": 999
   },
   "crystals": {
     "base": 60000,

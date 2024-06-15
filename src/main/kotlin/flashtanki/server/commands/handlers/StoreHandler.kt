@@ -29,7 +29,7 @@ class StoreHandler : ICommandHandler, KoinComponent {
   suspend fun openStore(socket: UserSocket) {
     val categories = storeRegistry.categories.values
     val clientCategories = categories.map(storeItemConverter::toClientCategory)
-    val clientItems = categories.flatMap { it.items }.map(storeItemConverter::toClientItem)
+    val clientItems = categories.flatMap { it.items }.map { item -> storeItemConverter.toClientItem(item, socket.locale ?: throw Exception("No Locale")) }
 
     Command(
       CommandName.ClientOpenStore,
