@@ -1,6 +1,7 @@
 {
   "price": {
-    "rub": 69
+    "rub": 69,
+	"usd": 999
   },
   "premium": {
     "base": 1

@@ -1,6 +1,7 @@
 {
   "price": {
-    "rub": 999
+    "rub": 999,
+	"usd": 999
   },
   "clan_license": {
     "base": 222
