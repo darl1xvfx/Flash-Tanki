@@ -16,7 +16,7 @@ class MineProcessor(
   override val battle: Battle
 ) : IMineProcessor {
   override val mines: MutableMap<Int, BattleMine> = mutableMapOf()
-  private var nextId: Int = 0
+  var nextId: Int = 0
 
   override fun incrementId() {
     nextId++

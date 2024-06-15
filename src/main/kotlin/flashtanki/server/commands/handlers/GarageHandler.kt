@@ -18,6 +18,7 @@ import flashtanki.server.commands.CommandName
 import flashtanki.server.commands.ICommandHandler
 import flashtanki.server.ISocketServer
 import flashtanki.server.garage.*
+import flashtanki.server.garage.lootbox.LootboxPrizeService
 
 /*
 Switch to garage from battle:
