@@ -1,6 +1,7 @@
 package flashtanki.server.garage.lootbox
 
 import com.squareup.moshi.Json
+import kotlin.random.Random
 
 class LootboxPrizeService {
     private val rewardsMap = mapOf(
@@ -35,7 +36,9 @@ class LootboxPrizeService {
     suspend fun getRandomReward(count: Int): List<LootboxPrize> {
         require(count <= names.size && count <= previews.size) { "Requested count exceeds available elements." }
 
-        return List(count) { i ->
+        val randomIndices = (names.indices).shuffled().take(count)
+
+        return randomIndices.map { i ->
             LootboxPrize(
                 category = "COMMON",
                 count = 1,
