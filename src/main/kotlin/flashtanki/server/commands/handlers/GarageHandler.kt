@@ -192,7 +192,7 @@ class GarageHandler : ICommandHandler, KoinComponent {
         }
       }
     }
-    Command(CommandName.OpenLootboxClient, "[{\"category\":\"LEGENDARY\",\"count\":1,\"preview\":1000001,\"name\":\"Краска Галактика\"}]").send(socket)
+    Command(CommandName.OpenLootboxClient, LootboxPrizeService().getRandomReward(count).toJson()).send(socket)
   }
 
   // TODO(Assasans): Code repeating
