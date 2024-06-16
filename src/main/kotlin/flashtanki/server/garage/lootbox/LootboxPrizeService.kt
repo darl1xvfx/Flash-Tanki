@@ -81,12 +81,13 @@ class LootboxPrizeService {
         val selectedPrizes = mutableListOf<Prize>()
         val prizeCounts = mutableMapOf<String, Int>()
         val random = Random.Default
+        var lastSelectedPrize: Prize? = null
 
         while (selectedPrizes.size < count) {
             val isDuplicate = random.nextDouble() < 0.27
             val filteredPrizes = if (isDuplicate && selectedPrizes.isNotEmpty()) {
                 selectedPrizes.filter {
-                    prizeCounts[it.id] ?: 0 < 3 && !it.name.contains("краска")
+                    prizeCounts[it.id] ?: 0 < 3 && it.id != "legendary_paint" && it.id != "epic_paint" && it != lastSelectedPrize
                 }
             } else {
                 val rarity = selectRarity()
@@ -99,10 +100,11 @@ class LootboxPrizeService {
                 val selectedPrize = filteredPrizes[random.nextInt(filteredPrizes.size)]
                 selectedPrizes.add(selectedPrize)
                 prizeCounts[selectedPrize.id] = (prizeCounts[selectedPrize.id] ?: 0) + 1
+                lastSelectedPrize = selectedPrize
             }
         }
 
-        selectedPrizes.sortedWith(compareBy { prizeOrder[it.id] })
+        selectedPrizes.sortWith(compareBy { prizeOrder[it.id] ?: Int.MAX_VALUE })
 
         return selectedPrizes.map { prize ->
             LootboxPrize(
