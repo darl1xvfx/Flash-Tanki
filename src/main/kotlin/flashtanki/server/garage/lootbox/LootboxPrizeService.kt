@@ -82,6 +82,17 @@ class LootboxPrizeService {
         val prizeCounts = mutableMapOf<String, Int>()
         val random = Random.Default
         var lastSelectedPrize: Prize? = null
+        
+        val specialPrizes = listOf("xt", "legendary_paint", "epic_paint")
+        for (specialPrizeId in specialPrizes) {
+            if (selectedPrizes.none { it.id == specialPrizeId }) {
+                val prize = prizes.find { it.id == specialPrizeId }
+                if (prize != null && selectedPrizes.size < count) {
+                    selectedPrizes.add(prize)
+                    prizeCounts[prize.id] = 1
+                }
+            }
+        }
 
         while (selectedPrizes.size < count) {
             val randomValue = random.nextDouble()
@@ -90,18 +101,18 @@ class LootboxPrizeService {
             val filteredPrizes = when {
                 isTriplicate && selectedPrizes.isNotEmpty() -> {
                     selectedPrizes.filter {
-                        it.id !in listOf("xt", "legendary_paint", "epic_paint") && (prizeCounts[it.id] ?: 0) < 3 && it != lastSelectedPrize
+                        it.id !in specialPrizes && (prizeCounts[it.id] ?: 0) < 3 && it != lastSelectedPrize
                     }
                 }
                 isDuplicate && selectedPrizes.isNotEmpty() -> {
                     selectedPrizes.filter {
-                        it.id !in listOf("xt", "legendary_paint", "epic_paint") && (prizeCounts[it.id] ?: 0) < 2 && it != lastSelectedPrize
+                        it.id !in specialPrizes && (prizeCounts[it.id] ?: 0) < 2 && it != lastSelectedPrize
                     }
                 }
                 else -> {
                     val rarity = selectRarity()
                     prizes.filter {
-                        it.id !in listOf("xt", "legendary_paint", "epic_paint") && it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 && !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
+                        it.id !in specialPrizes && it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 && !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
                     }
                 }
             }
@@ -111,33 +122,6 @@ class LootboxPrizeService {
                 selectedPrizes.add(selectedPrize)
                 prizeCounts[selectedPrize.id] = (prizeCounts[selectedPrize.id] ?: 0) + 1
                 lastSelectedPrize = selectedPrize
-            }
-            
-            if (selectedPrizes.none { it.id == "xt" }) {
-                val xtPrize = prizes.find { it.id == "xt" }
-                if (xtPrize != null) {
-                    selectedPrizes.add(xtPrize)
-                    prizeCounts[xtPrize.id] = (prizeCounts[xtPrize.id] ?: 0) + 1
-                    lastSelectedPrize = xtPrize
-                }
-            }
-
-            if (selectedPrizes.none { it.id == "legendary_paint" }) {
-                val legendaryPaintPrize = prizes.find { it.id == "legendary_paint" }
-                if (legendaryPaintPrize != null) {
-                    selectedPrizes.add(legendaryPaintPrize)
-                    prizeCounts[legendaryPaintPrize.id] = (prizeCounts[legendaryPaintPrize.id] ?: 0) + 1
-                    lastSelectedPrize = legendaryPaintPrize
-                }
-            }
-
-            if (selectedPrizes.none { it.id == "epic_paint" }) {
-                val epicPaintPrize = prizes.find { it.id == "epic_paint" }
-                if (epicPaintPrize != null) {
-                    selectedPrizes.add(epicPaintPrize)
-                    prizeCounts[epicPaintPrize.id] = (prizeCounts[epicPaintPrize.id] ?: 0) + 1
-                    lastSelectedPrize = epicPaintPrize
-                }
             }
         }
 
