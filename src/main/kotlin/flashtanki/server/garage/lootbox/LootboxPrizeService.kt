@@ -35,7 +35,7 @@ class LootboxPrizeService {
     )
 
     private val probabilities = mapOf(
-        "COMMON" to 0.50,
+        "COMMON" to 0.34,
         "UNCOMMON" to 0.30,
         "RARE" to 0.14,
         "EPIC" to 0.10,
@@ -83,17 +83,17 @@ class LootboxPrizeService {
             val filteredPrizes = prizes.filter { it.rarity == rarity }
             val index = Random.nextInt(filteredPrizes.size)
             filteredPrizes[index]
-        }
+        }.sortedWith(compareBy { prizeOrder[it.id] })
 
         return randomPrizes.map { prize ->
             LootboxPrize(
                 category = prize.rarity,
                 count = 1,
                 preview = prize.preview,
-                name = prize.name,
-                id = prize.id
+                name = prize.name
             )
-        }.sortedWith(compareBy { categoryOrder[it.category] }).sortedWith(compareBy { prizeOrder[it.id] })
+        }.sortedWith(compareBy { categoryOrder[it.category] })
+        //TODO(TitanoMachina) compare prize by category and rarity
     }
 
     private fun selectRarity(): String {
@@ -113,6 +113,5 @@ data class LootboxPrize(
     @Json(name = "category") val category: String,
     @Json(name = "count") val count: Int,
     @Json(name = "preview") val preview: Int,
-    @Json(name = "name") val name: String,
-    val id: String
+    @Json(name = "name") val name: String
 )
