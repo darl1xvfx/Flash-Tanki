@@ -82,38 +82,17 @@ class LootboxPrizeService {
         val prizeCounts = mutableMapOf<String, Int>()
         val random = Random.Default
         var lastSelectedPrize: Prize? = null
-        
-        val specialPrizes = listOf("xt", "legendary_paint", "epic_paint")
-        for (specialPrizeId in specialPrizes) {
-            if (selectedPrizes.none { it.id == specialPrizeId }) {
-                val prize = prizes.find { it.id == specialPrizeId }
-                if (prize != null && selectedPrizes.size < count) {
-                    selectedPrizes.add(prize)
-                    prizeCounts[prize.id] = 1
-                }
-            }
-        }
 
         while (selectedPrizes.size < count) {
-            val randomValue = random.nextDouble()
-            val isDuplicate = randomValue < 0.20
-            val isTriplicate = randomValue >= 0.20 && randomValue < 0.30
-            val filteredPrizes = when {
-                isTriplicate && selectedPrizes.isNotEmpty() -> {
-                    selectedPrizes.filter {
-                        it.id !in specialPrizes && (prizeCounts[it.id] ?: 0) < 3 && it != lastSelectedPrize
-                    }
+            val isDuplicate = random.nextDouble() < 0.27
+            val filteredPrizes = if (isDuplicate && selectedPrizes.isNotEmpty()) {
+                selectedPrizes.filter {
+                    prizeCounts[it.id] ?: 0 < 3 && it.id != "legendary_paint" && it.id != "epic_paint" && it != lastSelectedPrize
                 }
-                isDuplicate && selectedPrizes.isNotEmpty() -> {
-                    selectedPrizes.filter {
-                        it.id !in specialPrizes && (prizeCounts[it.id] ?: 0) < 2 && it != lastSelectedPrize
-                    }
-                }
-                else -> {
-                    val rarity = selectRarity()
-                    prizes.filter {
-                        it.id !in specialPrizes && it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 && !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
-                    }
+            } else {
+                val rarity = selectRarity()
+                prizes.filter {
+                    it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 && !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
                 }
             }
 
