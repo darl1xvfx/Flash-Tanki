@@ -19,26 +19,35 @@ class LootboxPrizeService {
         Prize("Пакет 10 000 кристаллов", "UNCOMMON", 824172),
         Prize("Набор 125 ремкомплектов", "UNCOMMON", 209092),
         Prize("Комплект 100 всех припасов", "UNCOMMON", 629496),
-        Prize("краска с фиолетового", "RARE", 730749),
-        Prize("Набор 5 золотых ящиков", "RARE", 882375),
+        Prize("краска с фиолетового", "EPIC", 730749),
+        Prize("Набор 5 золотых ящиков", "UNCOMMON", 882375),
         Prize("Пакет 25 000 кристаллов", "RARE", 542698),
-        Prize("3 дня премиум аккаунта", "EPIC", 826132),
-        Prize("Набор 10 золотых ящиков", "EPIC", 468704),
-        Prize("Комплект 250 всех припасов", "EPIC", 254675),
+        Prize("3 дня премиум аккаунта", "UNCOMMON", 826132),
+        Prize("Набор 10 золотых ящиков", "RARE", 468704),
+        Prize("Комплект 250 всех припасов", "RARE", 254675),
         Prize("краска с голд.свечения", "LEGENDARY", 350240),
         Prize("Пакет 100 000 кристаллов", "LEGENDARY", 978053),
-        Prize("10 дней премиум аккаунта", "LEGENDARY", 153186),
+        Prize("10 дней премиум аккаунта", "RARE", 153186),
         Prize("Пакет 300 000 кристаллов", "EXOTIC", 504645),
         Prize("ХТ", "EXOTIC", 716565)
     )
 
     private val probabilities = mapOf(
-        "COMMON" to 0.35,
-        "UNCOMMON" to 0.25,
-        "RARE" to 0.17,
-        "EPIC" to 0.15,
+        "COMMON" to /*0.35*/0.50,
+        "UNCOMMON" to /*0.25*/0.30,
+        "RARE" to /*0.17*/0.14,
+        "EPIC" to /*0.15*/0.10,
         "LEGENDARY" to 0.08,
         "EXOTIC" to 0.08
+    )
+
+    val customOrder = mapOf(
+        "COMMON" to 1,
+        "UNCOMMON" to 2,
+        "RARE" to 3,
+        "EPIC" to 4,
+        "LEGENDARY" to 5,
+        "EXOTIC" to 6
     )
 
     suspend fun getRandomReward(count: Int): List<LootboxPrize> {
@@ -58,7 +67,7 @@ class LootboxPrizeService {
                 preview = prize.preview,
                 name = prize.name
             )
-        }
+        }.sortedWith(compareBy { customOrder[it.category] })
     }
 
     private fun selectRarity(): String {
