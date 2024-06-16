@@ -43,7 +43,7 @@ class LootboxPrizeService {
         "EXOTIC" to 0.08
     )
 
-    val categoryOrder = mapOf(
+    private val categoryOrder = mapOf(
         "COMMON" to 1,
         "UNCOMMON" to 2,
         "RARE" to 3,
@@ -52,7 +52,7 @@ class LootboxPrizeService {
         "EXOTIC" to 6
     )
 
-    val prizeOrder = mapOf(
+    private val prizeOrder = mapOf(
         "crystals_3500" to 1,
         "double_damage_125" to 2,
         "double_armor_125" to 3,
@@ -78,14 +78,31 @@ class LootboxPrizeService {
     suspend fun getRandomReward(count: Int): List<LootboxPrize> {
         require(count <= prizes.size) { "Requested count exceeds available elements." }
 
-        val randomPrizes = List(count) {
-            val rarity = selectRarity()
-            val filteredPrizes = prizes.filter { it.rarity == rarity }
-            val index = Random.nextInt(filteredPrizes.size)
-            filteredPrizes[index]
-        }.sortedWith(compareBy { prizeOrder[it.id] })
+        val selectedPrizes = mutableListOf<Prize>()
+        val prizeCounts = mutableMapOf<String, Int>()
+        val random = Random.Default
 
-        return randomPrizes.map { prize ->
+        while (selectedPrizes.size < count) {
+            val isDuplicate = random.nextDouble() < 0.27
+            val filteredPrizes = if (isDuplicate && selectedPrizes.isNotEmpty()) {
+                selectedPrizes.filter {
+                    prizeCounts[it.id] ?: 0 < 3 && !it.name.contains("краска")
+                }
+            } else {
+                val rarity = selectRarity()
+                prizes.filter {
+                    it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 && !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
+                }
+            }
+
+            if (filteredPrizes.isNotEmpty()) {
+                val selectedPrize = filteredPrizes[random.nextInt(filteredPrizes.size)]
+                selectedPrizes.add(selectedPrize)
+                prizeCounts[selectedPrize.id] = (prizeCounts[selectedPrize.id] ?: 0) + 1
+            }
+        }
+
+        return selectedPrizes.map { prize ->
             LootboxPrize(
                 category = prize.rarity,
                 count = 1,
@@ -93,7 +110,6 @@ class LootboxPrizeService {
                 name = prize.name
             )
         }.sortedWith(compareBy { categoryOrder[it.category] })
-        //TODO(TitanoMachina) compare prize by category and rarity
     }
 
     private fun selectRarity(): String {
