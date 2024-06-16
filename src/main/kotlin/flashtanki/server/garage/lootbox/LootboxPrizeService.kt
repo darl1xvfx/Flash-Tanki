@@ -199,6 +199,6 @@ class LootboxPrizeService : KoinComponent {
                 return rarity
             }
         }
-        return probabilities.keys.last() // Fallback to the last rarity if probabilities don't add up to 1
+        return probabilities.keys.last()
     }
 }
