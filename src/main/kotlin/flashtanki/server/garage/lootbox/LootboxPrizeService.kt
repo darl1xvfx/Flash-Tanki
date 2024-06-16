@@ -84,15 +84,25 @@ class LootboxPrizeService {
         var lastSelectedPrize: Prize? = null
 
         while (selectedPrizes.size < count) {
-            val isDuplicate = random.nextDouble() < 0.27
-            val filteredPrizes = if (isDuplicate && selectedPrizes.isNotEmpty()) {
-                selectedPrizes.filter {
-                    prizeCounts[it.id] ?: 0 < 3 && it.id != "legendary_paint" && it.id != "epic_paint" && it != lastSelectedPrize
+            val randomValue = random.nextDouble()
+            val isDuplicate = randomValue < 0.20
+            val isTriplicate = randomValue >= 0.20 && randomValue < 0.30
+            val filteredPrizes = when {
+                isTriplicate && selectedPrizes.isNotEmpty() -> {
+                    selectedPrizes.filter {
+                        it.id != "xt" && prizeCounts[it.id] ?: 0 < 3 && it.id != "legendary_paint" && it.id != "epic_paint" && it != lastSelectedPrize
+                    }
                 }
-            } else {
-                val rarity = selectRarity()
-                prizes.filter {
-                    it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 && !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
+                isDuplicate && selectedPrizes.isNotEmpty() -> {
+                    selectedPrizes.filter {
+                        it.id != "xt" && prizeCounts[it.id] ?: 0 < 2 && it.id != "legendary_paint" && it.id != "epic_paint" && it != lastSelectedPrize
+                    }
+                }
+                else -> {
+                    val rarity = selectRarity()
+                    prizes.filter {
+                        it.id != "xt" && it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 && !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
+                    }
                 }
             }
 
@@ -101,6 +111,14 @@ class LootboxPrizeService {
                 selectedPrizes.add(selectedPrize)
                 prizeCounts[selectedPrize.id] = (prizeCounts[selectedPrize.id] ?: 0) + 1
                 lastSelectedPrize = selectedPrize
+            } else if (isDuplicate || isTriplicate) {
+                val nonDuplicatePrizes = prizes.filter { it.id == "xt" && !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id } }
+                if (nonDuplicatePrizes.isNotEmpty()) {
+                    val selectedPrize = nonDuplicatePrizes[random.nextInt(nonDuplicatePrizes.size)]
+                    selectedPrizes.add(selectedPrize)
+                    prizeCounts[selectedPrize.id] = (prizeCounts[selectedPrize.id] ?: 0) + 1
+                    lastSelectedPrize = selectedPrize
+                }
             }
         }
 
