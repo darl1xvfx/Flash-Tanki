@@ -85,20 +85,17 @@ class LootboxPrizeService {
 
         while (selectedPrizes.size < count) {
             val isDuplicate = random.nextDouble() < 0.15
-            val isTriplicate = random.nextDouble() < 0.8
-
-            val filteredPrizes = if (isTriplicate && selectedPrizes.isNotEmpty()) {
+            val isTriplicate = random.nextDouble() < 0.08
+            val filteredPrizes = if ((isDuplicate || isTriplicate) && selectedPrizes.isNotEmpty()) {
                 selectedPrizes.filter {
-                    prizeCounts[it.id] ?: 0 < 2
-                }
-            } else if (isDuplicate && selectedPrizes.isNotEmpty()) {
-                selectedPrizes.filter {
-                    prizeCounts[it.id] ?: 0 < 2 && it.id != "legendary_paint" && it.id != "epic_paint" && it.id != "xt" && it != lastSelectedPrize
+                    (prizeCounts[it.id] ?: 0 < 3 || (isTriplicate && prizeCounts[it.id] ?: 0 < 3)) &&
+                            it.id !in listOf("legendary_paint", "epic_paint", "xt") && it != lastSelectedPrize
                 }
             } else {
                 val rarity = selectRarity()
                 prizes.filter {
-                    it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 && !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
+                    it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 &&
+                            !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
                 }
             }
 
@@ -115,7 +112,7 @@ class LootboxPrizeService {
         return selectedPrizes.map { prize ->
             LootboxPrize(
                 category = prize.rarity,
-                count = if (prizeCounts[prize.id] == 2) 2 else if (prizeCounts[prize.id] == 3) 3 else 1,
+                count = 1,
                 preview = prize.preview,
                 name = prize.name
             )
