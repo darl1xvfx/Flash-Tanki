@@ -102,6 +102,8 @@ class LootboxPrizeService {
             }
         }
 
+        selectedPrizes.sortedWith(compareBy { prizeOrder[it.id] })
+
         return selectedPrizes.map { prize ->
             LootboxPrize(
                 category = prize.rarity,
