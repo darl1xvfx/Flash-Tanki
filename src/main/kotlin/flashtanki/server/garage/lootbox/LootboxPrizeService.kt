@@ -87,7 +87,7 @@ class LootboxPrizeService {
             val isDuplicate = random.nextDouble() < 0.27
             val filteredPrizes = if (isDuplicate && selectedPrizes.isNotEmpty()) {
                 selectedPrizes.filter {
-                    prizeCounts[it.id] ?: 0 < 3 && it.id != "legendary_paint" && it.id != "epic_paint" && it != lastSelectedPrize
+                    prizeCounts[it.id] ?: 0 < 3 && it.id != "legendary_paint" && it.id != "epic_paint" && it.id != "xt" && it != lastSelectedPrize
                 }
             } else {
                 val rarity = selectRarity()
