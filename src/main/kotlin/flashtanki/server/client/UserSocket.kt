@@ -239,24 +239,21 @@ class UserSocket(
       val currentInstant = Clock.System.now()
       if (user.premium <= 0) {
         // Create the identifier for ServerGarageUserItemPaint
-        val paintItemId = ServerGarageItemId(user, "premium")
+       /* val paintItemId = ServerGarageItemId(user, "premium")
         val existingPaintItem = withContext(Dispatchers.IO) {
           entityManager.find(ServerGarageUserItemPaint::class.java, paintItemId)
-        }
+        }*/
 
-        if (existingPaintItem == null) {
+        //if (existingPaintItem == null) {
           //val paintItem = ServerGarageUserItemPaint(user, "premium")
           //user.items += paintItem
           //entityManager.persist(paintItem)
           showWelcomeAlert = true
           showAlertForFirstPurchasePremium = true
-        }
+        //}
       }
 
       val nextDayInstant = currentInstant.plus((user.premium / 86400).days)
-      val subscriptionItem = ServerGarageUserItemSubscription(user, "premium_effect", nextDayInstant)
-      user.items += subscriptionItem
-      entityManager.persist(subscriptionItem)
 
       user.premium += premium * 86400
 

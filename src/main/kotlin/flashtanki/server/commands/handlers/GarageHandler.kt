@@ -192,7 +192,7 @@ class GarageHandler : ICommandHandler, KoinComponent {
         }
       }
     }
-    Command(CommandName.OpenLootboxClient, LootboxPrizeService().getRandomReward(count).toJson()).send(socket)
+    Command(CommandName.OpenLootboxClient, LootboxPrizeService().getRandomReward(socket, count).toJson()).send(socket)
   }
 
   // TODO(Assasans): Code repeating

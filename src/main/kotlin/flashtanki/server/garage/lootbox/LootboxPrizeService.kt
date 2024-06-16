@@ -1,7 +1,15 @@
 package flashtanki.server.garage.lootbox
 
 import com.squareup.moshi.Json
+import java.math.BigInteger
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.random.Random
+import flashtanki.server.HibernateUtils
+import flashtanki.server.client.*
+import flashtanki.server.garage.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 data class Prize(
     val name: String,
@@ -10,28 +18,28 @@ data class Prize(
     val id: String
 )
 
-class LootboxPrizeService {
+class LootboxPrizeService : KoinComponent {
     private val prizes = listOf(
-        Prize("Пакет 3500 кристаллов", "COMMON", 978053, "crystals_3500"), //1
-        Prize("Набор 125 двойного урона", "COMMON", 153186, "double_damage_125"), //2
-        Prize("Набор 125 повышенной защиты", "COMMON", 504645, "double_armor_125"), //3
-        Prize("Набор 125 ускорений", "COMMON", 716565, "nitro_125"), //4
-        Prize("Набор 125 мин", "COMMON", 71622, "mine_125"), //5
-        Prize("Пакет 10 000 кристаллов", "UNCOMMON", 824172, "crystals_10000"), //6
-        Prize("Набор 125 ремкомплектов", "UNCOMMON", 209092, "health_125"), //7
-        Prize("Комплект 100 всех припасов", "UNCOMMON", 629496, "allsupplies_100"), //8
-        Prize("краска с фиолетового", "EPIC", 730749, "epic_paint"), //9
-        Prize("Набор 5 золотых ящиков", "UNCOMMON", 882375, "goldboxes_5"), //9
-        Prize("Пакет 25 000 кристаллов", "RARE", 542698, "crystals_25000"), //10
-        Prize("3 дня премиум аккаунта", "UNCOMMON", 826132, "premiumdays_3"), //11
-        Prize("Набор 10 золотых ящиков", "RARE", 468704, "goldboxes_10"), //12
-        Prize("Комплект 250 всех припасов", "RARE", 254675, "allsupplies_250"), //13
-        Prize("краска с голд.свечения", "LEGENDARY", 350240, "legendary_paint"), //14
-        Prize("Пакет 100 000 кристаллов", "EPIC", 978053, "crystals_100000"), //15
-        Prize("10 дней премиум аккаунта", "RARE", 153186, "premiumdays_10"), //16
-        Prize("Пакет 300 000 кристаллов", "LEGENDARY", 504645, "crystals_300000"), //17
-        Prize("ХТ", "EXOTIC", 716565, "xt"), //18
-        Prize("Пакет 1 000 000 кристаллов", "EXOTIC", 1500009, "crystals_1000000") //19
+        Prize("Пакет 3500 кристаллов", "COMMON", 978053, "crystals_3500"),
+        Prize("Набор 125 двойного урона", "COMMON", 153186, "doubledamage_125"),
+        Prize("Набор 125 повышенной защиты", "COMMON", 504645, "armor_125"),
+        Prize("Набор 125 ускорений", "COMMON", 716565, "n2o_125"),
+        Prize("Набор 125 мин", "COMMON", 71622, "mine_125"),
+        Prize("Пакет 10 000 кристаллов", "UNCOMMON", 824172, "crystals_10000"),
+        Prize("Набор 125 ремкомплектов", "UNCOMMON", 209092, "health_125"),
+        Prize("Комплект 100 всех припасов", "UNCOMMON", 629496, "allsupplies_100"),
+        Prize("краска с фиолетового", "EPIC", 730749, "epic_paint"),
+        Prize("Набор 5 золотых ящиков", "UNCOMMON", 882375, "goldboxes_5"),
+        Prize("Пакет 25 000 кристаллов", "RARE", 542698, "crystals_25000"),
+        Prize("3 дня премиум аккаунта", "UNCOMMON", 826132, "premiumdays_3"),
+        Prize("Набор 10 золотых ящиков", "RARE", 468704, "goldboxes_10"),
+        Prize("Комплект 250 всех припасов", "RARE", 254675, "allsupplies_250"),
+        Prize("краска с голд.свечения", "LEGENDARY", 350240, "legendary_paint"),
+        Prize("Пакет 100 000 кристаллов", "EPIC", 978053, "crystals_100000"),
+        Prize("10 дней премиум аккаунта", "RARE", 153186, "premiumdays_10"),
+        Prize("Пакет 300 000 кристаллов", "LEGENDARY", 504645, "crystals_300000"),
+        Prize("ХТ", "EXOTIC", 716565, "test_xt"),
+        Prize("Пакет 1 000 000 кристаллов", "EXOTIC", 1500009, "crystals_1000000")
     )
 
     private val probabilities = mapOf(
@@ -54,9 +62,9 @@ class LootboxPrizeService {
 
     private val prizeOrder = mapOf(
         "crystals_3500" to 1,
-        "double_damage_125" to 2,
-        "double_armor_125" to 3,
-        "nitro_125" to 4,
+        "doubledamage_125" to 2,
+        "armor_125" to 3,
+        "n2o_125" to 4,
         "mine_125" to 5,
         "crystals_10000" to 7,
         "health_125" to 8,
@@ -71,17 +79,22 @@ class LootboxPrizeService {
         "crystals_100000" to 17,
         "legendary_paint" to 18,
         "crystals_300000" to 19,
-        "xt" to 20,
+        "test_xt" to 20,
         "crystals_1000000" to 21
     )
 
-    suspend fun getRandomReward(count: Int): List<LootboxPrize> {
+    private val userRepository: IUserRepository by inject()
+
+    suspend fun getRandomReward(socket: UserSocket, count: Int): List<LootboxPrize> {
         require(count <= prizes.size) { "Requested count exceeds available elements." }
 
+        val user = socket.user ?: throw Exception("No User")
         val selectedPrizes = mutableListOf<Prize>()
         val prizeCounts = mutableMapOf<String, Int>()
         val random = Random.Default
         var lastSelectedPrize: Prize? = null
+        val entityManager = HibernateUtils.createEntityManager()
+        entityManager.transaction.begin()
 
         while (selectedPrizes.size < count) {
             val isDuplicate = random.nextDouble() < 0.10
@@ -107,7 +120,53 @@ class LootboxPrizeService {
             }
         }
 
+        for (prize in selectedPrizes) {
+            val id = prize.id
+            val data = id.split("_")
+            if (data[0].contains("crystals")) {
+                val amount: BigInteger = data[1].toBigInteger()
+                user.crystals += amount.toInt()
+                socket.updateCrystals()
+                userRepository.updateUser(user)
+            } else {
+                if (data[0].contains("premiumdays")) {
+                    val amount: BigInteger = data[1].toBigInteger()
+                    socket.addPremiumAccount(amount.toInt())
+                } else {
+                    if (data[0].contains("health") || data[0].contains("armor") || data[0].contains("doubledamage") || data[0].contains("n2o") || data[0].contains("mine")) {
+                        val itemId = data[0].replace("double", "double_")
+                        var currentItem = user.items.singleOrNull { userItem -> userItem.marketItem.id == itemId }
+
+                        val count = data[1].toInt()
+
+                        if (currentItem == null) {
+                            // Создание нового объекта, если он не найден
+                            currentItem = ServerGarageUserItemSupply(user, itemId, count)
+                            user.items.add(currentItem)
+                            entityManager.persist(currentItem)
+                            userRepository.updateUser(user)
+                        } else {
+                            // Обновление существующего объекта
+                            val supplyItem = currentItem as ServerGarageUserItemSupply
+                            supplyItem.count += count
+
+                            withContext(Dispatchers.IO) {
+                                entityManager
+                                    .createQuery("UPDATE ServerGarageUserItemSupply SET count = :count WHERE id = :id")
+                                    .setParameter("count", supplyItem.count)
+                                    .setParameter("id", supplyItem.id)
+                                    .executeUpdate()
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
         selectedPrizes.sortWith(compareBy { prizeOrder[it.id] ?: Int.MAX_VALUE })
+        entityManager.transaction.commit()
+        entityManager.entityManagerFactory.cache.evictAll()
 
         return selectedPrizes.map { prize ->
             LootboxPrize(
