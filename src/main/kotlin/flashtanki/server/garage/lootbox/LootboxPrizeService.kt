@@ -84,8 +84,8 @@ class LootboxPrizeService {
         var lastSelectedPrize: Prize? = null
 
         while (selectedPrizes.size < count) {
-            val isDuplicate = random.nextDouble() < 0.20
-            val isTriplicate = random.nextDouble() < 0.10
+            val isDuplicate = random.nextDouble() < 0.15
+            val isTriplicate = random.nextDouble() < 0.8
 
             val filteredPrizes = if (isTriplicate && selectedPrizes.isNotEmpty()) {
                 selectedPrizes.filter {
