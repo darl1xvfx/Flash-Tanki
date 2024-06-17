@@ -98,7 +98,6 @@ class LootboxPrizeService : KoinComponent {
         var lastSelectedPrize: Prize? = null
         val entityManager = HibernateUtils.createEntityManager()
         try {
-            entityManager.transaction.begin()
 
             if(socket.screen == Screen.Garage) {
                 Command(CommandName.UnloadGarage).send(socket)
@@ -134,6 +133,7 @@ class LootboxPrizeService : KoinComponent {
             for (prize in selectedPrizes) {
                 val id = prize.id
                 val data = id.split("_")
+				entityManager.transaction.begin()
                 try {
                     if (data[0].contains("crystals")) {
                         val amount: BigInteger = data[1].toBigInteger()
@@ -150,15 +150,12 @@ class LootboxPrizeService : KoinComponent {
                                 var currentItem = user.items.singleOrNull { userItem -> userItem.marketItem.id == itemId }
 
                                 val count = data[1].toInt()
-
                                 if (currentItem == null) {
-                                    // Создание нового объекта, если он не найден
                                     currentItem = ServerGarageUserItemSupply(user, itemId, count)
                                     user.items.add(currentItem)
                                     entityManager.persist(currentItem)
                                     userRepository.updateUser(user)
                                 } else {
-                                    // Обновление существующего объекта
                                     val supplyItem = currentItem as ServerGarageUserItemSupply
                                     supplyItem.count += count
 
@@ -178,10 +175,10 @@ class LootboxPrizeService : KoinComponent {
                 } catch (e: Exception) {
                     println("Exception: ${e.message}")
                 }
+				entityManager.transaction.commit()
             }
 
             selectedPrizes.sortWith(compareBy { prizeOrder[it.id] ?: Int.MAX_VALUE })
-            entityManager.transaction.commit()
         } catch (e: Exception) {
             entityManager.transaction.rollback()
             throw e
