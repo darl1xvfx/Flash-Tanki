@@ -7,7 +7,10 @@ import org.koin.core.component.inject
 import kotlin.random.Random
 import flashtanki.server.HibernateUtils
 import flashtanki.server.client.*
+import flashtanki.server.commands.Command
+import flashtanki.server.commands.CommandName
 import flashtanki.server.garage.*
+import jakarta.persistence.EntityNotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -94,79 +97,98 @@ class LootboxPrizeService : KoinComponent {
         val random = Random.Default
         var lastSelectedPrize: Prize? = null
         val entityManager = HibernateUtils.createEntityManager()
-        entityManager.transaction.begin()
+        try {
+            entityManager.transaction.begin()
 
-        while (selectedPrizes.size < count) {
-            val isDuplicate = random.nextDouble() < 0.10
-            val isTriplicate = random.nextDouble() < 0.05
-            val filteredPrizes = if ((isDuplicate || isTriplicate) && selectedPrizes.isNotEmpty()) {
-                selectedPrizes.filter {
-                    (prizeCounts[it.id] ?: 0 < 3 || (isTriplicate && prizeCounts[it.id] ?: 0 < 3)) &&
-                            it.id !in listOf("legendary_paint", "epic_paint", "xt") && it != lastSelectedPrize
-                }
-            } else {
-                val rarity = selectRarity()
-                prizes.filter {
-                    it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 &&
-                            !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
-                }
+            if(socket.screen == Screen.Garage) {
+                Command(CommandName.UnloadGarage).send(socket)
+
+                socket.loadGarageResources()
+                socket.initGarage()
             }
 
-            if (filteredPrizes.isNotEmpty()) {
-                val selectedPrize = filteredPrizes[random.nextInt(filteredPrizes.size)]
-                selectedPrizes.add(selectedPrize)
-                prizeCounts[selectedPrize.id] = (prizeCounts[selectedPrize.id] ?: 0) + 1
-                lastSelectedPrize = selectedPrize
-            }
-        }
-
-        for (prize in selectedPrizes) {
-            val id = prize.id
-            val data = id.split("_")
-            if (data[0].contains("crystals")) {
-                val amount: BigInteger = data[1].toBigInteger()
-                user.crystals += amount.toInt()
-                socket.updateCrystals()
-                userRepository.updateUser(user)
-            } else {
-                if (data[0].contains("premiumdays")) {
-                    val amount: BigInteger = data[1].toBigInteger()
-                    socket.addPremiumAccount(amount.toInt())
+            while (selectedPrizes.size < count) {
+                val isDuplicate = random.nextDouble() < 0.10
+                val isTriplicate = random.nextDouble() < 0.05
+                val filteredPrizes = if ((isDuplicate || isTriplicate) && selectedPrizes.isNotEmpty()) {
+                    selectedPrizes.filter {
+                        (prizeCounts[it.id] ?: 0 < 3 || (isTriplicate && prizeCounts[it.id] ?: 0 < 3)) &&
+                                it.id !in listOf("legendary_paint", "epic_paint", "xt") && it != lastSelectedPrize
+                    }
                 } else {
-                    if (data[0].contains("health") || data[0].contains("armor") || data[0].contains("doubledamage") || data[0].contains("n2o") || data[0].contains("mine")) {
-                        val itemId = data[0].replace("double", "double_")
-                        var currentItem = user.items.singleOrNull { userItem -> userItem.marketItem.id == itemId }
+                    val rarity = selectRarity()
+                    prizes.filter {
+                        it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 &&
+                                !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id }
+                    }
+                }
 
-                        val count = data[1].toInt()
+                if (filteredPrizes.isNotEmpty()) {
+                    val selectedPrize = filteredPrizes[random.nextInt(filteredPrizes.size)]
+                    selectedPrizes.add(selectedPrize)
+                    prizeCounts[selectedPrize.id] = (prizeCounts[selectedPrize.id] ?: 0) + 1
+                    lastSelectedPrize = selectedPrize
+                }
+            }
 
-                        if (currentItem == null) {
-                            // Создание нового объекта, если он не найден
-                            currentItem = ServerGarageUserItemSupply(user, itemId, count)
-                            user.items.add(currentItem)
-                            entityManager.persist(currentItem)
-                            userRepository.updateUser(user)
+            for (prize in selectedPrizes) {
+                val id = prize.id
+                val data = id.split("_")
+                try {
+                    if (data[0].contains("crystals")) {
+                        val amount: BigInteger = data[1].toBigInteger()
+                        user.crystals += amount.toInt()
+                        socket.updateCrystals()
+                        userRepository.updateUser(user)
+                    } else {
+                        if (data[0].contains("premiumdays")) {
+                            val amount: BigInteger = data[1].toBigInteger()
+                            socket.addPremiumAccount(amount.toInt())
                         } else {
-                            // Обновление существующего объекта
-                            val supplyItem = currentItem as ServerGarageUserItemSupply
-                            supplyItem.count += count
+                            if (data[0].contains("health") || data[0].contains("armor") || data[0].contains("doubledamage") || data[0].contains("n2o") || data[0].contains("mine")) {
+                                val itemId = data[0].replace("double", "double_")
+                                var currentItem = user.items.singleOrNull { userItem -> userItem.marketItem.id == itemId }
 
-                            withContext(Dispatchers.IO) {
-                                entityManager
-                                    .createQuery("UPDATE ServerGarageUserItemSupply SET count = :count WHERE id = :id")
-                                    .setParameter("count", supplyItem.count)
-                                    .setParameter("id", supplyItem.id)
-                                    .executeUpdate()
+                                val count = data[1].toInt()
+
+                                if (currentItem == null) {
+                                    // Создание нового объекта, если он не найден
+                                    currentItem = ServerGarageUserItemSupply(user, itemId, count)
+                                    user.items.add(currentItem)
+                                    entityManager.persist(currentItem)
+                                    userRepository.updateUser(user)
+                                } else {
+                                    // Обновление существующего объекта
+                                    val supplyItem = currentItem as ServerGarageUserItemSupply
+                                    supplyItem.count += count
+
+                                    withContext(Dispatchers.IO) {
+                                        entityManager
+                                            .createQuery("UPDATE ServerGarageUserItemSupply SET count = :count WHERE id = :id")
+                                            .setParameter("count", supplyItem.count)
+                                            .setParameter("id", supplyItem.id)
+                                            .executeUpdate()
+                                    }
+                                }
                             }
                         }
                     }
-
+                } catch (e: EntityNotFoundException) {
+                    println("EntityNotFoundException: ${e.message}")
+                } catch (e: Exception) {
+                    println("Exception: ${e.message}")
                 }
             }
-        }
 
-        selectedPrizes.sortWith(compareBy { prizeOrder[it.id] ?: Int.MAX_VALUE })
-        entityManager.transaction.commit()
-        entityManager.entityManagerFactory.cache.evictAll()
+            selectedPrizes.sortWith(compareBy { prizeOrder[it.id] ?: Int.MAX_VALUE })
+            entityManager.transaction.commit()
+        } catch (e: Exception) {
+            entityManager.transaction.rollback()
+            throw e
+        } finally {
+            entityManager.entityManagerFactory.cache.evictAll()
+            entityManager.close()
+        }
 
         return selectedPrizes.map { prize ->
             LootboxPrize(
@@ -177,6 +199,7 @@ class LootboxPrizeService : KoinComponent {
             )
         }.sortedWith(compareBy { categoryOrder[it.category] })
     }
+
 
     private fun selectRarity(): String {
         val rand = Random.nextDouble()
