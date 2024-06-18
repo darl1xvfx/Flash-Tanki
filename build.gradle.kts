@@ -35,6 +35,7 @@ dependencies {
   implementation("io.ktor:ktor-client-cio:2.0.0-beta-1")
   implementation("io.ktor:ktor-client-websockets:2.0.0-beta-1")
   implementation("io.ktor:ktor-server-auth:2.0.0-beta-1")
+  implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.0-beta-1")
 
   val koinVersion = "3.1.5"
 
@@ -68,7 +69,6 @@ dependencies {
 
   // lib discord bot
   implementation(files("gradle/wrapper/JDA-4.3.0_277.jar"))
-
 
   testImplementation(kotlin("test"))
 }
@@ -112,7 +112,7 @@ tasks {
   }
 
   jar {
-    val gitSuffix = if(gitBranch.isNotEmpty() && gitCommitHash.isNotEmpty()) "/$gitBranch+${gitCommitHash.take(8)}" else ""
+    val gitSuffix = if (gitBranch.isNotEmpty() && gitCommitHash.isNotEmpty()) "/$gitBranch+${gitCommitHash.take(8)}" else ""
 
     archiveBaseName.set("flashtanki-server")
     archiveVersion.set("${project.version}")
@@ -127,7 +127,7 @@ tasks {
   }
 
   shadowJar {
-    val gitSuffix = if(gitBranch.isNotEmpty() && gitCommitHash.isNotEmpty()) "/$gitBranch+${gitCommitHash.take(8)}" else ""
+    val gitSuffix = if (gitBranch.isNotEmpty() && gitCommitHash.isNotEmpty()) "/$gitBranch+${gitCommitHash.take(8)}" else ""
 
     archiveBaseName.set("flashtanki-server")
     archiveVersion.set("${project.version}")
