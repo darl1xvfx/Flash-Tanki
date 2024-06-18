@@ -88,7 +88,6 @@ class LootboxPrizeService : KoinComponent {
 
     private val userRepository: IUserRepository by inject()
 
-    // Регулярное выражение для исключения красок и XT из лутбокса
     private val excludedPrizeRegex = Regex("^paint_.+|.+_xt$")
 
     suspend fun getRandomReward(socket: UserSocket, count: Int): List<LootboxPrize> {
