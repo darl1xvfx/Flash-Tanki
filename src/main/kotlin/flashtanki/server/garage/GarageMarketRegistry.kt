@@ -35,7 +35,7 @@ class GarageMarketRegistry : IGarageMarketRegistry, KoinComponent {
     GarageItemGroup(GarageItemType.Hull, ServerGarageItemHull::class, "hulls/default"),
 	GarageItemGroup(GarageItemType.Resistance, ServerGarageItemResistance::class, "resistance"),
     GarageItemGroup(GarageItemType.Paint, ServerGarageItemPaint::class, "paints/default"),
-	//GarageItemGroup(GarageItemType.Paint, ServerGarageItemPaint::class, "paints/animated"),
+	GarageItemGroup(GarageItemType.Paint, ServerGarageItemPaint::class, "paints/special"),
     GarageItemGroup(GarageItemType.Supply, ServerGarageItemSupply::class, "supplies"),
     GarageItemGroup(GarageItemType.Subscription, ServerGarageItemSubscription::class, "subscriptions"),
     GarageItemGroup(GarageItemType.Kit, ServerGarageItemKit::class, "kits"),
@@ -47,7 +47,6 @@ class GarageMarketRegistry : IGarageMarketRegistry, KoinComponent {
 
   override suspend fun load() {
     for(group in groups) {
-      logger.debug { "Loading garage item group ${group.itemType.name}..." }
 
       resourceManager.get("garage/items/${group.directory}").absolute().forEachDirectoryEntry { entry ->
         if(entry.extension != "json") return@forEachDirectoryEntry
@@ -58,8 +57,6 @@ class GarageMarketRegistry : IGarageMarketRegistry, KoinComponent {
           .fromJson(entry.readText())!!
 
         items[item.id] = item
-
-        logger.debug { "  > Loaded garage item ${item.id} -> ${item.name.localized} " }
       }
     }
 

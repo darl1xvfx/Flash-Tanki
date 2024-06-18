@@ -99,13 +99,6 @@ class LootboxPrizeService : KoinComponent {
         val entityManager = HibernateUtils.createEntityManager()
         try {
 
-            if(socket.screen == Screen.Garage) {
-                Command(CommandName.UnloadGarage).send(socket)
-
-                socket.loadGarageResources()
-                socket.initGarage()
-            }
-
             while (selectedPrizes.size < count) {
                 val isDuplicate = random.nextDouble() < 0.10
                 val isTriplicate = random.nextDouble() < 0.05
@@ -166,6 +159,14 @@ class LootboxPrizeService : KoinComponent {
                                             .setParameter("id", supplyItem.id)
                                             .executeUpdate()
                                     }
+
+                                    socket.battlePlayer?.let { battlePlayer ->
+                                        Command(
+                                            CommandName.SetItemCount,
+                                            supplyItem.marketItem.id,
+                                            supplyItem.count.toString()
+                                        ).send(battlePlayer)
+                                    }
                                 }
                             }
                         }
@@ -186,7 +187,12 @@ class LootboxPrizeService : KoinComponent {
             entityManager.entityManagerFactory.cache.evictAll()
             entityManager.close()
         }
+        if(socket.screen == Screen.Garage) {
+            Command(CommandName.UnloadGarage).send(socket)
 
+            socket.loadGarageResources()
+            socket.initGarage()
+        }
         return selectedPrizes.map { prize ->
             LootboxPrize(
                 category = prize.rarity,
