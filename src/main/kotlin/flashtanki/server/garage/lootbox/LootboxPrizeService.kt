@@ -32,7 +32,7 @@ class LootboxPrizeService : KoinComponent {
         Prize("Набор 125 ремкомплектов", "UNCOMMON", 716566, "health_125"),
         Prize("Комплект 100 всех припасов", "UNCOMMON", 60287, "allsupplies_100"),
 
-        Prize("краска с фиолетового", "EPIC", 730749, "epic_paint"),
+        Prize("Луноход", "EPIC", 342553, "paint_moonwalker"),
 
         Prize("Набор 5 золотых ящиков", "UNCOMMON", 60289, "goldboxes_5"),
         Prize("Пакет 25 000 кристаллов", "RARE", 60286, "crystals_25000"),
@@ -40,7 +40,7 @@ class LootboxPrizeService : KoinComponent {
         Prize("Набор 10 золотых ящиков", "RARE", 60289, "goldboxes_10"),
         Prize("Комплект 250 всех припасов", "RARE", 60287, "allsupplies_250"),
 
-        Prize("краска с голд.свечения", "LEGENDARY", 350240, "legendary_paint"),
+        //Prize("краска с голд.свечения", "LEGENDARY", 350240, "paint_legendary"),
 
         Prize("Пакет 100 000 кристаллов", "EPIC", 60286, "crystals_100000"),
         Prize("10 дней премиум аккаунта", "RARE", 60288, "premiumdays_10"),
@@ -82,9 +82,9 @@ class LootboxPrizeService : KoinComponent {
         "goldboxes_10" to 13,
         "allsupplies_250" to 14,
         "premiumdays_10" to 15,
-        "epic_paint" to 16,
+        "paint_moonwalker" to 16,
         "crystals_100000" to 17,
-        "legendary_paint" to 18,
+        "paint_legendary" to 18,
         "crystals_300000" to 19,
         "thunder_xt" to 20,
         "crystals_1000000" to 21
@@ -172,7 +172,52 @@ class LootboxPrizeService : KoinComponent {
                                         ).send(battlePlayer)
                                     }
                                 }
-                            }
+                            } else {
+                               if (data[0].contains("paint")) {
+							      val itemId = data[1]
+							      var currentItem = user.items.singleOrNull { userItem -> userItem.marketItem.id == itemId }
+                                  if (currentItem == null) {
+                                      currentItem = ServerGarageUserItemPaint(user, itemId)
+                                      user.items.add(currentItem)
+                                      entityManager.persist(currentItem)
+                                      userRepository.updateUser(user)
+                                  }
+							   } else {
+                                   if (data[0].contains("allsupplies")) {
+                                       val supplies = listOf("health", "armor", "double_damage", "n2o", "mine")
+                                       val count = data[1].toInt()
+                                       for (itemId in supplies) {
+                                           var currentItem =
+                                               user.items.singleOrNull { userItem -> userItem.marketItem.id == itemId }
+                                           if (currentItem == null) {
+                                               currentItem = ServerGarageUserItemSupply(user, itemId, count)
+                                               user.items.add(currentItem)
+                                               entityManager.persist(currentItem)
+                                               userRepository.updateUser(user)
+                                           } else {
+                                               val supplyItem = currentItem as ServerGarageUserItemSupply
+                                               supplyItem.count += count
+
+                                               withContext(Dispatchers.IO) {
+                                                   entityManager
+                                                       .createQuery("UPDATE ServerGarageUserItemSupply SET count = :count WHERE id = :id")
+                                                       .setParameter("count", supplyItem.count)
+                                                       .setParameter("id", supplyItem.id)
+                                                       .executeUpdate()
+                                               }
+
+                                               socket.battlePlayer?.let { battlePlayer ->
+                                                   Command(
+                                                       CommandName.SetItemCount,
+                                                       supplyItem.marketItem.id,
+                                                       supplyItem.count.toString()
+                                                   ).send(battlePlayer)
+                                               }
+                                           }
+                                       }
+                                   }
+                               }
+							}
                         }
                     }
                 } catch (e: EntityNotFoundException) {
