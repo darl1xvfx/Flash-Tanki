@@ -109,7 +109,9 @@ class LootboxPrizeService : KoinComponent {
                 val filteredPrizes = if ((isDuplicate || isTriplicate) && selectedPrizes.isNotEmpty()) {
                     selectedPrizes.filter {
                         (prizeCounts[it.id] ?: 0 < 3 || (isTriplicate && prizeCounts[it.id] ?: 0 < 3)) &&
-                                it.id !in listOf("legendary_paint", "epic_paint", "xt") && it != lastSelectedPrize
+                                !it.id.startsWith("paint_") && // исключаем все краски
+                                !it.id.endsWith("_xt") && // исключаем все XT
+                                it != lastSelectedPrize
                     }
                 } else {
                     val rarity = selectRarity()
