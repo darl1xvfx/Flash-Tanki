@@ -18,7 +18,8 @@ data class ServerStoreItem(
   val crystals: CrystalsPackage? = null,
   val premium: PremiumPackage? = null,
   val promocode: PromocodePackage? = null,
-  val clan_license: ClanLicense? = null
+  val clan_license: ClanLicense? = null,
+  val lootboxs: LootBoxs? = null
 ) {
   lateinit var id: String
   lateinit var category: ServerStoreCategory
@@ -36,6 +37,9 @@ data class ServerStoreItem(
     @Json val base: Int
   )
   data class ClanLicense(
+    @Json val base: Int
+  )
+  data class LootBoxs(
     @Json val base: Int
   )
 }

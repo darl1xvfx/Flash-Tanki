@@ -11,6 +11,7 @@ import flashtanki.server.commands.ICommandHandler
 import flashtanki.server.store.*
 import flashtanki.server.*
 import flashtanki.server.client.*
+import flashtanki.server.garage.ServerGarageUserItemLootbox
 import java.io.File
 
 class StoreHandler : ICommandHandler, KoinComponent {
@@ -101,8 +102,59 @@ class StoreHandler : ICommandHandler, KoinComponent {
       logger.debug { "Player ${user.username} added clan_license" }
     }
 
+    if (itemId.startsWith("lootbox_pack_")) {
+      val count = when (itemId) {
+        "lootbox_pack_1" -> 1
+        "lootbox_pack_2" -> 3
+        "lootbox_pack_3" -> 10
+        "lootbox_pack_4" -> 25
+        "lootbox_pack_5" -> 50
+        "lootbox_pack_6" -> 100
+        else -> {
+          logger.error { "Unknown lootbox pack ID: $itemId" }
+          return
+        }
+      }
+
+      val entityManager = HibernateUtils.createEntityManager()
+      try {
+        entityManager.transaction.begin()
+
+        val existingItem = user.items.singleOrNull { it.marketItem.id == "lootbox" }
+        if (existingItem != null) {
+          val supplyItem = existingItem as ServerGarageUserItemLootbox
+          supplyItem.count += count
+          entityManager.merge(supplyItem)
+        } else {
+          val newItem = ServerGarageUserItemLootbox(user, "lootbox", count)
+          user.items.add(newItem)
+          entityManager.persist(newItem)
+        }
+
+        entityManager.transaction.commit()
+      } catch (e: Exception) {
+        entityManager.transaction.rollback()
+        logger.error { "Error updating user lootbox: ${e.message}" }
+      } finally {
+        entityManager.close()
+      }
+
+      if(socket.screen == Screen.Garage) {
+        Command(CommandName.UnloadGarage).send(socket)
+
+        socket.loadGarageResources()
+        socket.initGarage()
+      }
+
+      userRepository.updateUser(user)
+    } else {
+      logger.error { "Unknown lootbox pack ID: $itemId" }
+    }
+
+
     logger.debug { "Player ${user.username} bought ${item.id} with payment method: $paymentMethod" }
   }
+
 
   private fun getLocaleValue(locale: SocketLocale?): String {
     return when (locale) {

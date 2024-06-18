@@ -1,27 +1,31 @@
 {
-  "id": "galaxy",
-  "index": -76,
-
-  "name": {
-    "en": "Galaxy",
-    "ru": "Галактика"
-  },
+  "animatedColoring": 1000002,
+  "baseItemId": 1000001,
   "description": {
     "en": "If you gaze into this paint long enough, you can see a cat flying through space on a slice of pizza.",
     "ru": "Если долго всматриваться в эту краску, можно увидеть кота, пролетающего на куске пиццы."
   },
-
-  "baseItemId": 1000001,
+  "id": "galaxy",
+  "index": -76,
+  "name": {
+    "en": "Galaxy",
+    "ru": "Галактика"
+  },
   "previewResourceId": 1000001,
-
-  "rank": 30,
   "price": 0,
-
-  "animatedColoring": 1000002,
-
   "properties": [
-    { "property": "RAILGUN_RESISTANCE", "value": 50 },
-    { "property": "RICOCHET_RESISTANCE", "value": 30 },
-	{ "property": "ISIS_RESISTANCE", "value": 20 }
-  ]
+    {
+      "property": "RAILGUN_RESISTANCE",
+      "value": 50
+    },
+    {
+      "property": "RICOCHET_RESISTANCE",
+      "value": 30
+    },
+    {
+      "property": "ISIS_RESISTANCE",
+      "value": 20
+    }
+  ],
+  "rank": 30
 }
