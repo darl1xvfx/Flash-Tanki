@@ -238,7 +238,7 @@ class LootboxPrizeService : KoinComponent {
                 category = prize.rarity,
                 count = 1,
                 preview = prize.preview,
-                name = prize.name
+                name = prize.name.toString()
             )
         }.sortedWith(compareBy { categoryOrder[it.category] })
     }
