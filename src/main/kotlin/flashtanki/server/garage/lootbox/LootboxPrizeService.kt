@@ -98,6 +98,7 @@ class LootboxPrizeService : KoinComponent {
         val prizeCounts = mutableMapOf<String, Int>()
         val random = Random.Default
         var lastSelectedPrize: Prize? = null
+        val locale = socket.locale ?: SocketLocale.English
         val entityManager = HibernateUtils.createEntityManager()
         try {
             while (selectedPrizes.size < count) {
@@ -238,7 +239,7 @@ class LootboxPrizeService : KoinComponent {
                 category = prize.rarity,
                 count = 1,
                 preview = prize.preview,
-                name = prize.name.toString()
+                name = prize.name.get(locale)
             )
         }.sortedWith(compareBy { categoryOrder[it.category] })
     }
