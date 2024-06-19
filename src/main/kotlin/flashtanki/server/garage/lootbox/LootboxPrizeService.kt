@@ -10,12 +10,13 @@ import flashtanki.server.client.*
 import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandName
 import flashtanki.server.garage.*
+import flashtanki.server.utils.LocalizedString
 import jakarta.persistence.EntityNotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 data class Prize(
-    val name: String,
+    val name: LocalizedString,
     val rarity: String,
     val preview: Int,
     val id: String
@@ -23,26 +24,25 @@ data class Prize(
 
 class LootboxPrizeService : KoinComponent {
     private val prizes = listOf(
-        Prize("Пакет 3500 кристаллов", "COMMON", 60285, "crystals_3500"),
-        Prize("Набор 125 двойного урона", "COMMON", 71623, "doubledamage_125"),
-        Prize("Набор 125 повышенной защиты", "COMMON", 824173, "armor_125"),
-        Prize("Набор 125 ускорений", "COMMON", 153187, "n2o_125"),
-        Prize("Набор 125 мин", "COMMON", 504646, "mine_125"),
-        Prize("Пакет 10 000 кристаллов", "UNCOMMON", 60286, "crystals_10000"),
-        Prize("Набор 125 ремкомплектов", "UNCOMMON", 716566, "health_125"),
-        Prize("Комплект 100 всех припасов", "UNCOMMON", 60287, "allsupplies_100"),
-        Prize("Луноход", "EPIC", 342553, "paint_moonwalker"),
-        Prize("Набор 5 золотых ящиков", "UNCOMMON", 60289, "goldboxes_5"),
-        Prize("Пакет 25 000 кристаллов", "RARE", 60286, "crystals_25000"),
-        Prize("3 дня премиум аккаунта", "UNCOMMON", 60288, "premiumdays_3"),
-        Prize("Набор 10 золотых ящиков", "RARE", 60289, "goldboxes_10"),
-        Prize("Комплект 250 всех припасов", "RARE", 60287, "allsupplies_250"),
-        //Prize("краска с голд.свечения", "LEGENDARY", 350240, "paint_legendary"),
-        Prize("Пакет 100 000 кристаллов", "EPIC", 60286, "crystals_100000"),
-        Prize("10 дней премиум аккаунта", "RARE", 60288, "premiumdays_10"),
-        Prize("Пакет 300 000 кристаллов", "LEGENDARY", 60286, "crystals_300000"),
-        Prize("ХТ", "EXOTIC", 60290, "thunder_xt"),
-        Prize("Пакет 1 000 000 кристаллов", "EXOTIC", 60286, "crystals_1000000")
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 3500 crystals", SocketLocale.Russian to "Пакет 3500 кристаллов")), rarity = "COMMON", preview = 60285, id = "crystals_3500"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 double damage", SocketLocale.Russian to "Набор 125 двойного урона")), rarity = "COMMON", preview = 71623, id = "doubledamage_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 increased protection", SocketLocale.Russian to "Набор 125 повышенной защиты")), rarity = "COMMON", preview = 824173, id = "armor_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 accelerations", SocketLocale.Russian to "Набор 125 ускорений")), rarity = "COMMON", preview = 153187, id = "n2o_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 mines", SocketLocale.Russian to "Набор 125 мин")), rarity = "COMMON", preview = 504646, id = "mine_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 10,000 crystals", SocketLocale.Russian to "Пакет 10 000 кристаллов")), rarity = "UNCOMMON", preview = 60286, id = "crystals_10000"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 repair kits", SocketLocale.Russian to "Набор 125 ремкомплектов")), rarity = "UNCOMMON", preview = 716566, id = "health_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 100 all supplies", SocketLocale.Russian to "Комплект 100 всех припасов")), rarity = "UNCOMMON", preview = 60287, id = "allsupplies_100"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Moonwalker", SocketLocale.Russian to "Луноход")), rarity = "EPIC", preview = 342553, id = "paint_moonwalker"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 5 gold boxes", SocketLocale.Russian to "Набор 5 золотых ящиков")), rarity = "UNCOMMON", preview = 60289, id = "goldboxes_5"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 25,000 crystals", SocketLocale.Russian to "Пакет 25 000 кристаллов")), rarity = "RARE", preview = 60286, id = "crystals_25000"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "3 days of premium account", SocketLocale.Russian to "3 дня премиум аккаунта")), rarity = "UNCOMMON", preview = 60288, id = "premiumdays_3"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 10 gold boxes", SocketLocale.Russian to "Набор 10 золотых ящиков")), rarity = "RARE", preview = 60289, id = "goldboxes_10"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 250 all supplies", SocketLocale.Russian to "Комплект 250 всех припасов")), rarity = "RARE", preview = 60287, id = "allsupplies_250"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 100,000 crystals", SocketLocale.Russian to "Пакет 100 000 кристаллов")), rarity = "EPIC", preview = 60286, id = "crystals_100000"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "10 days of premium account", SocketLocale.Russian to "10 дней премиум аккаунта")), rarity = "RARE", preview = 60288, id = "premiumdays_10"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 300,000 crystals", SocketLocale.Russian to "Пакет 300 000 кристаллов")), rarity = "LEGENDARY", preview = 60286, id = "crystals_300000"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Thunder XT", SocketLocale.Russian to "Гром ХТ")), rarity = "EXOTIC", preview = 60290, id = "thunder_xt"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 1,000,000 crystals", SocketLocale.Russian to "Пакет 1 000 000 кристаллов")), rarity = "EXOTIC", preview = 60286, id = "crystals_1000000")
     )
 
     private val probabilities = mapOf(
@@ -50,7 +50,7 @@ class LootboxPrizeService : KoinComponent {
         "UNCOMMON" to 0.34,
         "RARE" to 0.10,
         "EPIC" to 0.05,
-        "LEGENDARY" to 0.01,
+        "LEGENDARY" to 0.02,
         "EXOTIC" to 0.01
     )
 
@@ -100,14 +100,13 @@ class LootboxPrizeService : KoinComponent {
         var lastSelectedPrize: Prize? = null
         val entityManager = HibernateUtils.createEntityManager()
         try {
-
             while (selectedPrizes.size < count) {
                 val isDuplicate = random.nextDouble() < 0.10
                 val isTriplicate = random.nextDouble() < 0.05
                 val filteredPrizes = if ((isDuplicate || isTriplicate) && selectedPrizes.isNotEmpty()) {
                     selectedPrizes.filter {
                         (prizeCounts[it.id] ?: 0 < 3 || (isTriplicate && prizeCounts[it.id] ?: 0 < 3)) &&
-                                !excludedPrizeRegex.containsMatchIn(it.id) && // исключаем все краски и XT
+                                !excludedPrizeRegex.containsMatchIn(it.id) &&
                                 it != lastSelectedPrize
                     }
                 } else {
@@ -115,7 +114,7 @@ class LootboxPrizeService : KoinComponent {
                     prizes.filter {
                         it.rarity == rarity && (prizeCounts[it.id] ?: 0) < 3 &&
                                 !selectedPrizes.any { selectedPrize -> selectedPrize.id == it.id } &&
-                                !excludedPrizeRegex.containsMatchIn(it.id) // исключаем все краски и XT
+                                !excludedPrizeRegex.containsMatchIn(it.id)
                     }
                 }
 
