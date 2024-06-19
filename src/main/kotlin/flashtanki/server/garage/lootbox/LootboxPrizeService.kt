@@ -3,7 +3,6 @@ package flashtanki.server.garage.lootbox
 import com.squareup.moshi.Json
 import java.math.BigInteger
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import kotlin.random.Random
 import flashtanki.server.HibernateUtils
 import flashtanki.server.client.*
@@ -14,6 +13,7 @@ import flashtanki.server.utils.LocalizedString
 import jakarta.persistence.EntityNotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.core.component.inject
 
 data class Prize(
     val name: LocalizedString,
@@ -24,25 +24,25 @@ data class Prize(
 
 class LootboxPrizeService : KoinComponent {
     private val prizes = listOf(
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 3500 crystals", SocketLocale.Russian to "Пакет 3500 кристаллов")), rarity = "COMMON", preview = 60285, id = "crystals_3500"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 double damage", SocketLocale.Russian to "Набор 125 двойного урона")), rarity = "COMMON", preview = 71623, id = "doubledamage_125"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 increased protection", SocketLocale.Russian to "Набор 125 повышенной защиты")), rarity = "COMMON", preview = 824173, id = "armor_125"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 accelerations", SocketLocale.Russian to "Набор 125 ускорений")), rarity = "COMMON", preview = 153187, id = "n2o_125"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 mines", SocketLocale.Russian to "Набор 125 мин")), rarity = "COMMON", preview = 504646, id = "mine_125"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 10,000 crystals", SocketLocale.Russian to "Пакет 10 000 кристаллов")), rarity = "UNCOMMON", preview = 60286, id = "crystals_10000"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 125 repair kits", SocketLocale.Russian to "Набор 125 ремкомплектов")), rarity = "UNCOMMON", preview = 716566, id = "health_125"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 100 all supplies", SocketLocale.Russian to "Комплект 100 всех припасов")), rarity = "UNCOMMON", preview = 60287, id = "allsupplies_100"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Moonwalker", SocketLocale.Russian to "Луноход")), rarity = "EPIC", preview = 342553, id = "paint_moonwalker"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 5 gold boxes", SocketLocale.Russian to "Набор 5 золотых ящиков")), rarity = "UNCOMMON", preview = 60289, id = "goldboxes_5"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 25,000 crystals", SocketLocale.Russian to "Пакет 25 000 кристаллов")), rarity = "RARE", preview = 60286, id = "crystals_25000"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "3 days of premium account", SocketLocale.Russian to "3 дня премиум аккаунта")), rarity = "UNCOMMON", preview = 60288, id = "premiumdays_3"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 10 gold boxes", SocketLocale.Russian to "Набор 10 золотых ящиков")), rarity = "RARE", preview = 60289, id = "goldboxes_10"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Set of 250 all supplies", SocketLocale.Russian to "Комплект 250 всех припасов")), rarity = "RARE", preview = 60287, id = "allsupplies_250"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 100,000 crystals", SocketLocale.Russian to "Пакет 100 000 кристаллов")), rarity = "EPIC", preview = 60286, id = "crystals_100000"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "10 days of premium account", SocketLocale.Russian to "10 дней премиум аккаунта")), rarity = "RARE", preview = 60288, id = "premiumdays_10"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 300,000 crystals", SocketLocale.Russian to "Пакет 300 000 кристаллов")), rarity = "LEGENDARY", preview = 60286, id = "crystals_300000"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "3500 crystals pack", SocketLocale.Russian to "Пакет 3500 кристаллов")), rarity = "COMMON", preview = 60285, id = "crystals_3500"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "125 Double Damage set", SocketLocale.Russian to "Набор 125 двойного урона")), rarity = "COMMON", preview = 71623, id = "doubledamage_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "125 Dobule Armor set", SocketLocale.Russian to "Набор 125 повышенной защиты")), rarity = "COMMON", preview = 824173, id = "armor_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "125 Speed Boosts set", SocketLocale.Russian to "Набор 125 ускорений")), rarity = "COMMON", preview = 153187, id = "n2o_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "125 Mines set", SocketLocale.Russian to "Набор 125 мин")), rarity = "COMMON", preview = 504646, id = "mine_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "10.000 crystals pack", SocketLocale.Russian to "Пакет 10 000 кристаллов")), rarity = "UNCOMMON", preview = 60286, id = "crystals_10000"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "125 Repair Kits set", SocketLocale.Russian to "Набор 125 ремкомплектов")), rarity = "UNCOMMON", preview = 716566, id = "health_125"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "100 of All Supplies pack", SocketLocale.Russian to "Комплект 100 всех припасов")), rarity = "UNCOMMON", preview = 60287, id = "allsupplies_100"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Moonwalker paint", SocketLocale.Russian to "Краска Луноход")), rarity = "EPIC", preview = 342553, id = "paint_moonwalker"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "5 Gold Boxes set", SocketLocale.Russian to "Набор 5 золотых ящиков")), rarity = "UNCOMMON", preview = 60289, id = "goldboxes_5"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "25.000 crystals pack", SocketLocale.Russian to "Пакет 25 000 кристаллов")), rarity = "RARE", preview = 60286, id = "crystals_25000"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "3 days of Premium", SocketLocale.Russian to "3 дня премиум аккаунта")), rarity = "UNCOMMON", preview = 60288, id = "premiumdays_3"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "10 Gold Boxes set", SocketLocale.Russian to "Набор 10 золотых ящиков")), rarity = "RARE", preview = 60289, id = "goldboxes_10"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "250 of All Supplies pack", SocketLocale.Russian to "Комплект 250 всех припасов")), rarity = "RARE", preview = 60287, id = "allsupplies_250"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "100.000 crystals pack", SocketLocale.Russian to "Пакет 100 000 кристаллов")), rarity = "EPIC", preview = 60286, id = "crystals_100000"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "10 days of Premium", SocketLocale.Russian to "10 дней премиум аккаунта")), rarity = "RARE", preview = 60288, id = "premiumdays_10"),
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "300.000 crystals pack", SocketLocale.Russian to "Пакет 300 000 кристаллов")), rarity = "LEGENDARY", preview = 60286, id = "crystals_300000"),
         Prize(name = LocalizedString(mapOf(SocketLocale.English to "Thunder XT", SocketLocale.Russian to "Гром ХТ")), rarity = "EXOTIC", preview = 60290, id = "thunder_xt"),
-        Prize(name = LocalizedString(mapOf(SocketLocale.English to "Package of 1,000,000 crystals", SocketLocale.Russian to "Пакет 1 000 000 кристаллов")), rarity = "EXOTIC", preview = 60286, id = "crystals_1000000")
+        Prize(name = LocalizedString(mapOf(SocketLocale.English to "1.000.000 crystals pack", SocketLocale.Russian to "Пакет 1 000 000 кристаллов")), rarity = "EXOTIC", preview = 60286, id = "crystals_1000000")
     )
 
     private val probabilities = mapOf(

@@ -12,15 +12,21 @@ import flashtanki.server.battles.BattleTank
 import flashtanki.server.battles.sendTo
 import flashtanki.server.commands.Command
 import flashtanki.server.garage.*
+import flashtanki.server.client.*
 import flashtanki.server.commands.CommandName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.koin.core.component.inject
 import flashtanki.server.math.Quaternion
 import flashtanki.server.math.Vector3
+import org.koin.core.component.KoinComponent
 
 class BattleContainerBonus(battle: Battle, id: Int, position: Vector3, rotation: Quaternion, bonusPoint: ServerMapBonusPoint, siren:String="Скоро будет сброшен золотой ящик") :
-  BattleBonus(battle, id, position, rotation) {
+  BattleBonus(battle, id, position, rotation), KoinComponent {
   override val type: BonusType = BonusType.Container
   val goldBoxSiren: String = siren
   val bonusPoint = bonusPoint
+  val userRepository: IUserRepository by inject()
 
   override suspend fun spawn() {
     Command(CommandName.SpawnGold, goldBoxSiren, 490113.toString()).sendTo(battle)
@@ -33,27 +39,10 @@ class BattleContainerBonus(battle: Battle, id: Int, position: Vector3, rotation:
   }
 
   override suspend fun activate(tank: BattleTank) {
-    val garageItem = tank.player.user.items.singleOrNull { userItem ->
-      userItem is ServerGarageUserItemLootbox && userItem.marketItem.id == "lootbox"
-    } as? ServerGarageUserItemLootbox
-
-    garageItem?.let {
-      if(it.count > 0) {
-        it.count += 1
-
-        val entityManager = HibernateUtils.createEntityManager()
-        try {
-          entityManager.transaction.begin()
-          entityManager.merge(it)
-          entityManager.transaction.commit()
-        } catch(error: Exception) {
-          entityManager.transaction.rollback()
-          throw Exception("Error while updating garage item count", error)
-        } finally {
-          entityManager.close()
-        }
-      }
-    }
+    val user = tank.player.user
+    val itemId = "lootbox"
+    val entityManager = HibernateUtils.createEntityManager()
+    var currentItem = user.items.singleOrNull { userItem -> userItem.marketItem.id == itemId }
     Command(CommandName.RemoveOneGoldRegion, id.toString()).sendTo(battle)
     Command(CommandName.TakeGold, tank.id, false.toString()).sendTo(battle)
     battle.droppedGoldIds.remove(id.toString())
@@ -61,6 +50,27 @@ class BattleContainerBonus(battle: Battle, id: Int, position: Vector3, rotation:
     if (battle.unusedGoldBoxes.isNotEmpty()) {
       battle.spawnGoldBonus()
       battle.unusedGoldBoxes.removeAt(0)
+    }
+    if (currentItem == null) {
+      entityManager.transaction.begin()
+      currentItem = ServerGarageUserItemLootbox(user, itemId, 1)
+      user.items.add(currentItem)
+      entityManager.persist(currentItem)
+      userRepository.updateUser(user)
+      entityManager.transaction.commit()
+    } else {
+      entityManager.transaction.begin()
+      val supplyItem = currentItem as ServerGarageUserItemLootbox
+      supplyItem.count += 1
+
+      withContext(Dispatchers.IO) {
+        entityManager
+                .createQuery("UPDATE ServerGarageUserItemLootbox SET count = :count WHERE id = :id")
+                .setParameter("count", supplyItem.count)
+                .setParameter("id", supplyItem.id)
+                .executeUpdate()
+      }
+      entityManager.transaction.commit()
     }
   }
 }
