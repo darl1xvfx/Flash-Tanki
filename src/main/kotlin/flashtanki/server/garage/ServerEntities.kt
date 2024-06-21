@@ -25,6 +25,10 @@ interface IServerGarageItemWithModifications {
   val modifications: Map<Int, ServerGarageItemModification>
 }
 
+interface IServerGarageItemWithSkins {
+  val skins: List<ServerUserItemSkin>
+}
+
 class ServerGarageItemWeapon(
   id: String,
   index: Int,
@@ -34,12 +38,14 @@ class ServerGarageItemWeapon(
 
   baseItemId: Int,
 
-  @Json override val modifications: Map<Int, ServerGarageItemWeaponModification>
+  @Json override val modifications: Map<Int, ServerGarageItemWeaponModification>,
+
+  @Json override val skins: List<ServerUserItemSkin>
 ) : ServerGarageItem(
   id, index, GarageItemType.Weapon,
   name, description,
   baseItemId
-), IServerGarageItemWithModifications
+), IServerGarageItemWithModifications, IServerGarageItemWithSkins
 
 class ServerGarageItemHull(
   id: String,
@@ -50,12 +56,14 @@ class ServerGarageItemHull(
 
   baseItemId: Int,
 
-  @Json override val modifications: Map<Int, ServerGarageItemHullModification>
+  @Json override val modifications: Map<Int, ServerGarageItemHullModification>,
+
+  @Json override val skins: List<ServerUserItemSkin>
 ) : ServerGarageItem(
   id, index, GarageItemType.Hull,
   name, description,
   baseItemId
-), IServerGarageItemWithModifications
+), IServerGarageItemWithModifications, IServerGarageItemWithSkins
 
 class ServerGarageItemPaint(
   id: String,
@@ -253,6 +261,12 @@ abstract class ServerGarageItemModification(
   @Json val properties: List<ServerGarageItemProperty>,
 
   @Json open val physics: IPhysics
+)
+
+abstract class ServerUserItemSkin(
+  @Json val previewResourceId: Int,
+  @Json val id: String,
+  @Json val isMounted: Boolean
 )
 
 data class WeaponDamage(

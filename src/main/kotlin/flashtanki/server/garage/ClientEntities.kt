@@ -42,6 +42,8 @@ open class GarageItem(
 
   @Json(name = "properts") val properties: List<GarageItemProperty>,
 
+  @Json(name = "skins") val skins: List<GarageItemSkin>,
+
   // Weapon / hull
   @Json val modificationID: Int?,
   @Json val object3ds: Int?,
@@ -80,4 +82,10 @@ data class GarageItemProperty(
   @Json val property: String,
   @Json @SerializeNull val value: String?,
   @Json @SerializeNull val subproperties: List<GarageItemProperty>?
+)
+
+data class GarageItemSkin(
+  @Json val previewResourceId: Int,
+  @Json val id: String,
+  @Json val isMounted: Boolean
 )

@@ -25,6 +25,16 @@ class GarageItemConverter : IGarageItemConverter {
     }
   }
 
+  private fun toClientSkins(skins: List<ServerUserItemSkin>): List<GarageItemSkin> {
+    return skins.map { skin ->
+      GarageItemSkin(
+        previewResourceId = skin.previewResourceId,
+        id = skin.id,
+        isMounted = skin.isMounted
+      )
+    }
+  }
+
   override fun toClientWeapon(item: ServerGarageItemWeapon, locale: SocketLocale): List<GarageItem> {
     return item.modifications.map { (index, modification) ->
       val nextModification = item.modifications.getOrDefault(index + 1, null)
@@ -56,6 +66,8 @@ class GarageItemConverter : IGarageItemConverter {
         timeLeft = -1,
 
         properties = toClientProperties(modification.properties),
+
+        skins = toClientSkins(item.skins),
 
         modificationID = index,
         object3ds = modification.object3ds,
@@ -102,6 +114,8 @@ class GarageItemConverter : IGarageItemConverter {
 
         properties = toClientProperties(modification.properties),
 
+        skins = toClientSkins(item.skins),
+
         modificationID = index,
         object3ds = modification.object3ds,
 
@@ -144,6 +158,8 @@ class GarageItemConverter : IGarageItemConverter {
 
       properties = toClientProperties(item.properties),
 
+      skins = listOf(),
+
       modificationID = null,
       object3ds = null,
 
@@ -184,6 +200,7 @@ class GarageItemConverter : IGarageItemConverter {
         timeLeft = -1,
 
         properties = toClientProperties(item.properties),
+        skins = listOf(),
         modificationID = null,
         object3ds = null,
 
@@ -226,6 +243,7 @@ class GarageItemConverter : IGarageItemConverter {
       timeLeft = -1,
 
       properties = toClientProperties(item.properties),
+      skins = listOf(),
 
       modificationID = null,
       object3ds = null,
@@ -267,6 +285,7 @@ class GarageItemConverter : IGarageItemConverter {
       timeLeft = userItem?.timeLeft?.inWholeSeconds ?: 86400,//-1,
 
       properties = toClientProperties(item.properties),
+      skins = listOf(),
 
       modificationID = null,
       object3ds = null,
@@ -308,6 +327,7 @@ class GarageItemConverter : IGarageItemConverter {
       timeLeft = -1,
 
       properties = toClientProperties(item.properties),
+      skins = listOf(),
 
       modificationID = null,
       object3ds = null,
@@ -355,6 +375,7 @@ class GarageItemConverter : IGarageItemConverter {
       timeLeft = -1,
 
       properties = toClientProperties(item.properties),
+      skins = listOf(),
 
       modificationID = null,
       object3ds = null,
@@ -396,6 +417,7 @@ class GarageItemConverter : IGarageItemConverter {
       timeLeft = -1,
 
       properties = toClientProperties(item.properties),
+      skins = listOf(),
 
       modificationID = null,
       object3ds = null,

@@ -659,5 +659,12 @@
         ]
       }
     }
-  }
+  },
+  "skins":[
+     {
+		 "previewResourceId":0,
+		 "id":"default",
+		 "isMounted":true
+     }	 
+  ]
 }
