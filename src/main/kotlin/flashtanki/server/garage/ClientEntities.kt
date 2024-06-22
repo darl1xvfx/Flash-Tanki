@@ -87,5 +87,7 @@ data class GarageItemProperty(
 data class GarageItemSkin(
   @Json val previewResourceId: Int,
   @Json val id: String,
+  @Json val name: String,
+  @Json val description:String,
   @Json val isMounted: Boolean
 )

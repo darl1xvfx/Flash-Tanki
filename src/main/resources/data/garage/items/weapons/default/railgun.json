@@ -662,9 +662,11 @@
   },
   "skins":[
      {
-		 "previewResourceId":0,
-		 "id":"default",
-		 "isMounted":true
+		 "previewResourceId":1500016,
+		 "id":"railgun_xt",
+		 "name":"Рельса ХТ",
+		 "description":"description",
+		 "isMounted":false
      }	 
   ]
 }

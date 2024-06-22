@@ -30,6 +30,8 @@ class GarageItemConverter : IGarageItemConverter {
       GarageItemSkin(
         previewResourceId = skin.previewResourceId,
         id = skin.id,
+        name = skin.name,
+        description = skin.description,
         isMounted = skin.isMounted
       )
     }
