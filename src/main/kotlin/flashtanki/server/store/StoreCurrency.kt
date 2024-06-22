@@ -5,8 +5,9 @@ enum class StoreCurrency(val key: String, val displayName: String) {
   USD("usd", "USD");
 
   companion object {
-    private val map = values().associateBy(StoreCurrency::key)
+    private val map: Map<String, StoreCurrency> = values().associateBy(StoreCurrency::key)
 
-    fun get(key: String) = map[key]
+    fun get(key: String): StoreCurrency? = map[key]
   }
 }
+
