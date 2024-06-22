@@ -272,14 +272,14 @@ class BattlePlayer(
               slotId = 5,
               itemEffectTime = 20,
               itemRestSec = 20
-            )/*,
+            ),
 			InventoryItemData(
               id = "gold",
-              count = 99999,//user.items.singleOrNullOf<ServerGarageUserItem, ServerGarageUserItemSupply> { it.id.itemName == "gold" }?.count ?: 0,
+              count = user.items.singleOrNullOf<ServerGarageUserItem, ServerGarageUserItemSupply> { it.id.itemName == "gold" }?.count ?: 0,
               slotId = 6,
               itemEffectTime = 1,
               itemRestSec = 5
-            )*/
+            )
           )
         ).toJson()
       ).send(socket)

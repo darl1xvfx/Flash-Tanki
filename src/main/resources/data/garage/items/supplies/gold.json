@@ -1,0 +1,17 @@
+{
+  "id": "gold",
+  "index": 6,
+  "name": {
+    "en": "Gold box",
+    "ru": "Золотой ящик"
+  },
+  "description": {
+    "en": "null.",
+    "ru": "null."
+  },
+  "baseItemId": 1500017,
+  "previewResourceId": 1500017,
+  "rank": 11,
+  "price": 0,
+  "properties": []
+}

@@ -140,8 +140,8 @@ class LootboxPrizeService : KoinComponent {
                     } else if (data[0].contains("premiumdays")) {
                         val amount: BigInteger = data[1].toBigInteger()
                         socket.addPremiumAccount(amount.toInt())
-                    } else if (data[0].contains("health") || data[0].contains("armor") || data[0].contains("doubledamage") || data[0].contains("n2o") || data[0].contains("mine")) {
-                        val itemId = data[0].replace("double", "double_")
+                    } else if (data[0].contains("health") || data[0].contains("armor") || data[0].contains("doubledamage") || data[0].contains("n2o") || data[0].contains("mine") || data[0].contains("goldboxes")) {
+                        val itemId = data[0].replace("double", "double_").replace("goldboxes", "gold")
                         var currentItem = user.items.singleOrNull { userItem -> userItem.marketItem.id == itemId }
 
                         val count = data[1].toInt()

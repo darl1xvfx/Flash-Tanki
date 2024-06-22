@@ -40,7 +40,7 @@ class BattleSupplyHandler : ICommandHandler, KoinComponent {
       else            -> throw Exception("Unknown item: $item")
     }
     effect
-    if(player.battle.properties[BattleProperty.SuppliesCooldownEnabled]) {
+    if((!(player.battle.properties[BattleProperty.ParkourMode])) || player.battle.properties[BattleProperty.SuppliesCooldownEnabled]) {
       if (effect.info.name == "health") {
         Command(
                 CommandName.ActivateDependedCooldown,
@@ -163,7 +163,7 @@ class BattleSupplyHandler : ICommandHandler, KoinComponent {
       true.toString() // Decrement item count in HUD (visual)
     ).send(socket)
     val cdwn = effect.cooldown ?: 3.seconds
-    if(!(player.battle.properties[BattleProperty.ParkourMode]) || player.battle.properties[BattleProperty.SuppliesCooldownEnabled] || effect.info.name != "gold") {
+    if(item != "gold" && (!(player.battle.properties[BattleProperty.ParkourMode])) || player.battle.properties[BattleProperty.SuppliesCooldownEnabled]) {
       var job: Job = tank.coroutineScope.launchDelayed(effect.duration ?: 3.seconds) {
         Command(
                 CommandName.ActivateDependedCooldown,

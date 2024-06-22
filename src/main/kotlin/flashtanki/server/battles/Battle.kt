@@ -343,7 +343,7 @@ suspend fun createBonusRegions(socket: UserSocket) {
       }
     }
 
-  public suspend fun spawnGoldBonus() {
+  public suspend fun spawnGoldBonus(siren:String="", withoutContainers:Boolean=false) {
       val battle = this
 	  val bonusType = BonusType.Gold
       val availableBonuses = battle.map.bonuses
@@ -363,6 +363,9 @@ suspend fun createBonusRegions(socket: UserSocket) {
 	  }
 	  droppedGoldBoxes.add(bonusPoint)
       var message: String = ""
+	  if (siren != "") {
+	     message = siren
+	  } else {
       val playersData = players.users().map { player ->
         message = when (player.socket.locale) {
           SocketLocale.Russian -> "Скоро будет сброшен золотой ящик"
@@ -370,6 +373,7 @@ suspend fun createBonusRegions(socket: UserSocket) {
           else -> "Gold box will be dropped soon"
         }
       }
+	  }
       val x = (bonusPoint.position.min.x + bonusPoint.position.max.x) / 2
       val y = (bonusPoint.position.min.y + bonusPoint.position.max.y) / 2
       val z = (bonusPoint.position.min.z + bonusPoint.position.max.z) / 2
@@ -378,7 +382,7 @@ suspend fun createBonusRegions(socket: UserSocket) {
       val rotation = Quaternion()
       rotation.fromEulerAngles(bonusPoint.rotation.toVector())
 	  val containerChance = Random.nextInt(1, 3)
-      val bonus = if (containerChance == 2) BattleContainerBonus(battle, battle.bonusProcessor.nextId, position, rotation, bonusPoint, message) else BattleGoldBonus(battle, battle.bonusProcessor.nextId, position, rotation, bonusPoint, message)
+      val bonus = if (containerChance == 2 && !withoutContainers) BattleContainerBonus(battle, battle.bonusProcessor.nextId, position, rotation, bonusPoint, message) else BattleGoldBonus(battle, battle.bonusProcessor.nextId, position, rotation, bonusPoint, message)
       battle.bonusProcessor.incrementId()
       battle.coroutineScope.launch {
         battle.bonusProcessor.spawn(bonus)

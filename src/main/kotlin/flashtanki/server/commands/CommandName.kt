@@ -385,6 +385,7 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   SelectGarageCategory(CommandCategory.Garage, "showCategory", CommandSide.Client),
   SelectGarageItem(CommandCategory.Garage, "select", CommandSide.Client),
   PurchasePresent(CommandCategory.Garage, "purchasePresent", CommandSide.Server),
+  SetShowGoldAuthor(CommandCategory.Garage, "setShowGoldAuthor", CommandSide.Server),
   OpenStore(CommandCategory.Lobby, "show_payment", CommandSide.Server),
   ClientOpenStore(CommandCategory.Lobby, "show_payment", CommandSide.Client),
 

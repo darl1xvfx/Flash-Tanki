@@ -165,7 +165,6 @@ class GarageHandler : ICommandHandler, KoinComponent {
        Command(CommandName.ShowPresentsAlert).send(player ?: socket)
      }
     user.items += listOf(ServerGarageUserItemPresent(user, idPres))
-    user.items.forEach { item -> entityManager.persist(item) }
   }
 
   @CommandHandler(CommandName.OpenLootboxServer)
@@ -193,6 +192,11 @@ class GarageHandler : ICommandHandler, KoinComponent {
       }
     }
     Command(CommandName.OpenLootboxClient, LootboxPrizeService().getRandomReward(socket, count).toJson()).send(socket)
+  }
+  
+  @CommandHandler(CommandName.SetShowGoldAuthor)
+  suspend fun setShowGoldAuthor(socket: UserSocket, show: Boolean) {
+     socket.showGoldAuthor = show
   }
 
   // TODO(Assasans): Code repeating

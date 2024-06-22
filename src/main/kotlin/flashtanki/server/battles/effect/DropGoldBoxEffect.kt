@@ -25,6 +25,10 @@ class DropGoldBoxEffect(
 
   override suspend fun activate() {
     val battle = tank.battle
-    //battle.spawnGoldBonus(true, tank.socket.user?.username ?: "undefined")
+    battle.spawnGoldBonus(if (tank.socket.showGoldAuthor) getUsername() + " сбросил золотой ящик" else "", true)
+  }
+  
+  suspend fun getUsername() : String {
+     return (tank.socket.user?.username ?: "undefined")
   }
 }
