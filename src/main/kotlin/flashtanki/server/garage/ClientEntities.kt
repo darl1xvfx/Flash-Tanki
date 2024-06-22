@@ -42,7 +42,7 @@ open class GarageItem(
 
   @Json(name = "properts") val properties: List<GarageItemProperty>,
 
-  @Json(name = "skins") val skins: List<GarageItemSkin>,
+  @Json(name = "skins") val skins: List<GarageItemSkin>?,
 
   // Weapon / hull
   @Json val modificationID: Int?,
