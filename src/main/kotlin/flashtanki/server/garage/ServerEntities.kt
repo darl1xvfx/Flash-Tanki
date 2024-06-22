@@ -267,7 +267,7 @@ data class ServerUserItemSkin(
   @Json val previewResourceId: Int,
   @Json val id: String,
   @Json val name: String,
-  @Json val description:String,
+  @Json val description: String,
   @Json val isMounted: Boolean
 )
 

@@ -666,7 +666,7 @@
 		 "id":"railgun_xt",
 		 "name":"Рельса ХТ",
 		 "description":"description",
-		 "isMounted":false
+		 "isMounted":true
      }	 
   ]
 }

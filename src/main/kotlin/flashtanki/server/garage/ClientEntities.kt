@@ -89,5 +89,5 @@ data class GarageItemSkin(
   @Json val id: String,
   @Json val name: String,
   @Json val description:String,
-  @Json val isMounted: Boolean
+  @Json var isMounted: Boolean
 )
