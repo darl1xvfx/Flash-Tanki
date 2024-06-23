@@ -587,8 +587,35 @@ suspend fun initBattleList() {
     return friend
   }
 
+  data class Item(
+    @Json(name = "itemViewCategory") val itemViewCategory: String,
+    @Json(name = "preview") val preview: Int,
+    @Json(name = "item") val item: String,
+    @Json(name = "category") val category: String,
+    @Json(name = "modification") val modification: Int,
+    @Json(name = "name") val name: String,
+    @Json(name = "position") val position: Int
+  )
+
+  data class OpenedItemsData(
+    @Json(name = "items") val items: List<Item>
+  )
+
   suspend fun OpenedItems() {
-    Command(CommandName.OpenedItems, "{\"items\":[{\"itemViewCategory\":\"weapon\",\"preview\":770995,\"item\":\"thunder\",\"category\":\"weapon\",\"modification\":3,\"name\":\"Гром\",\"position\":1}]}").send(this)
+    val itemsList = listOf(
+      Item(
+        itemViewCategory = "weapon",
+        preview = 770995,
+        item = "thunder",
+        category = "weapon",
+        modification = 2,
+        name = "Гром",
+        position = 1
+      )
+    )
+    val openedItemsData = OpenedItemsData(itemsList)
+
+    Command(CommandName.OpenedItems, openedItemsData.toJson()).send(this)
   }
 
   suspend fun initGarage() {
