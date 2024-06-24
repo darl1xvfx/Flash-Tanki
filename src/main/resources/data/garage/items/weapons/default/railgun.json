@@ -664,8 +664,14 @@
      {
 		 "previewResourceId":1500016,
 		 "id":"railgun_xt",
-		 "name":"Рельса ХТ",
-		 "description":"description",
+         "name": {
+            "en": "Railgun XT",
+            "ru": "Рельса XT"
+         },
+		 "description":{
+           "en": "The unique Railgun XT is notable because of its side pattern styled after an eagle's head, with a very distinctive predatory beak.",
+           "ru": "Уникальная Рельса XT примечательна боковым рисунком, стилизованным под голову орла с характерными хищными очертаниями клюва."
+         },
 		 "isMounted":true
      }	 
   ]

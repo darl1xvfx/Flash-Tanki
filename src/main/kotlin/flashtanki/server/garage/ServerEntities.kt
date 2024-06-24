@@ -266,8 +266,8 @@ abstract class ServerGarageItemModification(
 data class ServerUserItemSkin(
   @Json val previewResourceId: Int,
   @Json val id: String,
-  @Json val name: String,
-  @Json val description: String,
+  @Json val name: LocalizedString,
+  @Json val description: LocalizedString,
   @Json val isMounted: Boolean
 )
 

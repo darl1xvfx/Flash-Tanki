@@ -25,13 +25,13 @@ class GarageItemConverter : IGarageItemConverter {
     }
   }
 
-  private fun toClientSkins(skins: List<ServerUserItemSkin>): List<GarageItemSkin> {
+  private fun toClientSkins(locale: SocketLocale, skins: List<ServerUserItemSkin>): List<GarageItemSkin> {
     return skins.map { skin ->
       GarageItemSkin(
         previewResourceId = skin.previewResourceId,
         id = skin.id,
-        name = skin.name,
-        description = skin.description,
+        name = skin.name.get(locale),
+        description = skin.description.get(locale),
         isMounted = skin.isMounted
       )
     }
@@ -69,7 +69,7 @@ class GarageItemConverter : IGarageItemConverter {
 
         properties = toClientProperties(modification.properties),
 
-        skins = toClientSkins(item.skins),
+        skins = toClientSkins(locale, item.skins),
 
         modificationID = index,
         object3ds = modification.object3ds,
@@ -116,7 +116,7 @@ class GarageItemConverter : IGarageItemConverter {
 
         properties = toClientProperties(modification.properties),
 
-        skins = toClientSkins(item.skins),
+        skins = toClientSkins(locale, item.skins),
 
         modificationID = index,
         object3ds = modification.object3ds,
