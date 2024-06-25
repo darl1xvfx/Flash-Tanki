@@ -12,6 +12,9 @@ import flashtanki.server.store.*
 import flashtanki.server.*
 import flashtanki.server.client.*
 import flashtanki.server.garage.ServerGarageUserItemLootbox
+import flashtanki.server.garage.ServerGarageUserItemSupply
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class StoreHandler : ICommandHandler, KoinComponent {
@@ -75,7 +78,10 @@ class StoreHandler : ICommandHandler, KoinComponent {
 
     val item = storeRegistry.categories.values
       .flatMap { it.items }
-      .single { it.id == itemId }
+      .singleOrNull { it.id == itemId } ?: run {
+      logger.error { "Unknown item ID: $itemId" }
+      return
+    }
 
     Command(
       CommandName.StorePaymentSuccess,
@@ -147,10 +153,61 @@ class StoreHandler : ICommandHandler, KoinComponent {
       }
 
       userRepository.updateUser(user)
-    } else {
-      logger.error { "Unknown lootbox pack ID: $itemId" }
-    }
+    } else if (itemId.startsWith("gold_boxes_pack_")) {
+      val goldCount = when (itemId) {
+        "gold_boxes_pack_1" -> 1
+        "gold_boxes_pack_2" -> 10
+        "gold_boxes_pack_3" -> 50
+        else -> {
+          logger.error { "Unknown goldboxes pack ID: $itemId" }
+          return
+        }
+      }
 
+      val entityManager = HibernateUtils.createEntityManager()
+      try {
+        entityManager.transaction.begin()
+
+        val existingItem = user.items.singleOrNull { it.marketItem.id == "gold" }
+        if (existingItem != null) {
+          val supplyItem = existingItem as ServerGarageUserItemSupply
+          supplyItem.count += goldCount
+
+          withContext(Dispatchers.IO) {
+            entityManager
+              .createQuery("UPDATE ServerGarageUserItemSupply SET count = :count WHERE id = :id")
+              .setParameter("count", supplyItem.count)
+              .setParameter("id", supplyItem.id)
+              .executeUpdate()
+          }
+
+          socket.battlePlayer?.let { battlePlayer ->
+            Command(
+              CommandName.SetItemCount,
+              supplyItem.marketItem.id,
+              supplyItem.count.toString()
+            ).send(battlePlayer)
+          }
+        } else {
+          val newItem = ServerGarageUserItemSupply(user, "gold", goldCount)
+          user.items.add(newItem)
+          entityManager.persist(newItem)
+        }
+
+        entityManager.transaction.commit()
+      } catch (e: Exception) {
+        if (entityManager.transaction.isActive) {
+          entityManager.transaction.rollback()
+        }
+        logger.error { "Error updating user gold: ${e.message}" }
+      } finally {
+        if (entityManager.isOpen) {
+          entityManager.close()
+        }
+      }
+    } else {
+      logger.error { "Unknown pack ID: $itemId" }
+    }
 
     logger.debug { "Player ${user.username} bought ${item.id} with payment method: $paymentMethod" }
   }
