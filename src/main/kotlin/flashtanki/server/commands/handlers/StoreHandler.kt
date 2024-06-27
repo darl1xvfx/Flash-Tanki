@@ -49,19 +49,162 @@ class StoreHandler : ICommandHandler, KoinComponent {
   @CommandHandler(CommandName.TryActivatePromocode)
   suspend fun tryActivatePromocode(socket: UserSocket, promocode: String) {
     val user = checkUser(socket)
-    if (promoCodeService.checkPromoCode(promocode)) {
-      val promoPrize = 5000
-      Command(CommandName.ActivatePromocodeSuccessfully).send(socket)
-      user.crystals += promoPrize
+    val prizes = promoCodeService.getPrizesForPromo(promocode)
 
-      socket.updateCrystals()
-      Command(
-        CommandName.StorePaymentSuccess,
-        promoPrize.toString(),
-        0.toString(),
-        0.toString(),
-        getLocaleValue(socket.locale)
-      ).send(socket)
+    if (prizes != null) {
+      prizes.forEach { prize ->
+        when (prize.type) {
+          "crystal" -> {
+            val quantity = prize.quantity
+            user.crystals += quantity
+            socket.updateCrystals()
+            Command(
+              CommandName.StorePaymentSuccess,
+              quantity.toString(),
+              0.toString(),
+              0.toString(),
+              getLocaleValue(socket.locale)
+            ).send(socket)
+          }
+          "premium" -> {
+            val quantity = prize.quantity
+            socket.addPremiumAccount(quantity)
+            userRepository.updateUser(user)
+          }
+          "gold" -> {
+            val quantity = prize.quantity
+            val entityManager = HibernateUtils.createEntityManager()
+            try {
+              entityManager.transaction.begin()
+
+              val existingItem = user.items.singleOrNull { it.marketItem.id == "gold" }
+              if (existingItem != null) {
+                val supplyItem = existingItem as ServerGarageUserItemSupply
+                supplyItem.count += quantity
+
+                withContext(Dispatchers.IO) {
+                  entityManager
+                    .createQuery("UPDATE ServerGarageUserItemSupply SET count = :count WHERE id = :id")
+                    .setParameter("count", supplyItem.count)
+                    .setParameter("id", supplyItem.id)
+                    .executeUpdate()
+                }
+
+                socket.battlePlayer?.let { battlePlayer ->
+                  Command(
+                    CommandName.SetItemCount,
+                    supplyItem.marketItem.id,
+                    supplyItem.count.toString()
+                  ).send(battlePlayer)
+                }
+              } else {
+                val newItem = ServerGarageUserItemSupply(user, "gold", quantity)
+                user.items.add(newItem)
+                entityManager.persist(newItem)
+              }
+
+              entityManager.transaction.commit()
+            } catch (e: Exception) {
+              if (entityManager.transaction.isActive) {
+                entityManager.transaction.rollback()
+              }
+              logger.error { "Error updating user gold: ${e.message}" }
+            } finally {
+              if (entityManager.isOpen) {
+                entityManager.close()
+              }
+            }
+          }
+          "supplies" -> {
+            val quantity = prize.quantity
+
+              val entityManager = HibernateUtils.createEntityManager()
+              try {
+                entityManager.transaction.begin()
+
+                val existingItems = listOf("health", "armor", "double_damage", "n2o", "mine")
+                for (itemId in existingItems) {
+                  val existingItem = user.items.singleOrNull { it.marketItem.id == itemId }
+                  if (existingItem != null) {
+                    val supplyItem = existingItem as ServerGarageUserItemSupply
+                    supplyItem.count += quantity
+                    entityManager.merge(supplyItem)
+
+                    withContext(Dispatchers.IO) {
+                      entityManager
+                        .createQuery("UPDATE ServerGarageUserItemSupply SET count = :count WHERE id = :id")
+                        .setParameter("count", supplyItem.count)
+                        .setParameter("id", supplyItem.id)
+                        .executeUpdate()
+                    }
+
+                    socket.battlePlayer?.let { battlePlayer ->
+                      Command(
+                        CommandName.SetItemCount,
+                        supplyItem.marketItem.id,
+                        supplyItem.count.toString()
+                      ).send(battlePlayer)
+                    }
+                  } else {
+                    val newItem = ServerGarageUserItemSupply(user, itemId, quantity)
+                    entityManager.persist(newItem)
+                    user.items.add(newItem)
+                  }
+                }
+
+                entityManager.transaction.commit()
+              } catch (e: Exception) {
+                if (entityManager.transaction.isActive) {
+                  entityManager.transaction.rollback()
+                }
+                logger.error { "Error updating user supplies: ${e.message}" }
+              } finally {
+                if (entityManager.isOpen) {
+                  entityManager.close()
+                }
+              }
+            }
+          "lootbox" -> {
+            val quantity = prize.quantity
+            val entityManager = HibernateUtils.createEntityManager()
+            try {
+              entityManager.transaction.begin()
+
+              val existingItem = user.items.singleOrNull { it.marketItem.id == "lootbox" }
+              if (existingItem != null) {
+                val supplyItem = existingItem as ServerGarageUserItemLootbox
+                supplyItem.count += quantity
+                entityManager.merge(supplyItem)
+              } else {
+                val newItem = ServerGarageUserItemLootbox(user, "lootbox", quantity)
+                user.items.add(newItem)
+                entityManager.persist(newItem)
+              }
+
+              entityManager.transaction.commit()
+            } catch (e: Exception) {
+              entityManager.transaction.rollback()
+              logger.error { "Error updating user lootbox: ${e.message}" }
+            } finally {
+              entityManager.close()
+            }
+
+            if(socket.screen == Screen.Garage) {
+              Command(CommandName.UnloadGarage).send(socket)
+
+              socket.loadGarageResources()
+              socket.initGarage()
+            }
+
+            userRepository.updateUser(user)
+          }
+          else -> {
+          logger.error { "Issue error: $prizes" }
+          }
+        }
+      }
+
+      Command(CommandName.ActivatePromocodeSuccessfully).send(socket)
       promoCodeService.removePromoCode(promocode)
       logger.debug { "Player ${user.username} activated promocode $promocode" }
     } else {
@@ -69,7 +212,7 @@ class StoreHandler : ICommandHandler, KoinComponent {
       logger.debug { "Player ${user.username} failed to activate promocode $promocode" }
     }
   }
-
+  
   @CommandHandler(CommandName.StoreTryBuyItem)
   suspend fun storeTryBuyItem(socket: UserSocket, itemId: String, paymentMethodId: String) {
     val user = checkUser(socket)

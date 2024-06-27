@@ -6,6 +6,7 @@ plugins {
   kotlin("plugin.allopen") version "1.6.10"
   id("com.github.gmazzo.buildconfig") version "3.0.3"
   id("com.github.johnrengelman.shadow") version "7.1.2"
+  id("org.jetbrains.kotlin.plugin.serialization") version "1.5.31"
   distribution
   application
 }
@@ -35,9 +36,10 @@ dependencies {
   implementation("io.ktor:ktor-client-cio:2.0.0-beta-1")
   implementation("io.ktor:ktor-client-websockets:2.0.0-beta-1")
   implementation("io.ktor:ktor-server-auth:2.0.0-beta-1")
-  implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.0-beta-1")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
-  val koinVersion = "3.1.5"
+
+    val koinVersion = "3.1.5"
 
   implementation("org.hibernate.orm:hibernate-core:6.0.0.Final")
   implementation("org.hibernate.validator:hibernate-validator:7.0.4.Final")
