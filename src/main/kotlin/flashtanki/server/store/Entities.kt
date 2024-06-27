@@ -4,6 +4,7 @@ import com.squareup.moshi.Json
 import flashtanki.server.utils.LocalizedString
 
 data class ServerStoreCategory(
+  @Json val category_id: Int,
   @Json val title: LocalizedString,
   @Json val description: LocalizedString
 ) {

@@ -14,6 +14,7 @@ data class OpenStoreData(
 )
 
 data class StoreCategory(
+  @Json val id: String,
   @Json val category_id: String,
   @Json val header_text: ClientLocalizedString,
   @Json val description: ClientLocalizedString

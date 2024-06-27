@@ -11,6 +11,7 @@ interface IStoreItemConverter {
 class StoreItemConverter : IStoreItemConverter {
   override fun toClientCategory(category: ServerStoreCategory): StoreCategory {
     return StoreCategory(
+      id = category.category_id.toString(),
       category_id = category.id,
       header_text = category.title.localized.toClientLocalizedString(),
       description = category.description.localized.toClientLocalizedString()
@@ -25,8 +26,8 @@ class StoreItemConverter : IStoreItemConverter {
       category_id = item.category.id,
       item_id = item.id,
       properties = StoreItemProperties(
-        price = if (locale == SocketLocale.Russian) item.price[StoreCurrency.RUB]!! else item.price[StoreCurrency.USD]!!, // TODO(Assasans)
-        currency = if (locale == SocketLocale.Russian) StoreCurrency.RUB.displayName else StoreCurrency.USD.displayName, // TODO(Assasans)
+        price = if (locale == SocketLocale.Russian) item.price[StoreCurrency.RUB]!! else item.price[StoreCurrency.USD]!!,
+        currency = if (locale == SocketLocale.Russian) StoreCurrency.RUB.displayName else StoreCurrency.USD.displayName,
 
         crystals = item.crystals?.base,
         bonusCrystals = item.crystals?.bonus,
