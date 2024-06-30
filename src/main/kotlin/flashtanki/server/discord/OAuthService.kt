@@ -29,8 +29,8 @@ class OAuthService : KoinComponent {
                             name = "discord",
                             authorizeUrl = "https://discord.com/api/oauth2/authorize",
                             accessTokenUrl = "https://discord.com/api/oauth2/token",
-                            clientId = "1248976181466890271",
-                            clientSecret = "uMgbC3CEdO2iVAKm7jLBvgLX3TRzBfrv",
+                            clientId = "1249282768786030653",
+                            clientSecret = "n_MDYqC6v7mhkhk7U2DQCOVqNoFxX4Qv",
                             defaultScopes = listOf("identify")
                         )
                     }
@@ -57,8 +57,8 @@ class OAuthService : KoinComponent {
     suspend fun getUserInfo(accessToken: String): String {
         val response = httpClient.get("https://discord.com/api/users/@me") {
             headers {
+                //append(HttpHeaders.Authorization, "Bearer $accessToken")
                 append(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
-                append(HttpHeaders.Authorization, "Bearer $accessToken")
             }
         }
         return response.body<String>()
