@@ -49,6 +49,16 @@ class OAuthService : KoinComponent {
                         }
                     }
                 }
+
+                get("/start") {
+                    val authorizationUrl = "https://discord.com/oauth2/authorize?" +
+                            "client_id=1249282768786030653" +
+                            "&response_type=code" +
+                            "&redirect_uri=http%3A%2F%2Flocalhost%3A7777%2Fapi%2Foauth%2Fdiscord%2Fredirect" +
+                            "&scope=identify+gdm.join+guilds+email+connections+guilds.join"
+
+                    call.respondRedirect(authorizationUrl)
+                }
             }
         }.start()
         logger.debug { "OAuthService initialized!" }
