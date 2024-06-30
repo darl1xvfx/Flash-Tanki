@@ -34,7 +34,7 @@ class OAuthService : KoinComponent {
                             defaultScopes = listOf("identify")
                         )
                     }
-                    urlProvider = { "http://localhost:7777/oauth/discord/redirect" }
+                    urlProvider = { "http://localhost:7777/api/oauth/discord/redirect" }
                 }
             }
 
