@@ -57,7 +57,7 @@ class OAuthService : KoinComponent {
     suspend fun getUserInfo(accessToken: String): String {
         val response = httpClient.get("https://discord.com/api/users/@me") {
             headers {
-                //append(HttpHeaders.Authorization, "Bearer $accessToken")
+                append(HttpHeaders.Authorization, "Bearer $accessToken")
                 append(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
             }
         }
