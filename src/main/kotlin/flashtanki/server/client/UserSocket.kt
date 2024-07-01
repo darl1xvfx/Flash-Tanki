@@ -1307,7 +1307,7 @@ data class ShowSettingsData(
   @Json val notificationEnabled: Boolean = true,
   @Json val showDamageEnabled: Boolean = true,
   @Json val isConfirmEmail: Boolean = false,
-  @Json val authorizationUrl: String = "http://localhost/",
+  @Json val authorizationUrl: String = "https://discord.com/api/oauth2/authorize",
   @Json val linkExists: Boolean = false,
   @Json val snId: String = "vkontakte",
   @Json val passwordCreated: Boolean = true
