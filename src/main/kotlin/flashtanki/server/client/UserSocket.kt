@@ -1245,7 +1245,7 @@ data class InitChatSettings(
   @Json val symbolCost: Int = 176,
   @Json val enterCost: Int = 880,
   @Json val chatEnabled: Boolean = true,
-  @Json val linksWhiteList: List<String> = listOf("http://gtanks-online.com/", "http://vk.com/ebal")
+  @Json val linksWhiteList: List<String> = listOf("https://www.playprotanki.com", "https://restoredtanks.online")
 )
 
 data class AuthData(
