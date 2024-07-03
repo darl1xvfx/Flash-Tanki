@@ -37,10 +37,26 @@ class CommandHandler(
             .joinToString("")
     }
 
+    private fun buildHelpMessage(): String {
+        return """
+            **Command List:**
+
+            `p?stop` - Stops the server.
+            `p?online` - Displays the number of online players and their details.
+            `p?invite toggle` - Toggles the invite code requirement on or off.
+            `p?invite add <code>` - Adds a new invite code.
+            `p?invite delete <code>` - Deletes an invite code.
+            `p?invite list` - Lists all invite codes.
+            `p?invite give` - Generates an invite code for a mentioned user.
+            `p?addcry <amount> <username>` - Adds crystals to the specified user.
+            `p?addscore <amount> <username>` - Adds score to the specified user.
+            `p?help` - Displays this help message.
+        """.trimIndent()
+    }
+
     suspend fun handleCommand(event: GuildMessageReceivedEvent) {
         val (message, channel, userId) = Triple(event.message.contentRaw, event.channel, event.author.id)
         val DiscordUserID = setOf("531060542740234240", "1185301918290022532", "1140945846146445354","994657015257378997","531366173875372032")
-
 
         if (userId !in DiscordUserID) {
             logger.info("Allowed: $DiscordUserID, UserId: $userId")
@@ -189,7 +205,6 @@ class CommandHandler(
                 }
             }
 
-
             message.startsWith(prefix + "addscore") -> GlobalScope.launch {
                 val args = message.split("\\s+".toRegex())
 
@@ -220,7 +235,10 @@ class CommandHandler(
                         .queue()
                 }
             }
+
+            message.startsWith(prefix + "help") -> {
+                channel.sendMessage(buildHelpMessage()).queue()
+            }
         }
     }
 }
-
