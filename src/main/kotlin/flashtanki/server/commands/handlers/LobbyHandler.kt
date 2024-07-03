@@ -330,6 +330,16 @@ class LobbyHandler : ICommandHandler, KoinComponent {
   suspend fun showPresents(socket: UserSocket) {
     Command(CommandName.SelectGarageCategory, "given_presents").send(socket)
   }
+  
+  @CommandHandler(CommandName.ShowReferrerPanelServer)
+  suspend fun showReferrerPanel(socket:UserSocket) {
+    Command(CommandName.ShowReferrerPanelClient, "{\"referrals\":[{\"income\": 0, \"rank\": 1, \"callsign\": \"test\"}]}").send(socket)
+  }
+  
+  @CommandHandler(CommandName.ReferrerSendInviteEmail)
+  suspend fun referrerSendInviteEmail(socket: UserSocket, email: String, username: String) {
+    Command(CommandName.ReferrerInviteSentSuccessfully).send(socket)
+  }
 
   @CommandHandler(CommandName.SwitchGarage)
   suspend fun switchGarage(socket: UserSocket) {

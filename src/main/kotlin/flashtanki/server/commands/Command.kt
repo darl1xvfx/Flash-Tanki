@@ -8,7 +8,7 @@ class Command {
   private val logger = KotlinLogging.logger { }
 
   companion object {
-    val Delimiter = "end~".toByteArray()
+    val Delimiter = "~dne".toByteArray()
     val CategoryRegex = Regex("^([A-Za-z_]+)$")
   }
 

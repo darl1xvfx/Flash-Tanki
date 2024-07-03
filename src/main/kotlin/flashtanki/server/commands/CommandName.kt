@@ -21,7 +21,11 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   AuthDenied(CommandCategory.Auth, "denied", CommandSide.Client),
   InitExternalModel(CommandCategory.Auth, "init_external_model", CommandSide.Client),
   ShowNews(CommandCategory.Lobby, "show_news", CommandSide.Client),
-
+  InitRefferalModel(CommandCategory.Lobby, "init_referral_model", CommandSide.Client),
+  ShowReferrerPanelClient(CommandCategory.Lobby, "show_referral_panel", CommandSide.Client),
+  ShowReferrerPanelServer(CommandCategory.Lobby, "showReferrerPanel", CommandSide.Server),
+  ReferrerSendInviteEmail(CommandCategory.Lobby, "sendInviteEmail", CommandSide.Server),
+  ReferrerInviteSentSuccessfully(CommandCategory.Lobby, "inviteSentSuccessfully", CommandSide.Client),
   /**
    * @argument {Boolean} enabled - Is invite code required to log in
    */

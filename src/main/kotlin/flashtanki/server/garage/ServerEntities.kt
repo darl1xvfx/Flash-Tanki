@@ -214,6 +214,7 @@ data class ServerGarageKit(
   @Json val image: Int,
   @Json val discount: Int,
   @Json val items: List<ServerGarageKitItem>,
+  @Json val gift: List<ServerGarageKitItem>,
   @Json val isTimeless: Boolean,
   @Json val timeLeft: Int?
 )

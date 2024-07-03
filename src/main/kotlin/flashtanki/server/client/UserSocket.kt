@@ -466,6 +466,7 @@ class UserSocket(
         next_score = user.rank.nextRank.scoreOrZero
       ).toJson()
     ).send(this)
+	Command(CommandName.InitRefferalModel).send(this)
     updateRating()
     Command(
        CommandName.InitPremium,
@@ -1245,7 +1246,7 @@ data class InitChatSettings(
   @Json val symbolCost: Int = 176,
   @Json val enterCost: Int = 880,
   @Json val chatEnabled: Boolean = true,
-  @Json val linksWhiteList: List<String> = listOf("https://playflashtanki.com")
+  @Json val linksWhiteList: List<String> = listOf("http://gtanks-online.com/", "http://vk.com/ebal")
 )
 
 data class AuthData(
@@ -1307,7 +1308,7 @@ data class ShowSettingsData(
   @Json val notificationEnabled: Boolean = true,
   @Json val showDamageEnabled: Boolean = true,
   @Json val isConfirmEmail: Boolean = false,
-  @Json val authorizationUrl: String = "https://discord.com/api/oauth2/authorize",
+  @Json val authorizationUrl: String = "http://localhost/",
   @Json val linkExists: Boolean = false,
   @Json val snId: String = "vkontakte",
   @Json val passwordCreated: Boolean = true

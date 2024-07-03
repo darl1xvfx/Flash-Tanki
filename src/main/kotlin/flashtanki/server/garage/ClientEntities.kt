@@ -63,6 +63,7 @@ data class GarageItemKit(
   @Json val image: Int,
   @Json val discountInPercent: Int,
   @Json val kitItems: List<GarageItemKitItem>,
+  @Json val giftItems: List<GarageItemKitItem>,
   @Json val isTimeless: Boolean,
   @Json val timeLeftInSeconds: Int
 )

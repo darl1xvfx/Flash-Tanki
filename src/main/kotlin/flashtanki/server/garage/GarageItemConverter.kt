@@ -343,6 +343,7 @@ class GarageItemConverter : IGarageItemConverter {
         image = item.kit.image,
         discountInPercent = item.kit.discount,
         kitItems = item.kit.items.map { kitItem -> GarageItemKitItem(count = kitItem.count, id = kitItem.id) },
+        giftItems = item.kit.gift.map { giftItem -> GarageItemKitItem(count = giftItem.count, id = giftItem.id + "_m0") },
         isTimeless = item.kit.isTimeless,
         timeLeftInSeconds = if(!item.kit.isTimeless) item.kit.timeLeft ?: throw Exception("Kit time left is not set") else 0
       )

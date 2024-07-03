@@ -24,8 +24,29 @@
         "count": 1
       }
     ],
-    "isTimeless": false,
-    "timeLeft": 499125
+	"gift": [
+      {
+        "id": "mine",
+        "count": 25
+      },
+      {
+        "id": "armor",
+        "count": 25
+      },
+      {
+        "id": "double_damage",
+        "count": 25
+      },
+      {
+        "id": "n2o",
+        "count": 25
+      },
+      {
+        "id": "health",
+        "count": 25
+      }
+    ],
+    "isTimeless": true
   },
   "properties": []
 }
