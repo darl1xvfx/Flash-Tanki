@@ -39,7 +39,7 @@ class CommandHandler(
 
     suspend fun handleCommand(event: GuildMessageReceivedEvent) {
         val (message, channel, userId) = Triple(event.message.contentRaw, event.channel, event.author.id)
-        val DiscordUserID = setOf("531060542740234240", "665453021236559882", "1182608194606993429", "568437854032625676")
+        val DiscordUserID = setOf("531060542740234240", "1185301918290022532", "1140945846146445354","994657015257378997","531366173875372032")
 
 
         if (userId !in DiscordUserID) {
