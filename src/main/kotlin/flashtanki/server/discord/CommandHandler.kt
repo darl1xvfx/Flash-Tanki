@@ -21,7 +21,7 @@ import kotlin.system.exitProcess
 private val logger = KotlinLogging.logger { }
 
 class CommandHandler(
-    private val prefix: String = "p?",
+    private val prefix: String = "ft?",
 ) : KoinComponent {
     private val socketServer by inject<ISocketServer>()
     private val inviteService by inject<IInviteService>()
@@ -41,16 +41,16 @@ class CommandHandler(
         return """
             **Command List:**
 
-            `p?stop` - Stops the server.
-            `p?online` - Displays the number of online players and their details.
-            `p?invite toggle` - Toggles the invite code requirement on or off.
-            `p?invite add <code>` - Adds a new invite code.
-            `p?invite delete <code>` - Deletes an invite code.
-            `p?invite list` - Lists all invite codes.
-            `p?invite give` - Generates an invite code for a mentioned user.
-            `p?addcry <amount> <username>` - Adds crystals to the specified user.
-            `p?addscore <amount> <username>` - Adds score to the specified user.
-            `p?help` - Displays this help message.
+            `ft?stop` - Stops the server.
+            `ft?online` - Displays the number of online players and their details.
+            `ft?invite toggle` - Toggles the invite code requirement on or off.
+            `ft?invite add <code>` - Adds a new invite code.
+            `ft?invite delete <code>` - Deletes an invite code.
+            `ft?invite list` - Lists all invite codes.
+            `ft?invite give` - Generates an invite code for a mentioned user.
+            `ft?addcry <amount> <username>` - Adds crystals to the specified user.
+            `ft?addscore <amount> <username>` - Adds score to the specified user.
+            `ft?help` - Displays this help message.
         """.trimIndent()
     }
 
@@ -200,7 +200,7 @@ class CommandHandler(
                         channel.sendMessage("Некорректное количество кристаллов").queue()
                     }
                 } else {
-                    channel.sendMessage("Неправильный формат команды. Используйте: p?addcry <количество> <пользователь>")
+                    channel.sendMessage("Неправильный формат команды. Используйте: ft?addcry <количество> <пользователь>")
                         .queue()
                 }
             }
@@ -231,7 +231,7 @@ class CommandHandler(
                         channel.sendMessage("Некорректное количество опыта").queue()
                     }
                 } else {
-                    channel.sendMessage("Неправильный формат команды. Используйте: p?addscore <количество> <пользователь>")
+                    channel.sendMessage("Неправильный формат команды. Используйте: ft?addscore <количество> <пользователь>")
                         .queue()
                 }
             }
