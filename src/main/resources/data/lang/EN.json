@@ -559,7 +559,7 @@
     },
     {
       "key": "DAILY_QUEST_INFORMATION",
-      "value": "<a href='https://playflashtanki.com' target='_blank'><font color='#59ff32'><u>Information</u></font></a>"
+      "value": "<a href='http://ru.protankiwiki.com/%D0%95%D0%B6%D0%B5%D0%B4%D0%BD%D0%B5%D0%B2%D0%BD%D1%8B%D0%B5_%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D1%8F' target='_blank'><font color='#59ff32'><u>Information</u></font></a>"
     },
     {
       "key": "STRING_PARTNER_REGISTARTION_FORM_CONTINUE",
@@ -2942,6 +2942,54 @@
 	{
       "key": "CONNECTION_CLOSED_MESSAGE",
       "value": "Server connection closed"
-    }
+    },
+	{
+	  "key": "LOADER_HEADER",
+	  "value": "Loading"
+	},	
+	{
+      "key": "TIP_1",
+	  "value": "tip1"
+	},
+	{
+      "key": "TIP_2",
+	  "value": "tip2"
+	},
+	{
+      "key": "TIP_3",
+	  "value": "tip3"
+	},
+	{
+      "key": "TIP_4",
+	  "value": "tip4"
+	},
+	{
+      "key": "TIP_5",
+	  "value": "tip5"
+	},
+	{
+      "key": "TIP_6",
+	  "value": "tip6"
+	},
+	{
+      "key": "TIP_7",
+	  "value": "tip7"
+	},
+	{
+      "key": "TIP_8",
+	  "value": "tip8"
+	},
+	{
+      "key": "PIECE_1",
+	  "value": "piece"	
+	},	
+	{
+      "key": "PIECE_2",
+	  "value": "pieces"	
+	},
+	{
+      "key": "PIECE_3",
+	  "value": "pieces"	
+	}
   ]
 }
