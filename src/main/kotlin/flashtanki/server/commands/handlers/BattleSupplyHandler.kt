@@ -191,12 +191,12 @@ class BattleSupplyHandler : ICommandHandler, KoinComponent {
             }.join()
 
             coroutineScope.cancel()
-
-            activateItem(socket, "health")
-            activateItem(socket, "armor")
-            activateItem(socket, "double_damage")
-            activateItem(socket, "n2o")
-            activateItem(socket, "mine")
+            
+			val effectss = listOf(RepairKitEffect(tank), DoubleArmorEffect(tank), DoubleDamageEffect(tank), NitroEffect(tank), MineEffect(tank))
+			for (effectt in effectss) {
+			    tank.effects.add(effectt)
+                effectt.run()
+			}
 
             player.ultimateCharge = 0
             tank.updateUltimateCharge()
