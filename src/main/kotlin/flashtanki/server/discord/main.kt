@@ -17,13 +17,13 @@ import flashtanki.server.ISocketServer
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class DiscordBot(private val discordCommandHandler: CommandHandler, private val autoResponsesHandlers: autoResponsesHandlers) : ListenerAdapter(), KoinComponent {
+class DiscordBot(private val discordCommandHandler: BaseCommandHandler, private val autoResponsesHandlers: autoResponsesHandlers) : ListenerAdapter(), KoinComponent {
     private val socketServer by inject<ISocketServer>()
 
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        fun run(token: String, discordCommandHandler: CommandHandler, autoResponsesHandlers: autoResponsesHandlers) {
+        fun run(token: String, discordCommandHandler: BaseCommandHandler, autoResponsesHandlers: autoResponsesHandlers) {
             try {
                 val jda = JDABuilder.createDefault(token)
                     .addEventListeners(DiscordBot(discordCommandHandler, autoResponsesHandlers))
