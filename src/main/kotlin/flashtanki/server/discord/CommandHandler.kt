@@ -159,6 +159,11 @@ class CommandHandler(
                                 }
                             }
 
+                            event.author.openPrivateChannel().queue { privateChannel ->
+                                privateChannel.sendMessage("`Ru:` Инвайт код был успешно отправлен упомянутому пользователю.").queue()
+                                privateChannel.sendMessage("`En:` Invite code successfully sent to the mentioned user.").queue()
+                            }
+
                             channel.sendMessage("`Ru:` Инвайт код отправлен упомянутому пользователю.").queue()
                             channel.sendMessage("`En:` Invite code sent to the mentioned user.").queue()
                         } else {
