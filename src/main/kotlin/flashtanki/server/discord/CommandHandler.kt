@@ -157,13 +157,12 @@ class CommandHandler(
                                     privateChannel.sendMessage("`Ru:` Твой инвайт код: `$generatedCode`").queue()
                                     privateChannel.sendMessage("`En:` Your Invite Code: `$generatedCode`").queue()
                                 }
+                                
+                                event.author.openPrivateChannel().queue { privateChannel ->
+                                    privateChannel.sendMessage("Ru: Инвайт код был успешно отправлен $generatedCode @${user.name}").queue()
+                                    privateChannel.sendMessage("En: Invite code $generatedCode successfully sent to @${user.name}").queue()
+                                }
                             }
-
-                            /*event.author.openPrivateChannel().queue { privateChannel ->
-                                privateChannel.sendMessage("`Ru:` Инвайт код был успешно отправлен упомянутому пользователю.").queue()
-                                privateChannel.sendMessage("`En:` Invite code successfully sent to the mentioned user.").queue()
-                            }
-                             */
 
                             channel.sendMessage("`Ru:` Инвайт код отправлен упомянутому пользователю.").queue()
                             channel.sendMessage("`En:` Invite code sent to the mentioned user.").queue()
