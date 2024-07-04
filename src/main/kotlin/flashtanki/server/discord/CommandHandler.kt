@@ -4,13 +4,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import flashtanki.server.ISocketServer
-import flashtanki.server.chat.IChatCommandRegistry
 import flashtanki.server.client.IUserRepository
 import flashtanki.server.client.Screen
 import flashtanki.server.invite.IInviteRepository
@@ -153,14 +150,17 @@ class CommandHandler(
                         val mentionedUsers = event.message.mentionedUsers
                         if (mentionedUsers.isNotEmpty()) {
                             val generatedCode = generateRandomCode(20)
-
                             inviteRepository.createInvite(generatedCode)
 
-                            val user = event.jda.retrieveUserById(userId).complete()
-                            user.openPrivateChannel().queue { privateChannel ->
-                                privateChannel.sendMessage("`Ru:` Твой инвайт код: `$generatedCode`").queue()
-                                privateChannel.sendMessage("`En:` You Invite Code: `$generatedCode`").queue()
+                            mentionedUsers.forEach { user ->
+                                user.openPrivateChannel().queue { privateChannel ->
+                                    privateChannel.sendMessage("`Ru:` Твой инвайт код: `$generatedCode`").queue()
+                                    privateChannel.sendMessage("`En:` Your Invite Code: `$generatedCode`").queue()
+                                }
                             }
+
+                            channel.sendMessage("`Ru:` Инвайт код отправлен упомянутому пользователю.").queue()
+                            channel.sendMessage("`En:` Invite code sent to the mentioned user.").queue()
                         } else {
                             channel.sendMessage("`Ru:` Упомяните пользователя для отправки инвайта.").queue()
                             channel.sendMessage("`En:` Mention the user to send an invite.").queue()
