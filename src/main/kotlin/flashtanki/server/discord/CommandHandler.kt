@@ -157,8 +157,8 @@ class CommandHandler(
                                     privateChannel.sendMessage("`Ru:` Твой инвайт код: `$generatedCode`").queue()
                                     privateChannel.sendMessage("`En:` Your Invite Code: `$generatedCode`").queue()
                                 }
-                                
-                                channel.sendMessage("`Ru:` Инвайт код успешно отправлен `${user.name}`.").queue()
+
+                                channel.sendMessage("`Ru:` Инвайт код успешно отправлен для `${user.name}`.").queue()
                                 channel.sendMessage("`En:` Invite code successfully sent to `${user.name}`.").queue()
                             }
                         } else {
