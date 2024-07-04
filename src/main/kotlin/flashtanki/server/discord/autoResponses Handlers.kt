@@ -8,24 +8,28 @@ import org.koin.core.component.KoinComponent
 class autoResponsesHandlers : KoinComponent {
 
     suspend fun handleCommand(event: GuildMessageReceivedEvent) {
-        val message = event.message.contentRaw
+        val message = event.message.contentRaw.lowercase()
         val channel = event.channel
         val authorId = event.author.id
 
-        if (message.startsWith("Ссылка") || message.startsWith("Link")) {
+        if (message.startsWith("ссылка") || message.startsWith("link")) {
             GlobalScope.launch {
                 channel.sendMessage("https://discord.gg/tjskEJ7SFb").queue()
             }
         }
-        /*when {
+        /* when {
             message.startsWith(" ") -> {
                 GlobalScope.launch {
                     channel.sendMessage(" ").queue()
                     channel.sendMessage(" ").queue()
                 }
             }
-
-        }
-         */
+            message.startsWith(" ") -> {
+                GlobalScope.launch {
+                    channel.sendMessage(" ").queue()
+                    channel.sendMessage(" ").queue()
+                }
+            }
+        } */
     }
 }
