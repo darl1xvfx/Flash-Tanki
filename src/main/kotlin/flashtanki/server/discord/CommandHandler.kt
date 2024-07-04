@@ -1,4 +1,4 @@
-package flashtanki.server.discord.CommandHandler
+package flashtanki.server.bot.discord
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -17,15 +17,15 @@ import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger { }
 
-abstract class BaseCommandHandler(
-    protected val prefix: String
+class CommandHandler(
+    private val prefix: String = "ft?",
 ) : KoinComponent {
-    protected val socketServer by inject<ISocketServer>()
-    protected val inviteService by inject<IInviteService>()
-    protected val inviteRepository by inject<IInviteRepository>()
-    protected val userRepository by inject<IUserRepository>()
+    private val socketServer by inject<ISocketServer>()
+    private val inviteService by inject<IInviteService>()
+    private val inviteRepository by inject<IInviteRepository>()
+    private val userRepository by inject<IUserRepository>()
 
-    protected fun generateRandomCode(length: Int): String {
+    private fun generateRandomCode(length: Int): String {
         val characters =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[{]};:'\",<.>/?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[{]};:'\",<.>/?"
         return (1..length)
@@ -34,7 +34,22 @@ abstract class BaseCommandHandler(
             .joinToString("")
     }
 
-    protected abstract fun buildHelpMessage(): String
+    private fun buildHelpMessage(): String {
+        return """
+            **Command List:**
+
+            `ft?stop` - Stops the server.
+            `ft?online` - Displays the number of online players and their details.
+            `ft?invite toggle` - Toggles the invite code requirement on or off.
+            `ft?invite add <code>` - Adds a new invite code.
+            `ft?invite delete <code>` - Deletes an invite code.
+            `ft?invite list` - Lists all invite codes.
+            `ft?invite give` - Generates an invite code for a mentioned user.
+            `ft?addcry <amount> <username>` - Adds crystals to the specified user.
+            `ft?addscore <amount> <username>` - Adds score to the specified user.
+            `ft?help` - Displays this help message.
+        """.trimIndent()
+    }
 
     suspend fun handleCommand(event: GuildMessageReceivedEvent) {
         val (message, channel, userId) = Triple(event.message.contentRaw, event.channel, event.author.id)
@@ -49,7 +64,9 @@ abstract class BaseCommandHandler(
             message.startsWith(prefix + "stop") -> {
                 GlobalScope.launch {
                     logger.info("\u001B[31mRequest to shutdown server received stop...\u001B[0m")
-                    channel.sendMessage(localizeStopMessage(event.member?.asMention ?: "Unknown")).queue()
+                    channel.sendMessage("`Ru:` Сервер остановлен игроком ${event.member?.asMention}!").queue()
+                    channel.sendMessage("`En:` Server stopped for ${event.member?.asMention}!").queue()
+
                     delay(5000)
                     exitProcess(0)
                 }
@@ -58,18 +75,17 @@ abstract class BaseCommandHandler(
             message.startsWith(prefix + "online") -> GlobalScope.launch {
                 val playersByScreen = socketServer.players.groupBy { it.screen }
                 val onlinePlayersMessage = buildString {
-                    append(localizeOnlineMessageHeader(socketServer.players.size))
+                    append("__**Online**__: ${socketServer.players.size}\n")
                     append(
-                        localizePlayerListMessage(
+                        "__**Players**__: ${
                             socketServer.players.mapNotNull { it.user?.username }.joinToString(", ")
-                                .takeIf { it.isNotBlank() } ?: localizeNoPlayersMessage()
-                        )
-                    )
+                                .takeIf { it.isNotBlank() } ?: "None"
+                        }\n")
 
                     fun buildScreenMessage(screen: Screen, screenName: String) {
                         val players = playersByScreen[screen]?.mapNotNull { it.user?.username }?.joinToString(", ")
-                        val message = if (players.isNullOrBlank()) localizeNoPlayersMessage() else players
-                        append(localizeScreenMessage(screenName, message))
+                        val message = if (players.isNullOrBlank()) "None" else players
+                        append("__**Players in $screenName**__: $message\n")
                     }
 
                     buildScreenMessage(Screen.Battle, "battle")
@@ -87,26 +103,43 @@ abstract class BaseCommandHandler(
                 when (subcommand) {
                     "toggle" -> {
                         inviteService.enabled = !inviteService.enabled
-                        channel.sendMessage(localizeInviteToggleMessage(inviteService.enabled)).queue()
+                        channel.sendMessage("`Ru:` Инвайт коды теперь ${if (inviteService.enabled) "`нужны`" else "`не нужны`"} для входа в игру.")
+                            .queue()
+                        channel.sendMessage("`En:` Invite codes are now ${if (inviteService.enabled) "`enabled`" else "`not enabled`"} to enter the game")
+                            .queue()
                         logger.info(if (inviteService.enabled) "\u001B[32mInvite codes are now: enabled\u001B[0m" else "\u001B[31mInvite codes are now: not enabled\u001B[0m")
                     }
 
                     "add" -> {
                         val code = args.getOrElse(1) { "" }
                         inviteRepository.createInvite(code)
-                        channel.sendMessage(localizeInviteAddMessage(code)).queue()
+                        channel.sendMessage("`Ru:` Инвайт код: $code. Был добавлен").queue()
+                        channel.sendMessage("`En:` Invite code called: $code. Has been added").queue()
                     }
 
                     "delete" -> {
                         val code = args.getOrElse(1) { "" }
                         val deleted = inviteRepository.deleteInvite(code)
-                        channel.sendMessage(localizeInviteDeleteMessage(code, deleted)).queue()
+
+                        val replyMessageEn = if (deleted) {
+                            "`En:` Successfully removed invite code '$code'"
+                        } else {
+                            "`En:` Invite '$code' not found"
+                        }
+                        val replyMessageRu = if (deleted) {
+                            "`Ru:` Инвайт '$code' успешно удален."
+                        } else {
+                            "`Ru:` Инвайт '$code' не найдено"
+                        }
+                        channel.sendMessage(replyMessageRu).queue()
+                        channel.sendMessage(replyMessageEn).queue()
                     }
 
                     "list" -> {
                         val invites = inviteRepository.getInvites()
                         if (invites.isEmpty()) {
-                            channel.sendMessage(localizeNoInviteCodesMessage()).queue()
+                            channel.sendMessage("`Ru:` Нет доступных пригласительных кодов").queue()
+                            channel.sendMessage("`En:` No invite codes available").queue()
                             return
                         }
                         val inviteList = invites.joinToString("\n") { invite -> " - ${invite.code} (ID: ${invite.id})" }
@@ -121,17 +154,22 @@ abstract class BaseCommandHandler(
 
                             mentionedUsers.forEach { user ->
                                 user.openPrivateChannel().queue { privateChannel ->
-                                    privateChannel.sendMessage(localizeInviteSendMessage(generatedCode)).queue()
+                                    privateChannel.sendMessage("`Ru:` Твой инвайт код: `$generatedCode`").queue()
+                                    privateChannel.sendMessage("`En:` Your Invite Code: `$generatedCode`").queue()
                                 }
-                                channel.sendMessage(localizeInviteSuccessMessage(user.name)).queue()
+
+                                channel.sendMessage("`Ru:` Инвайт код успешно отправлен для `${user.name}`.").queue()
+                                channel.sendMessage("`En:` Invite code successfully sent to `${user.name}`.").queue()
                             }
                         } else {
-                            channel.sendMessage(localizeMentionUserMessage()).queue()
+                            channel.sendMessage("`Ru:` Упомяните пользователя для отправки инвайта.").queue()
+                            channel.sendMessage("`En:` Mention the user to send an invite.").queue()
                         }
                     }
 
                     else -> {
-                        channel.sendMessage(localizeInvalidInviteCommandMessage()).queue()
+                        channel.sendMessage("`Ru:` Invalid command for 'invite'").queue()
+                        channel.sendMessage("`En:` Invalid command for 'invite'").queue()
                     }
                 }
             }
@@ -153,15 +191,17 @@ abstract class BaseCommandHandler(
                             player.updateCrystals()
                             userRepository.updateUser(user)
 
-                            channel.sendMessage(localizeAddCrystalsMessage(amount, user.username)).queue()
+                            channel.sendMessage("Успешно добавлено $amount кристаллов пользователю ${user.username}")
+                                .queue()
                         } else {
-                            channel.sendMessage(localizeUserNotFoundMessage(username)).queue()
+                            channel.sendMessage("Пользователь не найден: $username").queue()
                         }
                     } else {
-                        channel.sendMessage(localizeInvalidAmountMessage()).queue()
+                        channel.sendMessage("Некорректное количество кристаллов").queue()
                     }
                 } else {
-                    channel.sendMessage(localizeAddCrystalsFormatMessage()).queue()
+                    channel.sendMessage("Неправильный формат команды. Используйте: ft?addcry <количество> <пользователь>")
+                        .queue()
                 }
             }
 
@@ -182,15 +222,17 @@ abstract class BaseCommandHandler(
                             player.updateScore()
                             userRepository.updateUser(user)
 
-                            channel.sendMessage(localizeAddScoreMessage(amount, user.username)).queue()
+                            channel.sendMessage("Успешно добавлено $amount опыта пользователю ${user.username}")
+                                .queue()
                         } else {
-                            channel.sendMessage(localizeUserNotFoundMessage(username)).queue()
+                            channel.sendMessage("Пользователь не найден: $username").queue()
                         }
                     } else {
-                        channel.sendMessage(localizeInvalidAmountMessage()).queue()
+                        channel.sendMessage("Некорректное количество опыта").queue()
                     }
                 } else {
-                    channel.sendMessage(localizeAddScoreFormatMessage()).queue()
+                    channel.sendMessage("Неправильный формат команды. Используйте: ft?addscore <количество> <пользователь>")
+                        .queue()
                 }
             }
 
@@ -199,24 +241,4 @@ abstract class BaseCommandHandler(
             }
         }
     }
-
-    protected abstract fun localizeStopMessage(mention: String): String
-    protected abstract fun localizeOnlineMessageHeader(playerCount: Int): String
-    protected abstract fun localizePlayerListMessage(players: String): String
-    protected abstract fun localizeNoPlayersMessage(): String
-    protected abstract fun localizeScreenMessage(screenName: String, players: String): String
-    protected abstract fun localizeInviteToggleMessage(enabled: Boolean): String
-    protected abstract fun localizeInviteAddMessage(code: String): String
-    protected abstract fun localizeInviteDeleteMessage(code: String, deleted: Boolean): String
-    protected abstract fun localizeNoInviteCodesMessage(): String
-    protected abstract fun localizeInviteSendMessage(code: String): String
-    protected abstract fun localizeInviteSuccessMessage(username: String): String
-    protected abstract fun localizeMentionUserMessage(): String
-    protected abstract fun localizeInvalidInviteCommandMessage(): String
-    protected abstract fun localizeAddCrystalsMessage(amount: Int, username: String): String
-    protected abstract fun localizeUserNotFoundMessage(username: String): String
-    protected abstract fun localizeInvalidAmountMessage(): String
-    protected abstract fun localizeAddCrystalsFormatMessage(): String
-    protected abstract fun localizeAddScoreMessage(amount: Int, username: String): String
-    protected abstract fun localizeAddScoreFormatMessage(): String
 }
