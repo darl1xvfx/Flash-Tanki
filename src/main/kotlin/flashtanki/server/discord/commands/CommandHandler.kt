@@ -173,21 +173,19 @@ class CommandHandler : KoinComponent {
 
                             mentionedUsers.forEach { user ->
                                 user.openPrivateChannel().queue { privateChannel ->
-                                    privateChannel.sendMessage(
-                                        if (locale == "ru") RUlocale().inviteSent(generatedCode)
-                                        else ENlocale().inviteSent(generatedCode)
-                                    ).queue()
+                                    val localeMessage = if (locale == "ru") RUlocale().inviteSent(generatedCode)
+                                    else ENlocale().inviteSent(generatedCode)
+                                    privateChannel.sendMessage(localeMessage).queue()
                                 }
-                                channel.sendMessage(
-                                    if (locale == "ru") RUlocale().inviteSentToUser(user.name)
-                                    else ENlocale().inviteSentToUser(user.name)
-                                ).queue()
+
+                                val localeMessageToChannel = if (locale == "ru") RUlocale().inviteSentToUser(user.name)
+                                else ENlocale().inviteSentToUser(user.name)
+                                channel.sendMessage(localeMessageToChannel).queue()
                             }
                         } else {
-                            channel.sendMessage(
-                                if (locale == "ru") RUlocale().mentionUserForInvite()
-                                else ENlocale().mentionUserForInvite()
-                            ).queue()
+                            val localeMessage = if (locale == "ru") RUlocale().mentionUserForInvite()
+                            else ENlocale().mentionUserForInvite()
+                            channel.sendMessage(localeMessage).queue()
                         }
                     }
 
