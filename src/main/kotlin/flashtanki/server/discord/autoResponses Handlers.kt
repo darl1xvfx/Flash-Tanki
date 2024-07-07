@@ -17,19 +17,5 @@ class autoResponsesHandlers : KoinComponent {
                 channel.sendMessage("https://discord.gg/tjskEJ7SFb").queue()
             }
         }
-        /* when {
-            message.startsWith(" ") -> {
-                GlobalScope.launch {
-                    channel.sendMessage(" ").queue()
-                    channel.sendMessage(" ").queue()
-                }
-            }
-            message.startsWith(" ") -> {
-                GlobalScope.launch {
-                    channel.sendMessage(" ").queue()
-                    channel.sendMessage(" ").queue()
-                }
-            }
-        } */
     }
 }

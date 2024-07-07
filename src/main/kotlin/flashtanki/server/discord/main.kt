@@ -1,7 +1,7 @@
 package flashtanki.server.bot.discord
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDABuilder
@@ -17,31 +17,34 @@ import flashtanki.server.ISocketServer
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class DiscordBot(private val discordCommandHandler: CommandHandler, private val autoResponsesHandlers: autoResponsesHandlers) : ListenerAdapter(), KoinComponent {
+class DiscordBot(
+    private val discordCommandHandler: CommandHandler,
+    private val autoResponsesHandler: autoResponsesHandlers
+) : ListenerAdapter(), KoinComponent {
+
     private val socketServer by inject<ISocketServer>()
 
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        fun run(token: String, discordCommandHandler: CommandHandler, autoResponsesHandlers: autoResponsesHandlers) {
+        fun run(token: String, discordCommandHandler: CommandHandler, autoResponsesHandler: autoResponsesHandlers) {
             try {
+                val bot = DiscordBot(discordCommandHandler, autoResponsesHandler)
                 val jda = JDABuilder.createDefault(token)
-                    .addEventListeners(DiscordBot(discordCommandHandler, autoResponsesHandlers))
+                    .addEventListeners(bot)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .disableCache(CacheFlag.VOICE_STATE, CacheFlag.ACTIVITY)
                     .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGE_TYPING)
                     .build()
                     .awaitReady()
 
-                val updateActivity = {
+                val scheduler = Executors.newScheduledThreadPool(1)
+                scheduler.scheduleAtFixedRate({
                     jda.presence.activity = Activity.streaming(
-                        "❗Flash Tanki Online: ${DiscordBot(discordCommandHandler, autoResponsesHandlers).socketServer.players.size}",
+                        "❗Flash Tanki Online: ${bot.socketServer.players.size}",
                         ""
                     )
-                }
-
-                val scheduler = Executors.newScheduledThreadPool(1)
-                scheduler.scheduleAtFixedRate(updateActivity, 1, 1, TimeUnit.SECONDS)
+                }, 1, 1, TimeUnit.SECONDS)
 
                 logger.info { "\u001B[93mBot is running!\u001B[0m" }
                 logger.info { "\u001B[93mCommandHandler is running!\u001B[0m" }
@@ -51,11 +54,10 @@ class DiscordBot(private val discordCommandHandler: CommandHandler, private val 
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.Default).launch {
             discordCommandHandler.handleCommand(event)
-            autoResponsesHandlers.handleCommand(event)
+            autoResponsesHandler.handleCommand(event)
         }
     }
 }
