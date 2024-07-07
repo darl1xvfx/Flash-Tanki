@@ -137,15 +137,27 @@ class CommandHandler : KoinComponent {
                     "list" -> {
                         val invites = inviteRepository.getInvites()
                         if (invites.isEmpty()) {
-                            channel.sendMessage(
-                                if (locale == "ru") RUlocale().noInviteCodes()
-                                else ENlocale().noInviteCodes()
-                            ).queue()
+                            val message = if (locale == "ru") {
+                                RUlocale().noInviteCodes()
+                            } else {
+                                ENlocale().noInviteCodes()
+                            }
+                            channel.sendMessage(message).queue()
                             return
                         }
+
                         val inviteList = invites.joinToString("\n") { invite ->
-                            " - ${invite.code} (ID: ${invite.id})"
+                            val code = invite.code
+                            val username = invite.username.toString()
+                            val id = invite.id.toString()
+                            val localizedMessage = if (locale == "ru") {
+                                RUlocale().inviteListEntry(code, username, id)
+                            } else {
+                                ENlocale().inviteListEntry(code, username, id)
+                            }
+                            localizedMessage
                         }
+
                         channel.sendMessage(inviteList).queue()
                     }
 

@@ -34,6 +34,10 @@ class RUlocale {
         return if (deleted) "`Ru:` Инвайт `$code` успешно удален." else "Ru: Инвайт `$code` не найдено"
     }
 
+    fun inviteListEntry(code: String, username: String, id: String): String {
+        return " - Код: `$code`, Никнейм: `$username` (ID: `$id`)"
+    }
+
     fun noInviteCodes(): String {
         return "`Ru:` Нет доступных пригласительных кодов"
     }
@@ -115,6 +119,10 @@ class ENlocale {
 
     fun inviteDeleted(deleted: Boolean, code: String): String {
         return if (deleted) "`En:` Successfully removed invite code `$code`" else "`En:` Invite `$code` not found"
+    }
+
+    fun inviteListEntry(code: String, username: String, id: String): String {
+        return " - Code: `$code`, UserName: `$username` (ID: `$id`)"
     }
 
     fun noInviteCodes(): String {
