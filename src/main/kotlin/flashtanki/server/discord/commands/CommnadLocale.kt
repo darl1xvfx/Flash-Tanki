@@ -38,6 +38,10 @@ class RUlocale {
         return " - Код: `$code`, Никнейм: `$username` (ID: `$id`)"
     }
 
+    fun unknownUsername(): String {
+        return "Неизвестное имя пользователя"
+    }
+
     fun noInviteCodes(): String {
         return "`Ru:` Нет доступных пригласительных кодов"
     }
@@ -123,6 +127,10 @@ class ENlocale {
 
     fun inviteListEntry(code: String, username: String, id: String): String {
         return " - Code: `$code`, UserName: `$username` (ID: `$id`)"
+    }
+
+    fun unknownUsername(): String {
+        return "Unknown Username"
     }
 
     fun noInviteCodes(): String {

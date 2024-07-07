@@ -148,7 +148,11 @@ class CommandHandler : KoinComponent {
 
                         val inviteList = invites.joinToString("\n") { invite ->
                             val code = invite.code
-                            val username = invite.username.toString()
+                            val username = invite.username ?: if (locale == "ru") {
+                                RUlocale().unknownUsername()
+                            } else {
+                                ENlocale().unknownUsername()
+                            }
                             val id = invite.id.toString()
                             val localizedMessage = if (locale == "ru") {
                                 RUlocale().inviteListEntry(code, username, id)
