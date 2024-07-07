@@ -17,13 +17,14 @@ import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger { }
 
-class CommandHandler(
-    private val prefix: String = "ft?",
-) : KoinComponent {
+class CommandHandler : KoinComponent {
     private val socketServer by inject<ISocketServer>()
     private val inviteService by inject<IInviteService>()
     private val inviteRepository by inject<IInviteRepository>()
     private val userRepository by inject<IUserRepository>()
+
+    private val ruPrefix = "ru?"
+    private val enPrefix = "en?"
 
     private fun generateRandomCode(length: Int): String {
         val characters =
@@ -34,25 +35,44 @@ class CommandHandler(
             .joinToString("")
     }
 
-    private fun buildHelpMessage(): String {
-        return """
-            **Command List:**
+    private fun buildHelpMessage(locale: String): String {
+        return if (locale == "ru") {
+            """
+                **Список команд:**
 
-            `ft?stop` - Stops the server.
-            `ft?online` - Displays the number of online players and their details.
-            `ft?invite toggle` - Toggles the invite code requirement on or off.
-            `ft?invite add <code>` - Adds a new invite code.
-            `ft?invite delete <code>` - Deletes an invite code.
-            `ft?invite list` - Lists all invite codes.
-            `ft?invite give` - Generates an invite code for a mentioned user.
-            `ft?addcry <amount> <username>` - Adds crystals to the specified user.
-            `ft?addscore <amount> <username>` - Adds score to the specified user.
-            `ft?help` - Displays this help message.
-        """.trimIndent()
+                ru?stop - Останавливает сервер.
+                ru?online - Показывает количество онлайн игроков и их данные.
+                ru?invite toggle - Включает или выключает требование инвайт-кода.
+                ru?invite add <код> - Добавляет новый инвайт-код.
+                ru?invite delete <код> - Удаляет инвайт-код.
+                ru?invite list - Список всех инвайт-кодов.
+                ru?invite give - Генерирует инвайт-код для упомянутого пользователя.
+                ru?addcry <количество> <пользователь> - Добавляет кристаллы указанному пользователю.
+                ru?addscore <количество> <пользователь> - Добавляет очки указанному пользователю.
+                ru?help - Показывает это сообщение.
+            """.trimIndent()
+        } else {
+            """
+                **Command List:**
+
+                en?stop - Stops the server.
+                en?online - Displays the number of online players and their details.
+                en?invite toggle - Toggles the invite code requirement on or off.
+                en?invite add <code> - Adds a new invite code.
+                en?invite delete <code> - Deletes an invite code.
+                en?invite list - Lists all invite codes.
+                en?invite give - Generates an invite code for a mentioned user.
+                en?addcry <amount> <username> - Adds crystals to the specified user.
+                en?addscore <amount> <username> - Adds score to the specified user.
+                en?help - Displays this help message.
+            """.trimIndent()
+        }
     }
 
     suspend fun handleCommand(event: GuildMessageReceivedEvent) {
-        val (message, channel, userId) = Triple(event.message.contentRaw, event.channel, event.author.id)
+        val message = event.message.contentRaw
+        val channel = event.channel
+        val userId = event.author.id
         val DiscordUserID = setOf("531060542740234240", "1185301918290022532", "1140945846146445354","994657015257378997","531366173875372032","929665438437240923","1139886895715848222")
 
         if (userId !in DiscordUserID) {
@@ -60,13 +80,23 @@ class CommandHandler(
             return
         }
 
+        val prefix = when {
+            message.startsWith(ruPrefix) -> ruPrefix
+            message.startsWith(enPrefix) -> enPrefix
+            else -> return
+        }
+
+        val locale = if (prefix == ruPrefix) "ru" else "en"
+
         when {
             message.startsWith(prefix + "stop") -> {
                 GlobalScope.launch {
                     logger.info("\u001B[31mRequest to shutdown server received stop...\u001B[0m")
-                    channel.sendMessage("`Ru:` Сервер остановлен игроком ${event.member?.asMention}!").queue()
-                    channel.sendMessage("`En:` Server stopped for ${event.member?.asMention}!").queue()
-
+                    if (locale == "ru") {
+                        channel.sendMessage("Ru: Сервер остановлен игроком ${event.member?.asMention}!").queue()
+                    } else {
+                        channel.sendMessage("En: Server stopped for ${event.member?.asMention}!").queue()
+                    }
                     delay(5000)
                     exitProcess(0)
                 }
@@ -88,9 +118,9 @@ class CommandHandler(
                         append("__**Players in $screenName**__: $message\n")
                     }
 
-                    buildScreenMessage(Screen.Battle, "battle")
-                    buildScreenMessage(Screen.BattleSelect, "choosing battles")
-                    buildScreenMessage(Screen.Garage, "the garage")
+                    buildScreenMessage(Screen.Battle, if (locale == "ru") "бою" else "battle")
+                    buildScreenMessage(Screen.BattleSelect, if (locale == "ru") "выборе боев" else "choosing battles")
+                    buildScreenMessage(Screen.Garage, if (locale == "ru") "гараже" else "the garage")
                 }
 
                 channel.sendMessage(onlinePlayersMessage.trim()).queue()
@@ -103,43 +133,43 @@ class CommandHandler(
                 when (subcommand) {
                     "toggle" -> {
                         inviteService.enabled = !inviteService.enabled
-                        channel.sendMessage("`Ru:` Инвайт коды теперь ${if (inviteService.enabled) "`нужны`" else "`не нужны`"} для входа в игру.")
-                            .queue()
-                        channel.sendMessage("`En:` Invite codes are now ${if (inviteService.enabled) "`enabled`" else "`not enabled`"} to enter the game")
-                            .queue()
+                        if (locale == "ru") {
+                            channel.sendMessage("Ru: Инвайт коды теперь ${if (inviteService.enabled) "нужны" else "не нужны"} для входа в игру.").queue()
+                        } else {
+                            channel.sendMessage("En: Invite codes are now ${if (inviteService.enabled) "enabled" else "not enabled"} to enter the game").queue()
+                        }
                         logger.info(if (inviteService.enabled) "\u001B[32mInvite codes are now: enabled\u001B[0m" else "\u001B[31mInvite codes are now: not enabled\u001B[0m")
                     }
 
                     "add" -> {
                         val code = args.getOrElse(1) { "" }
                         inviteRepository.createInvite(code)
-                        channel.sendMessage("`Ru:` Инвайт код: $code. Был добавлен").queue()
-                        channel.sendMessage("`En:` Invite code called: $code. Has been added").queue()
+                        if (locale == "ru") {
+                            channel.sendMessage("Ru: Инвайт код: $code. Был добавлен").queue()
+                        } else {
+                            channel.sendMessage("En: Invite code called: $code. Has been added").queue()
+                        }
                     }
 
                     "delete" -> {
                         val code = args.getOrElse(1) { "" }
                         val deleted = inviteRepository.deleteInvite(code)
 
-                        val replyMessageEn = if (deleted) {
-                            "`En:` Successfully removed invite code '$code'"
+                        if (locale == "ru") {
+                            channel.sendMessage(if (deleted) "Ru: Инвайт '$code' успешно удален." else "Ru: Инвайт '$code' не найдено").queue()
                         } else {
-                            "`En:` Invite '$code' not found"
+                            channel.sendMessage(if (deleted) "En: Successfully removed invite code '$code'" else "En: Invite '$code' not found").queue()
                         }
-                        val replyMessageRu = if (deleted) {
-                            "`Ru:` Инвайт '$code' успешно удален."
-                        } else {
-                            "`Ru:` Инвайт '$code' не найдено"
-                        }
-                        channel.sendMessage(replyMessageRu).queue()
-                        channel.sendMessage(replyMessageEn).queue()
                     }
 
                     "list" -> {
                         val invites = inviteRepository.getInvites()
                         if (invites.isEmpty()) {
-                            channel.sendMessage("`Ru:` Нет доступных пригласительных кодов").queue()
-                            channel.sendMessage("`En:` No invite codes available").queue()
+                            if (locale == "ru") {
+                                channel.sendMessage("Ru: Нет доступных пригласительных кодов").queue()
+                            } else {
+                                channel.sendMessage("En: No invite codes available").queue()
+                            }
                             return
                         }
                         val inviteList = invites.joinToString("\n") { invite -> " - ${invite.code} (ID: ${invite.id})" }
@@ -154,22 +184,33 @@ class CommandHandler(
 
                             mentionedUsers.forEach { user ->
                                 user.openPrivateChannel().queue { privateChannel ->
-                                    privateChannel.sendMessage("`Ru:` Твой инвайт код: `$generatedCode`").queue()
-                                    privateChannel.sendMessage("`En:` Your Invite Code: `$generatedCode`").queue()
+                                    if (locale == "ru") {
+                                        privateChannel.sendMessage("Ru: Твой инвайт код: $generatedCode").queue()
+                                    } else {
+                                        privateChannel.sendMessage("En: Your Invite Code: $generatedCode").queue()
+                                    }
                                 }
-
-                                channel.sendMessage("`Ru:` Инвайт код успешно отправлен для `${user.name}`.").queue()
-                                channel.sendMessage("`En:` Invite code successfully sent to `${user.name}`.").queue()
+                                if (locale == "ru") {
+                                    channel.sendMessage("Ru: Инвайт код успешно отправлен для ${user.name}.").queue()
+                                } else {
+                                    channel.sendMessage("En: Invite code successfully sent to ${user.name}.").queue()
+                                }
                             }
                         } else {
-                            channel.sendMessage("`Ru:` Упомяните пользователя для отправки инвайта.").queue()
-                            channel.sendMessage("`En:` Mention the user to send an invite.").queue()
+                            if (locale == "ru") {
+                                channel.sendMessage("Ru: Упомяните пользователя для отправки инвайта.").queue()
+                            } else {
+                                channel.sendMessage("En: Mention the user to send an invite.").queue()
+                            }
                         }
                     }
 
                     else -> {
-                        channel.sendMessage("`Ru:` Invalid command for 'invite'").queue()
-                        channel.sendMessage("`En:` Invalid command for 'invite'").queue()
+                        if (locale == "ru") {
+                            channel.sendMessage("Ru: Неверная команда для 'invite'").queue()
+                        } else {
+                            channel.sendMessage("En: Invalid command for 'invite'").queue()
+                        }
                     }
                 }
             }
@@ -191,17 +232,31 @@ class CommandHandler(
                             player.updateCrystals()
                             userRepository.updateUser(user)
 
-                            channel.sendMessage("Успешно добавлено $amount кристаллов пользователю ${user.username}")
-                                .queue()
+                            if (locale == "ru") {
+                                channel.sendMessage("Успешно добавлено $amount кристаллов пользователю ${user.username}").queue()
+                            } else {
+                                channel.sendMessage("Successfully added $amount crystals to user ${user.username}").queue()
+                            }
                         } else {
-                            channel.sendMessage("Пользователь не найден: $username").queue()
+                            if (locale == "ru") {
+                                channel.sendMessage("Пользователь не найден: $username").queue()
+                            } else {
+                                channel.sendMessage("User not found: $username").queue()
+                            }
                         }
                     } else {
-                        channel.sendMessage("Некорректное количество кристаллов").queue()
+                        if (locale == "ru") {
+                            channel.sendMessage("Некорректное количество кристаллов").queue()
+                        } else {
+                            channel.sendMessage("Incorrect amount of crystals").queue()
+                        }
                     }
                 } else {
-                    channel.sendMessage("Неправильный формат команды. Используйте: ft?addcry <количество> <пользователь>")
-                        .queue()
+                    if (locale == "ru") {
+                        channel.sendMessage("Неправильный формат команды. Используйте: ru?addcry <количество> <пользователь>").queue()
+                    } else {
+                        channel.sendMessage("Incorrect command format. Use: en?addcry <amount> <user>").queue()
+                    }
                 }
             }
 
@@ -222,22 +277,36 @@ class CommandHandler(
                             player.updateScore()
                             userRepository.updateUser(user)
 
-                            channel.sendMessage("Успешно добавлено $amount опыта пользователю ${user.username}")
-                                .queue()
+                            if (locale == "ru") {
+                                channel.sendMessage("Успешно добавлено $amount опыта пользователю ${user.username}").queue()
+                            } else {
+                                channel.sendMessage("Successfully added $amount score to user ${user.username}").queue()
+                            }
                         } else {
-                            channel.sendMessage("Пользователь не найден: $username").queue()
+                            if (locale == "ru") {
+                                channel.sendMessage("Пользователь не найден: $username").queue()
+                            } else {
+                                channel.sendMessage("User not found: $username").queue()
+                            }
                         }
                     } else {
-                        channel.sendMessage("Некорректное количество опыта").queue()
+                        if (locale == "ru") {
+                            channel.sendMessage("Некорректное количество опыта").queue()
+                        } else {
+                            channel.sendMessage("Incorrect amount of score").queue()
+                        }
                     }
                 } else {
-                    channel.sendMessage("Неправильный формат команды. Используйте: ft?addscore <количество> <пользователь>")
-                        .queue()
+                    if (locale == "ru") {
+                        channel.sendMessage("Неправильный формат команды. Используйте: ru?addscore <количество> <пользователь>").queue()
+                    } else {
+                        channel.sendMessage("Incorrect command format. Use: en?addscore <amount> <user>").queue()
+                    }
                 }
             }
 
             message.startsWith(prefix + "help") -> {
-                channel.sendMessage(buildHelpMessage()).queue()
+                channel.sendMessage(buildHelpMessage(locale)).queue()
             }
         }
     }
