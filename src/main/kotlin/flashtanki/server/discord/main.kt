@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import flashtanki.server.ISocketServer
+import flashtanki.server.discord.commands.CommandHandler
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
