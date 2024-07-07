@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 
 class DiscordBot(
     private val discordCommandHandler: CommandHandler,
-    private val autoResponsesHandler: autoResponsesHandlers
+    private val autoResponseHandler: AutoResponseHandler
 ) : ListenerAdapter(), KoinComponent {
 
     private val socketServer by inject<ISocketServer>()
@@ -28,9 +28,9 @@ class DiscordBot(
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        fun run(token: String, discordCommandHandler: CommandHandler, autoResponsesHandler: autoResponsesHandlers) {
+        fun run(token: String, discordCommandHandler: CommandHandler, autoResponseHandler: AutoResponseHandler) {
             try {
-                val bot = DiscordBot(discordCommandHandler, autoResponsesHandler)
+                val bot = DiscordBot(discordCommandHandler, autoResponseHandler)
                 val jda = JDABuilder.createDefault(token)
                     .addEventListeners(bot)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -58,7 +58,7 @@ class DiscordBot(
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         CoroutineScope(Dispatchers.Default).launch {
             discordCommandHandler.handleCommand(event)
-            autoResponsesHandler.handleCommand(event)
+            autoResponseHandler.handleCommand(event)
         }
     }
 }

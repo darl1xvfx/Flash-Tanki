@@ -5,7 +5,7 @@ import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import org.koin.core.component.KoinComponent
 
-class autoResponsesHandlers : KoinComponent {
+class AutoResponseHandler : KoinComponent {
 
     suspend fun handleCommand(event: GuildMessageReceivedEvent) {
         val message = event.message.contentRaw.lowercase()
