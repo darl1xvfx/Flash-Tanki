@@ -16,6 +16,7 @@ import flashtanki.server.commands.CommandName
 import flashtanki.server.commands.ICommandHandler
 import flashtanki.server.commands.ICommandRegistry
 import flashtanki.server.discord.jda.JDA
+import flashtanki.server.discord.commands.CommandHandler
 import flashtanki.server.extensions.cast
 import flashtanki.server.extensions.toString
 import flashtanki.server.garage.*
@@ -1004,6 +1005,8 @@ class Server : KoinComponent {
         launch { resourceServer.run() }
         launch { apiServer.run() }
         launch { JDA("MTI0OTI4Mjc2ODc4NjAzMDY1Mw.Gu5v7i.PoyQ4vYXlzieG1lhxKsOblen9fm6-g6cNcAZWM") }
+        launch { DiscordBot.run("MTI0OTI4Mjc2ODc4NjAzMDY1Mw.Gu5v7i.PoyQ4vYXlzieG1lhxKsOblen9fm6-g6cNcAZWM", CommandHandler(), AutoResponseHandler()) }
+
         ServerStartedMessage().send()
         logger.info("Server started...")
 
