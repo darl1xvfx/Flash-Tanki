@@ -7,7 +7,6 @@ import flashtanki.server.battles.BattleTeam
 import flashtanki.server.battles.IBattleProcessor
 import flashtanki.server.battles.map.IMapRegistry
 import flashtanki.server.battles.map.get
-import flashtanki.server.battles.mode.DeathmatchModeHandler
 import flashtanki.server.battles.mode.*
 import flashtanki.server.bot.discord.*
 import flashtanki.server.chat.*
@@ -16,6 +15,7 @@ import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandName
 import flashtanki.server.commands.ICommandHandler
 import flashtanki.server.commands.ICommandRegistry
+import flashtanki.server.discord.jda.JDA
 import flashtanki.server.extensions.cast
 import flashtanki.server.extensions.toString
 import flashtanki.server.garage.*
@@ -116,7 +116,7 @@ class Server : KoinComponent {
           val commandName: String? = arguments.getOrNull("command")
           val user = socket.user ?: throw Exception("User is null")
           if(commandName == null) {
-            val availableCommands = commands.filter { it.permissions.any(user.permissions) }
+            val availableCommands = commands.filter { it.permissions.any (user.permissions) }
             val commandList = availableCommands.joinToString(", \n") { it.name }
             reply("Available commands (${availableCommands.size}):\n$commandList")
             return@handler
@@ -1003,8 +1003,7 @@ class Server : KoinComponent {
         launch { OAuthService().init() }
         launch { resourceServer.run() }
         launch { apiServer.run() }
-        launch { DiscordBot.run("MTI0OTI4Mjc2ODc4NjAzMDY1Mw.Gu5v7i.PoyQ4vYXlzieG1lhxKsOblen9fm6-g6cNcAZWM", CommandHandler(), autoResponsesHandlers()) }
-
+        launch { JDA("MTI0OTI4Mjc2ODc4NjAzMDY1Mw.Gu5v7i.PoyQ4vYXlzieG1lhxKsOblen9fm6-g6cNcAZWM") }
         ServerStartedMessage().send()
         logger.info("Server started...")
 
@@ -1025,7 +1024,7 @@ class Server : KoinComponent {
       logger.info("Server stops after 50 seconds...")
 
       Command(CommandName.ShowServerStop).let {
-        command -> socketServer.players.forEach {
+          command -> socketServer.players.forEach {
           player -> player.send(command) }
       }
 
