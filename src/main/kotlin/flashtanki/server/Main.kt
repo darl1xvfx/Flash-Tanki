@@ -21,7 +21,6 @@
   import flashtanki.server.commands.CommandRegistry
   import flashtanki.server.commands.ICommandRegistry
   import flashtanki.server.extensions.cast
-  import flashtanki.server.extensions.gitVersion
   import flashtanki.server.garage.GarageItemConverter
   import flashtanki.server.garage.GarageMarketRegistry
   import flashtanki.server.garage.IGarageItemConverter
@@ -211,7 +210,6 @@
       val logger = KotlinLogging.logger { }
 
       logger.info { "Hello!" }
-      logger.info { "Version: ${BuildConfig.gitVersion}" }
       logger.info { "Root path: ${Paths.get("").absolute()}" }
 
       val module = module {

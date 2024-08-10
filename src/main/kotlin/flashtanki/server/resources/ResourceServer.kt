@@ -17,7 +17,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import flashtanki.server.IResourceManager
 import flashtanki.server.ServerIdResource
-import flashtanki.server.extensions.gitVersion
 import flashtanki.server.utils.ResourceUtils
 import io.ktor.util.*
 import kotlin.io.path.inputStream

@@ -23,13 +23,11 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import flashtanki.server.BuildConfig
 import flashtanki.server.client.*
 import flashtanki.server.commands.Command
 import flashtanki.server.commands.CommandHandler
 import flashtanki.server.commands.CommandName
 import flashtanki.server.commands.ICommandHandler
-import flashtanki.server.extensions.gitVersion
 import flashtanki.server.extensions.launchDelayed
 import flashtanki.server.invite.IInviteService
 import flashtanki.server.utils.Captcha

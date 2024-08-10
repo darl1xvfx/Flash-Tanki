@@ -4,7 +4,6 @@ plugins {
   kotlin("jvm") version "1.6.10"
   kotlin("plugin.jpa") version "1.6.10"
   kotlin("plugin.allopen") version "1.6.10"
-  id("com.github.gmazzo.buildconfig") version "3.0.3"
   id("com.github.johnrengelman.shadow") version "7.1.2"
   id("org.jetbrains.kotlin.plugin.serialization") version "1.5.31"
   distribution
@@ -12,10 +11,7 @@ plugins {
 }
 
 group = "flashtanki.server"
-version = ""
-
-val gitBranch = ""
-var gitCommitHash = ""
+version = "1.0.0"
 
 repositories {
   mavenCentral()
@@ -38,8 +34,7 @@ dependencies {
   implementation("io.ktor:ktor-server-auth:2.0.0-beta-1")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
-
-    val koinVersion = "3.1.5"
+  val koinVersion = "3.1.5"
 
   implementation("org.hibernate.orm:hibernate-core:6.0.0.Final")
   implementation("org.hibernate.validator:hibernate-validator:7.0.4.Final")
@@ -71,8 +66,6 @@ dependencies {
 
   // lib discord bot
   implementation(files("gradle/wrapper/JDA-4.3.0_277.jar"))
-
-  testImplementation(kotlin("test"))
 }
 
 tasks.withType<KotlinCompile> {
@@ -86,15 +79,6 @@ sourceSets {
       exclude("data")
     }
   }
-}
-
-buildConfig {
-  useKotlinOutput()
-  packageName("flashtanki.server")
-
-  buildConfigField("String", "VERSION", "\"${project.version}\"")
-  buildConfigField("String", "GIT_BRANCH", "\"$gitBranch\"")
-  buildConfigField("String", "GIT_COMMIT_HASH", "\"$gitCommitHash\"")
 }
 
 distributions {
@@ -114,14 +98,12 @@ tasks {
   }
 
   jar {
-    val gitSuffix = if (gitBranch.isNotEmpty() && gitCommitHash.isNotEmpty()) "/$gitBranch+${gitCommitHash.take(8)}" else ""
-
     archiveBaseName.set("flashtanki-server")
     archiveVersion.set("${project.version}")
 
     manifest {
       attributes["Main-Class"] = application.mainClass
-      attributes["Implementation-Version"] = "${project.version}$gitSuffix"
+      attributes["Implementation-Version"] = "${project.version}"
     }
 
     dependsOn("copyDependencies")
@@ -129,14 +111,12 @@ tasks {
   }
 
   shadowJar {
-    val gitSuffix = if (gitBranch.isNotEmpty() && gitCommitHash.isNotEmpty()) "/$gitBranch+${gitCommitHash.take(8)}" else ""
-
     archiveBaseName.set("flashtanki-server")
     archiveVersion.set("${project.version}")
 
     manifest {
       attributes["Main-Class"] = application.mainClass
-      attributes["Implementation-Version"] = "${project.version}$gitSuffix"
+      attributes["Implementation-Version"] = "${project.version}"
     }
 
     dependsOn("copyRuntimeResources")
@@ -151,10 +131,6 @@ tasks {
   register<Sync>("copyDependencies") {
     from(configurations.default)
     into("$buildDir/dependencies")
-  }
-
-  test {
-    useJUnitPlatform()
   }
 
   startScripts {
