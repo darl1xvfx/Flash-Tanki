@@ -15,7 +15,7 @@ import flashtanki.server.client.toVector
 import flashtanki.server.commands.CommandHandler
 import flashtanki.server.commands.CommandName
 import flashtanki.server.commands.ICommandHandler
-import flashtanki.server.battles.anticheat.CaptureTheFlagAnticheatModel
+import flashtanki.server.anticheats.CaptureTheFlagAnticheatModel
 
 class CtfBattleHandler : ICommandHandler, KoinComponent {
   private val logger = KotlinLogging.logger { }

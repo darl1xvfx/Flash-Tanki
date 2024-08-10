@@ -1,4 +1,4 @@
-package flashtanki.server.battles.anticheat
+package flashtanki.server.anticheats
 
 import flashtanki.server.client.UserSocket
 import mu.KotlinLogging
