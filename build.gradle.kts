@@ -98,16 +98,7 @@ tasks {
   }
 
   jar {
-    archiveBaseName.set("flashtanki-server")
-    archiveVersion.set("${project.version}")
-
-    manifest {
-      attributes["Main-Class"] = application.mainClass
-      attributes["Implementation-Version"] = "${project.version}"
-    }
-
-    dependsOn("copyDependencies")
-    dependsOn("copyRuntimeResources")
+    enabled = false
   }
 
   shadowJar {
