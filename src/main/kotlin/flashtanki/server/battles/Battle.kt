@@ -648,12 +648,12 @@ suspend fun createBonusRegions(socket: UserSocket) {
 
     Command(CommandName.RestartBattle, properties[BattleProperty.TimeLimit].toString()).sendTo(this)
 	
-	players.users().forEach { player ->
+	/*players.users().forEach { player ->
 	   with(player) {
 	     ultimateCharge = 0
 	     tank!!.updateUltimateCharge()
 	   }
-	}
+	}*/
 
     autoRestartHandler(this)
 

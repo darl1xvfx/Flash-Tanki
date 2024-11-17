@@ -277,7 +277,7 @@ class BattleTank(
     ).send(this)
   }
 
-  suspend fun updateUltimateCharge() {
+  /*suspend fun updateUltimateCharge() {
     val chargeToAdd = 1
     val delayTime = 1000L
     var chargeAccumulator = 0
@@ -298,7 +298,7 @@ class BattleTank(
     if (player.ultimateCharge >= 100) {
       Command(CommandName.ShowUltimateCharged, id).send(this)
     }
-  }
+  }*/
 
   suspend fun initSelf() {
     Command(

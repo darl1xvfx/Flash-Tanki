@@ -117,8 +117,8 @@ class BattlePlayer(
           .forEach { player -> command.send(player) }
       }
       isActive = false
-      Command(CommandName.AddUltimateCharge, ("-" + ultimateCharge).toString()).send(socket)
-      ultimateCharge = 0
+      //Command(CommandName.AddUltimateCharge, ("-" + ultimateCharge).toString()).send(socket)
+      //ultimateCharge = 0
     }
   }
 
@@ -284,9 +284,9 @@ class BattlePlayer(
         ).toJson()
       ).send(socket)
 	  
-	  Command(
+	  /*Command(
 	   CommandName.InitUltimateModel
-	  ).send(socket) 
+	  ).send(socket) */
 
     Command(
       CommandName.InitMineModel,
@@ -324,7 +324,7 @@ class BattlePlayer(
     if(!isSpectator && tank != null) {
       tank.updateSpawnPosition()
       tank.prepareToSpawn()
-	  tank.updateUltimateCharge()
+	  //tank.updateUltimateCharge()
     }
 
     spawnAnotherTanks()

@@ -227,11 +227,11 @@ enum class CommandName(val category: CommandCategory, val key: String, val side:
   ActivateDependedCooldown(CommandCategory.Battle, "activate_depended_cooldown", CommandSide.Client),
   ActivateCooldown(CommandCategory.Battle, "activate_cooldown", CommandSide.Client),
   ClientActivateItem(CommandCategory.Battle, "activate_item", CommandSide.Client),
-  ActivateUltimate(CommandCategory.Battle, "activateUltimate", CommandSide.Server),
-  ActivateUltimate2(CommandCategory.Battle, "activate_ultimate", CommandSide.Client),
-  InitUltimateModel(CommandCategory.Battle, "init_ulitmate_model", CommandSide.Client),
-  AddUltimateCharge(CommandCategory.Battle, "add_ultimate_charge", CommandSide.Client),
-  ShowUltimateCharged(CommandCategory.Battle, "show_ultimate_charged", CommandSide.Client),
+  //ActivateUltimate(CommandCategory.Battle, "activateUltimate", CommandSide.Server),
+  //ActivateUltimate2(CommandCategory.Battle, "activate_ultimate", CommandSide.Client),
+  //InitUltimateModel(CommandCategory.Battle, "init_ulitmate_model", CommandSide.Client),
+  //AddUltimateCharge(CommandCategory.Battle, "add_ultimate_charge", CommandSide.Client),
+  //ShowUltimateCharged(CommandCategory.Battle, "show_ultimate_charged", CommandSide.Client),
   
   SelfDestruct(CommandCategory.Battle, "suicide", CommandSide.Server),
 

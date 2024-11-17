@@ -172,7 +172,7 @@ class BattleSupplyHandler : ICommandHandler, KoinComponent {
         }
     }
 
-    @CommandHandler(CommandName.ActivateUltimate)
+    /*@CommandHandler(CommandName.ActivateUltimate)
     suspend fun activateUltimate(socket: UserSocket) {
         val user = socket.user ?: throw Exception("No User")
         val player = socket.battlePlayer ?: throw Exception("No BattlePlayer")
@@ -203,7 +203,7 @@ class BattleSupplyHandler : ICommandHandler, KoinComponent {
         } finally {
             coroutineScope.cancel()
         }
-    }
+    }*/
 
     @CommandHandler(CommandName.TryActivateBonus)
     suspend fun tryActivateBonus(socket: UserSocket, key: String) {
